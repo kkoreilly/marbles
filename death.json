@@ -1,0 +1,39 @@
+{
+  "Params": {
+    "NMarbles": 10,
+    "NSteps": 1000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1
+  },
+  "Lines": [
+    {
+      "Eq": "-1/4*x+7",
+      "MinX": -10,
+      "MaxX": 1.5,
+      "Color": "blue",
+      "Bounce": 1
+    },
+    {
+      "Eq": "-1/4*x+7",
+      "MinX": 1.5,
+      "MaxX": 2.5,
+      "Color": "black",
+      "Bounce": 0.05
+    },
+    {
+      "Eq": "-1/4*x+7",
+      "MinX": 2.5,
+      "MaxX": 3.5,
+      "Color": "blue",
+      "Bounce": 1
+    },
+    {
+      "Eq": "-1/4*x+7",
+      "MinX": 3.5,
+      "MaxX": 4.5,
+      "Color": "black",
+      "Bounce": 0.05
+    }
+  ]
+}

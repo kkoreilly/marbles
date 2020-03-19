@@ -1,0 +1,60 @@
+{
+  "Params": {
+    "NMarbles": 100,
+    "NSteps": 1000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1
+  },
+  "Lines": [
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": -1,
+      "MaxX": 1,
+      "Color": "black",
+      "Bounce": 1
+    },
+    {
+      "Eq": "1/10*x+3",
+      "MinX": 1,
+      "MaxX": 3,
+      "Color": "red",
+      "Bounce": 0.75
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": -1.5,
+      "MaxX": 0.5,
+      "Color": "blue",
+      "Bounce": 0.75
+    },
+    {
+      "Eq": "10*(x-3)",
+      "MinX": -10,
+      "MaxX": 3,
+      "Color": "purple",
+      "Bounce": 1
+    },
+    {
+      "Eq": "1*(x+1)-2",
+      "MinX": -10,
+      "MaxX": -1,
+      "Color": "purple",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "2*cos(x-2)-8",
+      "MinX": -3,
+      "MaxX": 10,
+      "Color": "brown",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "2*cos(x+2)-7.8",
+      "MinX": -6.5,
+      "MaxX": -3.8,
+      "Color": "green",
+      "Bounce": 0.75
+    }
+  ]
+}

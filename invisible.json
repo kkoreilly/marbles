@@ -1,0 +1,25 @@
+{
+  "Params": {
+    "NMarbles": 10,
+    "NSteps": 1000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1
+  },
+  "Lines": [
+    {
+      "Eq": "sin(x)",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 1
+    },
+    {
+      "Eq": "-0.8",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.01
+    }
+  ]
+}
