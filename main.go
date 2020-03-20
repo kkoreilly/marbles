@@ -1,8 +1,6 @@
-// Copyright (c) 2018, The GoKi Authors. All rights reserved.
+// Copyright (c) 2020, kplat1. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-// Originally written by Kai O'Reilly (https://github.com/kplat1) with some help from his dad..
 
 package main
 

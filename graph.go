@@ -1,8 +1,6 @@
-// Copyright (c) 2018, The GoKi Authors. All rights reserved.
+// Copyright (c) 2020, kplat1. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-// Originally written by Kai O'Reilly (https://github.com/kplat1) with some help from his dad..
 
 package main
 
@@ -20,6 +18,7 @@ import (
 	"github.com/goki/ki/ki"
 	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
+	"math/rand"
 )
 
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
@@ -321,7 +320,9 @@ type Marble struct {
 }
 
 func (mb *Marble) Init(diff float32) {
-	mb.Pos = mat32.Vec2{0, 10 - diff}
+	randNum := (rand.Float32() * 2) - 1
+	xPos := randNum * Gr.Params.Width
+	mb.Pos = mat32.Vec2{xPos, 10 - diff}
 	mb.Vel = mat32.Vec2{0, float32(-Gr.Params.StartSpeed)}
 	mb.PrvPos = mb.Pos
 }
@@ -338,6 +339,7 @@ type Params struct {
 	StartSpeed float32 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
 	UpdtRate   float32 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
 	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
+	Width      float32 `length of spawning zone for marbles, set to 0 for all spawn in a column`
 }
 
 func (pr *Params) Defaults() {
