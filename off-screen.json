@@ -1,14 +1,15 @@
 {
   "Params": {
-    "NMarbles": 10,
+    "NMarbles": 1000,
     "NSteps": 1000,
     "StartSpeed": 0,
     "UpdtRate": 0.02,
-    "Gravity": 0.1
+    "Gravity": 0.1,
+    "Width": 10
   },
   "Lines": [
     {
-      "Eq": "-1/2*x+7",
+      "Eq": "-1/4*x+5",
       "MinX": -10,
       "MaxX": 10,
       "Color": "black",
@@ -19,7 +20,7 @@
       "MinX": -10,
       "MaxX": 20,
       "Color": "red",
-      "Bounce": 0.75
+      "Bounce": 0.95
     }
   ]
 }
