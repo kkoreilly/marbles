@@ -1,0 +1,32 @@
+{
+  "Params": {
+    "NMarbles": 10,
+    "NSteps": 1000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1
+  },
+  "Lines": [
+    {
+      "Eq": "cos(pow(x,2))*sin(x)",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 1.1
+    },
+    {
+      "Eq": "100*(x+9)",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "100*(x-9)",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.95
+    }
+  ]
+}
