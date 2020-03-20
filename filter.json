@@ -93,14 +93,14 @@
       "Bounce": 0.2
     },
     {
-      "Eq": "10*(x+10)",
+      "Eq": "20*(x+9.5)",
       "MinX": -10,
       "MaxX": 10,
       "Color": "white",
       "Bounce": 0.95
     },
     {
-      "Eq": "-10*(x-10)",
+      "Eq": "-20*(x-9.5)",
       "MinX": -10,
       "MaxX": 10,
       "Color": "white",
