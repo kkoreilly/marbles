@@ -97,7 +97,7 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 		return err
 	}
 	err = json.Unmarshal(b, gr)
-	gr.Graph()
+	gr.Reset()
 	return err
 }
 
@@ -335,7 +335,7 @@ var Marbles []*Marble
 
 // Params holds our parameters
 type Params struct {
-	NMarbles   int     `desc:"number of marbles"`
+	NMarbles   int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
 	NSteps     int     `min:"100" max:"10000" step:"10" desc:"number of steps to take when running"`
 	StartSpeed float32 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
 	UpdtRate   float32 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
@@ -345,7 +345,7 @@ type Params struct {
 
 func (pr *Params) Defaults() {
 	pr.NMarbles = 10
-	pr.NSteps = 1000
+	pr.NSteps = 10000
 	pr.StartSpeed = 0
 	pr.UpdtRate = .02
 	pr.Gravity = 0.1
