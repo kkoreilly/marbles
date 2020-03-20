@@ -11,6 +11,8 @@ import (
 	"log"
 	"math"
 
+	"math/rand"
+
 	"github.com/Knetic/govaluate"
 	"github.com/chewxy/math32"
 	"github.com/goki/gi/gi"
@@ -18,7 +20,6 @@ import (
 	"github.com/goki/ki/ki"
 	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
-	"math/rand"
 )
 
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
@@ -59,8 +60,8 @@ var GraphProps = ki.Props{
 		}},
 		{"sep-ctrl", ki.BlankProp{}},
 		{"Graph", ki.Props{
-			"desc": "updates graph for current equations, and resets marbles too",
-			"icon": "update",
+			"desc": "updates graph for current equations",
+			"icon": "file-image",
 		}},
 		{"Run", ki.Props{
 			"desc":            "runs the marbles for NSteps",
@@ -78,9 +79,8 @@ var GraphProps = ki.Props{
 			"no-update-after": true,
 		}},
 		{"Reset", ki.Props{
-			"desc":            "resets marbles to their initial starting positions",
-			"icon":            "update",
-			"no-update-after": true,
+			"desc": "resets marbles to their initial starting positions",
+			"icon": "update",
 		}},
 	},
 }
@@ -117,7 +117,7 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() {
-	ResetMarbles()
+	// ResetMarbles()
 	gr.Lines.Graph()
 }
 
@@ -139,6 +139,7 @@ func (gr *Graph) Step() {
 // Reset resets the marbles to their initial starting positions
 func (gr *Graph) Reset() {
 	ResetMarbles()
+	gr.Lines.Graph()
 }
 
 ///////////////////////////////////////////////////////////////////////////
