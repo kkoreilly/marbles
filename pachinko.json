@@ -1,0 +1,817 @@
+{
+  "Params": {
+    "NMarbles": 1000,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 10
+  },
+  "Lines": [
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": -9,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": -7,
+      "MaxX": -6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": -5,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": -3,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": -1,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": 1,
+      "MaxX": 2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": 3,
+      "MaxX": 4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": 5,
+      "MaxX": 6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": 7,
+      "MaxX": 8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+7",
+      "MinX": 9,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": -9,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": -7,
+      "MaxX": -6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": -5,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": -3,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": -1,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": 1,
+      "MaxX": 2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": 3,
+      "MaxX": 4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": 5,
+      "MaxX": 6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": 7,
+      "MaxX": 8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+5",
+      "MinX": 9,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": -9,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": -7,
+      "MaxX": -6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": -5,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": -3,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": -1,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": 1,
+      "MaxX": 2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": 3,
+      "MaxX": 4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": 5,
+      "MaxX": 6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": 7,
+      "MaxX": 8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": 9,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": -9,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": -7,
+      "MaxX": -6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": -5,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": -3,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": -1,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": 1,
+      "MaxX": 2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": 3,
+      "MaxX": 4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": 5,
+      "MaxX": 6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": 7,
+      "MaxX": 8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": 9,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": -9,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": -7,
+      "MaxX": -6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": -5,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": -3,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": -1,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": 1,
+      "MaxX": 2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": 3,
+      "MaxX": 4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": 5,
+      "MaxX": 6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": 7,
+      "MaxX": 8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": 9,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": -9,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": -7,
+      "MaxX": -6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": -5,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": -3,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": -1,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": 1,
+      "MaxX": 2,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": 3,
+      "MaxX": 4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": 5,
+      "MaxX": 6,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": 7,
+      "MaxX": 8,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-3",
+      "MinX": 9,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": -10,
+      "MaxX": -9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": -8,
+      "MaxX": -7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": -6,
+      "MaxX": -5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": -4,
+      "MaxX": -3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": -2,
+      "MaxX": -1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": 0.01,
+      "MaxX": 1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": 2,
+      "MaxX": 3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": 4,
+      "MaxX": 5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": 6,
+      "MaxX": 7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+6",
+      "MinX": 8,
+      "MaxX": 9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": -10,
+      "MaxX": -9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": -8,
+      "MaxX": -7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": -6,
+      "MaxX": -5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": -4,
+      "MaxX": -3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": -2,
+      "MaxX": -1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": 0.01,
+      "MaxX": 1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": 2,
+      "MaxX": 3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": 4,
+      "MaxX": 5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": 6,
+      "MaxX": 7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+4",
+      "MinX": 8,
+      "MaxX": 9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": -10,
+      "MaxX": -9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": -8,
+      "MaxX": -7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": -6,
+      "MaxX": -5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": -4,
+      "MaxX": -3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": -2,
+      "MaxX": -1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": 0.01,
+      "MaxX": 1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": 2,
+      "MaxX": 3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": 4,
+      "MaxX": 5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": 6,
+      "MaxX": 7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": 8,
+      "MaxX": 9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": -10,
+      "MaxX": -9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": -8,
+      "MaxX": -7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": -6,
+      "MaxX": -5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": -4,
+      "MaxX": -3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": -2,
+      "MaxX": -1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": 0.01,
+      "MaxX": 1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": 2,
+      "MaxX": 3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": 4,
+      "MaxX": 5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": 6,
+      "MaxX": 7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": 8,
+      "MaxX": 9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": -10,
+      "MaxX": -9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": -8,
+      "MaxX": -7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": -6,
+      "MaxX": -5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": -4,
+      "MaxX": -3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": -2,
+      "MaxX": -1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": 0.01,
+      "MaxX": 1,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": 2,
+      "MaxX": 3,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": 4,
+      "MaxX": 5,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": 6,
+      "MaxX": 7,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": 8,
+      "MaxX": 9,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "10*(x-11)",
+      "MinX": -10,
+      "MaxX": 15,
+      "Color": "brown",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-10*(x+11)",
+      "MinX": -15,
+      "MaxX": 10,
+      "Color": "orange",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-9",
+      "MinX": -1,
+      "MaxX": 1,
+      "Color": "green",
+      "Bounce": 0.01
+    },
+    {
+      "Eq": "-9",
+      "MinX": -10,
+      "MaxX": -1,
+      "Color": "black",
+      "Bounce": 0.01
+    },
+    {
+      "Eq": "-9",
+      "MinX": 1,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.01
+    }
+  ]
+}

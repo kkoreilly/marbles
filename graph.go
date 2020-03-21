@@ -94,6 +94,7 @@ func (gr *Graph) Defaults() {
 func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	b, err := ioutil.ReadFile(string(filename))
 	if err != nil {
+		fmt.Printf("%v", err)
 		return err
 	}
 	err = json.Unmarshal(b, gr)
@@ -504,6 +505,18 @@ var functions = map[string]govaluate.ExpressionFunction{
 	},
 	"fact": func(args ...interface{}) (interface{}, error) {
 		y := FactorialMemoization(int(args[0].(float64)))
+		return y, nil
+	},
+	"ceil": func(args ...interface{}) (interface{}, error) {
+		y := math.Ceil(args[0].(float64))
+		return y, nil
+	},
+	"floor": func(args ...interface{}) (interface{}, error) {
+		y := math.Floor(args[0].(float64))
+		return y, nil
+	},
+	"mod": func(args ...interface{}) (interface{}, error) {
+		y := math.Mod(args[0].(float64), args[1].(float64))
 		return y, nil
 	},
 }
