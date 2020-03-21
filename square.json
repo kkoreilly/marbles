@@ -62,14 +62,14 @@
       "MinX": -5,
       "MaxX": -0.05,
       "Color": "black",
-      "Bounce": 0.95
+      "Bounce": 1.05
     },
     {
       "Eq": "pow(x,2)*1/5-6",
       "MinX": 0.05,
       "MaxX": 5,
       "Color": "black",
-      "Bounce": 0.95
+      "Bounce": 1.05
     },
     {
       "Eq": "-1/10*x-8",
