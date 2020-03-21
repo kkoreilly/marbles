@@ -46,7 +46,7 @@
     {
       "Eq": "-3*(x+9)",
       "MinX": -10,
-      "MaxX": 10,
+      "MaxX": -9,
       "Color": "brown",
       "Bounce": 0.95
     },
@@ -60,13 +60,13 @@
     {
       "Eq": "pow(x,2)*1/5-6",
       "MinX": -5,
-      "MaxX": -0.2,
+      "MaxX": -0.05,
       "Color": "black",
       "Bounce": 0.95
     },
     {
       "Eq": "pow(x,2)*1/5-6",
-      "MinX": 0.2,
+      "MinX": 0.05,
       "MaxX": 5,
       "Color": "black",
       "Bounce": 0.95
@@ -74,9 +74,9 @@
     {
       "Eq": "-1/10*x-8",
       "MinX": -10,
-      "MaxX": 5,
+      "MaxX": 7,
       "Color": "blue",
-      "Bounce": 0.8
+      "Bounce": 0.95
     },
     {
       "Eq": "-9",
@@ -90,7 +90,7 @@
       "MinX": 0.01,
       "MaxX": 3.5,
       "Color": "green",
-      "Bounce": 0.5
+      "Bounce": 0.85
     },
     {
       "Eq": "-0.5",
@@ -111,6 +111,27 @@
       "MinX": -10,
       "MaxX": 15,
       "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-0.5",
+      "MinX": -6.5,
+      "MaxX": -5,
+      "Color": "red",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-2",
+      "MinX": -10,
+      "MaxX": -4.8,
+      "Color": "blue",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "x",
+      "MinX": -8,
+      "MaxX": -3.6,
+      "Color": "green",
       "Bounce": 0.95
     }
   ]
