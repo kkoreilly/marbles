@@ -49,6 +49,48 @@
       "MaxX": 11,
       "Color": "white",
       "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+3",
+      "MinX": -9.8,
+      "MaxX": -7,
+      "Color": "orange",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+2",
+      "MinX": -6,
+      "MaxX": -4,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+1",
+      "MinX": -3,
+      "MaxX": -1,
+      "Color": "red",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x+0",
+      "MinX": 0.01,
+      "MaxX": 2,
+      "Color": "blue",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-1",
+      "MinX": 3,
+      "MaxX": 5,
+      "Color": "green",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-1/10*x-2",
+      "MinX": 6,
+      "MaxX": 8,
+      "Color": "purple",
+      "Bounce": 0.95
     }
   ]
 }
