@@ -23,6 +23,13 @@
       "Bounce": 0.01
     },
     {
+      "Eq": "-3",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
       "Eq": "1/10*x+7",
       "MinX": -9.8,
       "MaxX": 10,
