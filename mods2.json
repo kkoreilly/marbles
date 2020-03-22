@@ -9,7 +9,7 @@
   },
   "Lines": [
     {
-      "Eq": "pow(mod(abs(x),4)-2, 2)-9",
+      "Eq": "pow(mod(abs(x),4)-2, 2)*1/2-9",
       "MinX": -10,
       "MaxX": 10,
       "Color": "green",
