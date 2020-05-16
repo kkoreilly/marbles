@@ -26,7 +26,7 @@ var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orang
 
 // Graph represents the overall graph parameters -- lines and params
 type Graph struct {
-	Params Params `desc:"the parameters for updating the marbles"`
+	Params Params `view:"inline" desc:"the parameters for updating the marbles"`
 	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
 }
 
@@ -140,6 +140,7 @@ func (gr *Graph) Step() {
 // Reset resets the marbles to their initial starting positions
 func (gr *Graph) Reset() {
 	ResetMarbles()
+	gr.Params.Time = 0
 	gr.Lines.Graph()
 }
 
@@ -174,6 +175,7 @@ func (ln *Line) Eval(x float32) float32 {
 		ln.params = make(map[string]interface{}, 1)
 	}
 	ln.params["x"] = float64(x)
+	ln.params["t"] = Gr.Params.Time
 	yi, _ := ln.expr.Evaluate(ln.params)
 	y := float32(yi.(float64))
 	return y
@@ -244,7 +246,10 @@ func (ls *Lines) SaveJSON(filename gi.FileName) error {
 
 func (ls *Lines) Graph() {
 	updt := SvgGraph.UpdateStart()
-	SvgLines.DeleteChildren(true)
+	nln := len(*ls)
+	if SvgLines.NumChildren() != nln {
+		SvgLines.SetNChildren(nln, svg.KiT_Path, "line")
+	}
 	for i, ln := range *ls {
 		ln.Graph(i)
 	}
@@ -268,7 +273,7 @@ func (ln *Line) Graph(lidx int) {
 	if ln.MaxX == 0 {
 		ln.MaxX = 10
 	}
-	path := svg.AddNewPath(SvgLines, "path", "")
+	path := SvgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
 	clr := ln.Color
 	path.SetProp("stroke", clr)
@@ -342,6 +347,8 @@ type Params struct {
 	UpdtRate   float32 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
 	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
 	Width      float32 `length of spawning zone for marbles, set to 0 for all spawn in a column`
+	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
+	Time       float32 `inactive:"+" desc:"time in msecs since starting"`
 }
 
 func (pr *Params) Defaults() {
@@ -350,6 +357,7 @@ func (pr *Params) Defaults() {
 	pr.StartSpeed = 0
 	pr.UpdtRate = .02
 	pr.Gravity = 0.1
+	pr.TimeStep = 0.01
 }
 
 var MarbleRadius = .1
@@ -395,6 +403,8 @@ func UpdateMarbles() {
 	updt := SvgGraph.UpdateStart()
 	defer SvgGraph.UpdateEnd(updt)
 	SvgGraph.SetNeedsFullRender()
+
+	Gr.Lines.Graph()
 
 	for i, m := range Marbles {
 
@@ -476,6 +486,7 @@ func RunMarbles() {
 	Stop = false
 	for i := 0; i < Gr.Params.NSteps; i++ {
 		UpdateMarbles()
+		Gr.Params.Time += Gr.Params.TimeStep
 		if Stop {
 			break
 		}
@@ -517,6 +528,10 @@ var functions = map[string]govaluate.ExpressionFunction{
 	},
 	"mod": func(args ...interface{}) (interface{}, error) {
 		y := math.Mod(args[0].(float64), args[1].(float64))
+		return y, nil
+	},
+	"rand": func(args ...interface{}) (interface{}, error) {
+		y := float64(rand.Float32()) * args[0].(float64)
 		return y, nil
 	},
 }
