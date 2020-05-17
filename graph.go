@@ -152,6 +152,8 @@ type Line struct {
 	Eq     string                         `width:"60" desc:"equation: use 'x' for the x value, and must use * for multiplication, and start with 0 for decimal numbers (0.01 instead of .01)"`
 	MinX   float32                        `step:"1" desc:"Minimum x value for this line."`
 	MaxX   float32                        `step:"1" desc:"Maximum x value for this line."`
+	MinY   float32                        `step:"1" desc:"Minimum y value for this line."`
+	MaxY   float32                        `step:"1" desc:"Maximum y value for this line."`
 	Color  string                         `desc:"color to draw the line in"`
 	Bounce float32                        `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
 	expr   *govaluate.EvaluableExpression `tableview:"-" desc:"the expression evaluator"`
@@ -164,6 +166,8 @@ func (ln *Line) Defaults(lidx int) {
 	ln.Bounce = 0.95
 	ln.MinX = -10
 	ln.MaxX = 10
+	ln.MinY = -10
+	ln.MaxY = 10
 }
 
 // Eval gives the y value of the function for given x value
@@ -246,6 +250,11 @@ func (ls *Lines) SaveJSON(filename gi.FileName) error {
 
 func (ls *Lines) Graph() {
 	updt := SvgGraph.UpdateStart()
+	SvgGraph.ViewBox.Min = Gr.Params.MinSize
+	SvgGraph.ViewBox.Size = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
+	gmin = Gr.Params.MinSize
+	gmax = Gr.Params.MaxSize
+	gsz = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
 	nln := len(*ls)
 	if SvgLines.NumChildren() != nln {
 		SvgLines.SetNChildren(nln, svg.KiT_Path, "line")
@@ -289,9 +298,9 @@ func (ln *Line) Graph(lidx int) {
 	ps := ""
 	start := true
 	for x := gmin.X; x < gmax.X; x += ginc.X {
+		y := ln.Eval(x)
+		if x > ln.MinX && x < ln.MaxX && y > ln.MinY && y < ln.MaxY {
 
-		if x > ln.MinX && x < ln.MaxX {
-			y := ln.Eval(x)
 			if start {
 				ps += fmt.Sprintf("M %v %v ", x, y)
 				start = false
@@ -307,10 +316,10 @@ func InitCoords() {
 	updt := SvgGraph.UpdateStart()
 	SvgCoords.DeleteChildren(true)
 
-	xAxis := svg.AddNewLine(SvgCoords, "xAxis", -10, 0, 10, 0)
+	xAxis := svg.AddNewLine(SvgCoords, "xAxis", -1000, 0, 1000, 0)
 	xAxis.SetProp("stroke", "#888")
 
-	yAxis := svg.AddNewLine(SvgCoords, "yAxis", 0, -10, 0, 10)
+	yAxis := svg.AddNewLine(SvgCoords, "yAxis", 0, -1000, 0, 1000)
 	yAxis.SetProp("stroke", "#888")
 
 	SvgGraph.UpdateEnd(updt)
@@ -329,7 +338,8 @@ type Marble struct {
 func (mb *Marble) Init(diff float32) {
 	randNum := (rand.Float32() * 2) - 1
 	xPos := randNum * Gr.Params.Width
-	mb.Pos = mat32.Vec2{xPos, 10 - diff}
+	mb.Pos = mat32.Vec2{xPos, Gr.Params.MaxSize.Y - diff}
+	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	mb.Vel = mat32.Vec2{0, float32(-Gr.Params.StartSpeed)}
 	mb.PrvPos = mb.Pos
 }
@@ -349,6 +359,8 @@ type Params struct {
 	Width      float32 `length of spawning zone for marbles, set to 0 for all spawn in a column`
 	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
 	Time       float32 `inactive:"+" desc:"time in msecs since starting"`
+	MinSize    mat32.Vec2
+	MaxSize    mat32.Vec2
 }
 
 func (pr *Params) Defaults() {
@@ -358,6 +370,8 @@ func (pr *Params) Defaults() {
 	pr.UpdtRate = .02
 	pr.Gravity = 0.1
 	pr.TimeStep = 0.01
+	pr.MinSize = mat32.Vec2{-10, -10}
+	pr.MaxSize = mat32.Vec2{10, 10}
 }
 
 var MarbleRadius = .1
@@ -372,7 +386,9 @@ func GraphMarblesInit() {
 
 	SvgMarbles.DeleteChildren(true)
 	for i, m := range Marbles {
-		circle := svg.AddNewCircle(SvgMarbles, "circle", m.Pos.X, m.Pos.Y, float32(MarbleRadius))
+		size := float32(MarbleRadius) * gsz.Y / 20
+		// fmt.Printf("size: %v \n", size)
+		circle := svg.AddNewCircle(SvgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
 		circle.SetProp("stroke", "none")
 		circle.SetProp("fill", colors[i%len(colors)])
 	}
@@ -383,7 +399,7 @@ func GraphMarblesInit() {
 func InitMarbles() {
 	Marbles = make([]*Marble, 0)
 	for n := 0; n < Gr.Params.NMarbles; n++ {
-		diff := 2 * float32(n) / float32(Gr.Params.NMarbles)
+		diff := (gsz.Y / 20) * 2 * float32(n) / float32(Gr.Params.NMarbles)
 		m := Marble{}
 		m.Init(diff)
 		Marbles = append(Marbles, &m)
@@ -408,8 +424,9 @@ func UpdateMarbles() {
 
 	for i, m := range Marbles {
 
-		m.Vel.Y -= Gr.Params.Gravity
-		npos := m.Pos.Add(m.Vel.MulScalar(Gr.Params.UpdtRate))
+		m.Vel.Y -= Gr.Params.Gravity * ((gsz.Y * gsz.X) / 400)
+		updtrate := Gr.Params.UpdtRate
+		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
 
 		for _, ln := range Gr.Lines {
@@ -422,7 +439,7 @@ func UpdateMarbles() {
 
 			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
 
-			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < ln.MaxX && npos.X > ln.MinX) {
+			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < ln.MaxX && npos.X > ln.MinX) && (npos.Y < ln.MaxY && npos.Y > ln.MinY) {
 				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
 
 				dly := yn - yp // change in the lines y
