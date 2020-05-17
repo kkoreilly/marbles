@@ -158,7 +158,6 @@ func (gr *Graph) CompileExprs() {
 		if &ln.MaxY == nil || ln.MaxY.Expr == "" {
 			ln.MaxY.Expr = "10"
 		}
-		fmt.Printf("Line: %v \n", ln)
 		ln.Compile()
 	}
 }

@@ -15,7 +15,6 @@ type Expr struct {
 
 func (ex *Expr) Compile() error {
 	var err error
-	fmt.Printf("expr: %v \n", ex)
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)
 	if err != nil {
 		ex.Val = nil
