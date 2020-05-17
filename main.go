@@ -106,6 +106,7 @@ func mainrun() {
 
 	InitCoords()
 	ResetMarbles()
+	Gr.CompileExprs()
 	Gr.Lines.Graph()
 
 	//////////////////////////////////////////

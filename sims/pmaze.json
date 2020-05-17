@@ -1,0 +1,124 @@
+{
+  "Params": {
+    "NMarbles": 1000,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 3
+  },
+  "Lines": [
+    {
+      "Eq": "1/10*x**2+5",
+      "MinX": -3,
+      "MaxX": 3,
+      "Color": "green",
+      "Bounce": 0.5
+    },
+    {
+      "Eq": "1/10*x+7",
+      "MinX": -5,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-(x+5)",
+      "MinX": -10,
+      "MaxX": -6,
+      "Color": "blue",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "pow(mod(abs(x),2)-1, 2)+1",
+      "MinX": -6.3,
+      "MaxX": 0.01,
+      "Color": "green",
+      "Bounce": 1
+    },
+    {
+      "Eq": "1",
+      "MinX": 1,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.01
+    },
+    {
+      "Eq": "1",
+      "MinX": 1,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-4*(x+2)",
+      "MinX": -3.65,
+      "MaxX": -3,
+      "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "1/2*(x-3)**2-2",
+      "MinX": 1,
+      "MaxX": 5,
+      "Color": "green",
+      "Bounce": 1.05
+    },
+    {
+      "Eq": "-3",
+      "MinX": 1,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.01
+    },
+    {
+      "Eq": "-3",
+      "MinX": 1,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "0.5",
+      "MinX": -8,
+      "MaxX": 0.01,
+      "Color": "green",
+      "Bounce": 0.01
+    },
+    {
+      "Eq": "1/2*(x-8)**2-6",
+      "MinX": 6,
+      "MaxX": 10,
+      "Color": "purple",
+      "Bounce": 1.05
+    },
+    {
+      "Eq": "1/10*x-8",
+      "MinX": 1,
+      "MaxX": 10,
+      "Color": "brown",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-8.3",
+      "MinX": -2,
+      "MaxX": 10,
+      "Color": "green",
+      "Bounce": 1
+    },
+    {
+      "Eq": "-8.3",
+      "MinX": -5,
+      "MaxX": -2,
+      "Color": "black",
+      "Bounce": 0.01
+    },
+    {
+      "Eq": "(x+7)**2*1/5-10",
+      "MinX": -9,
+      "MaxX": -5,
+      "Color": "green",
+      "Bounce": 0.6
+    }
+  ]
+}

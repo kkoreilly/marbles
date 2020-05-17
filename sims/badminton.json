@@ -1,0 +1,33 @@
+{
+  "Params": {
+    "NMarbles": 1,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 0
+  },
+  "Lines": [
+    {
+      "Eq": "10*x",
+      "MinX": -10,
+      "MaxX": 0.01,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "1/10*x+9",
+      "MinX": -5,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-5*(x+8)",
+      "MinX": -8.7,
+      "MaxX": -8,
+      "Color": "black",
+      "Bounce": 1.05
+    }
+  ]
+}

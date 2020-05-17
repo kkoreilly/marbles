@@ -1,16 +1,29 @@
 {
   "Params": {
-    "NMarbles": 10,
+    "NMarbles": 1000,
     "NSteps": 1000,
     "StartSpeed": 0,
     "UpdtRate": 0.02,
-    "Gravity": 0.1
+    "Gravity": 0.1,
+    "Width": 10,
+    "TimeStep": 0.01,
+    "Time": 0,
+    "MinSize": {
+      "X": -10,
+      "Y": -10
+    },
+    "MaxSize": {
+      "X": 10,
+      "Y": 10
+    }
   },
   "Lines": [
     {
       "Eq": "1 * sin(x)",
       "MinX": -10,
       "MaxX": 10,
+      "MinY": -10,
+      "MaxY": 10,
       "Color": "black",
       "Bounce": 0.95
     },
@@ -18,6 +31,8 @@
       "Eq": "10 * (x - 9)",
       "MinX": -10,
       "MaxX": 10,
+      "MinY": -10,
+      "MaxY": 10,
       "Color": "red",
       "Bounce": 0.95
     },
@@ -25,6 +40,8 @@
       "Eq": "-10 * (x + 9)",
       "MinX": -10,
       "MaxX": 10,
+      "MinY": -10,
+      "MaxY": 10,
       "Color": "blue",
       "Bounce": 0.95
     }

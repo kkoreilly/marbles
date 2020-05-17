@@ -1,0 +1,40 @@
+{
+  "Params": {
+    "NMarbles": 10,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 0,
+    "TimeStep": 0.01,
+    "Time": 0,
+    "MinSize": {
+      "X": -10,
+      "Y": -10
+    },
+    "MaxSize": {
+      "X": 10,
+      "Y": 10
+    }
+  },
+  "Lines": [
+    {
+      "Eq": "-9",
+      "MinX": -10,
+      "MaxX": 10,
+      "MinY": -10,
+      "MaxY": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "20*t*(x-2)",
+      "MinX": -10,
+      "MaxX": 10,
+      "MinY": -10,
+      "MaxY": 10,
+      "Color": "red",
+      "Bounce": 0.95
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "Params": {
+    "NMarbles": 1000,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 9
+  },
+  "Lines": [
+    {
+      "Eq": "1/100*x+6.8",
+      "MinX": -9.6,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "100*(x+9.8)",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "-100*(x-9.8)",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "white",
+      "Bounce": 0.95
+    },
+    {
+      "Eq": "1/2*x+8",
+      "MinX": -9.7,
+      "MaxX": -4,
+      "Color": "green",
+      "Bounce": 1.05
+    }
+  ]
+}

@@ -78,10 +78,6 @@ var GraphProps = ki.Props{
 			"icon":            "step-fwd",
 			"no-update-after": true,
 		}},
-		{"Reset", ki.Props{
-			"desc": "resets marbles to their initial starting positions",
-			"icon": "update",
-		}},
 	},
 }
 
@@ -98,7 +94,7 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 		return err
 	}
 	err = json.Unmarshal(b, gr)
-	gr.Reset()
+	gr.Graph()
 	return err
 }
 
@@ -118,7 +114,9 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() {
-	// ResetMarbles()
+	ResetMarbles()
+	gr.CompileExprs()
+	gr.Params.Time = 0
 	gr.Lines.Graph()
 }
 
@@ -137,11 +135,19 @@ func (gr *Graph) Step() {
 	UpdateMarbles()
 }
 
-// Reset resets the marbles to their initial starting positions
-func (gr *Graph) Reset() {
-	ResetMarbles()
-	gr.Params.Time = 0
-	gr.Lines.Graph()
+func (gr *Graph) CompileExprs() {
+	for _, ln := range gr.Lines {
+		ln.Compile()
+	}
+}
+
+func (ln *Line) Compile() {
+	ln.Expr.Compile()
+	ln.Bounce.Compile()
+	ln.MinX.Compile()
+	ln.MaxX.Compile()
+	ln.MinY.Compile()
+	ln.MaxY.Compile()
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -149,41 +155,26 @@ func (gr *Graph) Reset() {
 
 // Line represents one line with an equation etc
 type Line struct {
-	Eq     string                         `width:"60" desc:"equation: use 'x' for the x value, and must use * for multiplication, and start with 0 for decimal numbers (0.01 instead of .01)"`
-	MinX   float32                        `step:"1" desc:"Minimum x value for this line."`
-	MaxX   float32                        `step:"1" desc:"Maximum x value for this line."`
-	MinY   float32                        `step:"1" desc:"Minimum y value for this line."`
-	MaxY   float32                        `step:"1" desc:"Maximum y value for this line."`
-	Color  string                         `desc:"color to draw the line in"`
-	Bounce float32                        `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
-	expr   *govaluate.EvaluableExpression `tableview:"-" desc:"the expression evaluator"`
-	params map[string]interface{}         `tableview:"-" desc:"the eval params"`
+	Expr   Expr   `width:"60" label:"y=" desc:"equation: use 'x' for the x value, and must use * for multiplication, and start with 0 for decimal numbers (0.01 instead of .01)"`
+	MinX   Expr   `width:"30" step:"1" desc:"Minimum x value for this line."`
+	MaxX   Expr   `step:"1" desc:"Maximum x value for this line."`
+	MinY   Expr   `step:"1" desc:"Minimum y value for this line."`
+	MaxY   Expr   `step:"1" desc:"Maximum y value for this line."`
+	Color  string `desc:"color to draw the line in"`
+	Bounce Expr   `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
 }
 
 func (ln *Line) Defaults(lidx int) {
-	ln.Eq = "x"
+	ln.Expr.Expr = "x"
 	ln.Color = colors[lidx%len(colors)]
-	ln.Bounce = 0.95
-	ln.MinX = -10
-	ln.MaxX = 10
-	ln.MinY = -10
-	ln.MaxY = 10
+	ln.Bounce.Expr = "0.95"
+	ln.MinX.Expr = "-10"
+	ln.MaxX.Expr = "10"
+	ln.MinY.Expr = "-10"
+	ln.MaxY.Expr = "10"
 }
 
 // Eval gives the y value of the function for given x value
-func (ln *Line) Eval(x float32) float32 {
-	if ln.expr == nil {
-		return 0
-	}
-	if ln.params == nil {
-		ln.params = make(map[string]interface{}, 1)
-	}
-	ln.params["x"] = float64(x)
-	ln.params["t"] = Gr.Params.Time
-	yi, _ := ln.expr.Evaluate(ln.params)
-	y := float32(yi.(float64))
-	return y
-}
 
 // Lines is a collection of lines
 type Lines []*Line
@@ -267,20 +258,26 @@ func (ls *Lines) Graph() {
 
 // Graph graphs this line in the SvgLines group
 func (ln *Line) Graph(lidx int) {
-	if ln.Eq == "" {
+	if ln.Expr.Expr == "" {
 		ln.Defaults(lidx)
 	}
 	if ln.Color == "" {
 		ln.Color = colors[lidx%len(colors)]
 	}
-	if ln.Bounce == 0 {
-		ln.Bounce = 0.95
+	if ln.Bounce.Expr == "" {
+		ln.Bounce.Expr = "0.95"
 	}
-	if ln.MinX == 0 {
-		ln.MinX = -10
+	if ln.MinX.Expr == "" {
+		ln.MinX.Expr = "-10"
 	}
-	if ln.MaxX == 0 {
-		ln.MaxX = 10
+	if ln.MaxX.Expr == "0" {
+		ln.MaxX.Expr = "10"
+	}
+	if ln.MinY.Expr == "0" {
+		ln.MinY.Expr = "-10"
+	}
+	if ln.MaxY.Expr == "0" {
+		ln.MaxY.Expr = "10"
 	}
 	path := SvgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
@@ -288,9 +285,9 @@ func (ln *Line) Graph(lidx int) {
 	path.SetProp("stroke", clr)
 
 	var err error
-	ln.expr, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Eq, functions)
+	ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
 	if err != nil {
-		ln.expr = nil
+		ln.Expr.Val = nil
 		log.Println(err)
 		return
 	}
@@ -298,8 +295,12 @@ func (ln *Line) Graph(lidx int) {
 	ps := ""
 	start := true
 	for x := gmin.X; x < gmax.X; x += ginc.X {
-		y := ln.Eval(x)
-		if x > ln.MinX && x < ln.MaxX && y > ln.MinY && y < ln.MaxY {
+		MinX := ln.MinX.Eval(x, Gr.Params.Time)
+		MaxX := ln.MaxX.Eval(x, Gr.Params.Time)
+		MinY := ln.MinY.Eval(x, Gr.Params.Time)
+		MaxY := ln.MaxY.Eval(x, Gr.Params.Time)
+		y := ln.Expr.Eval(x, Gr.Params.Time)
+		if x > MinX && x < MaxX && y > MinY && y < MaxY {
 
 			if start {
 				ps += fmt.Sprintf("M %v %v ", x, y)
@@ -358,7 +359,7 @@ type Params struct {
 	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
 	Width      float32 `length of spawning zone for marbles, set to 0 for all spawn in a column`
 	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
-	Time       float32 `inactive:"+" desc:"time in msecs since starting"`
+	Time       float32 `view:"-" inactive:"+" desc:"time in msecs since starting"`
 	MinSize    mat32.Vec2
 	MaxSize    mat32.Vec2
 }
@@ -430,16 +431,19 @@ func UpdateMarbles() {
 		ppos := m.Pos
 
 		for _, ln := range Gr.Lines {
-			if ln.expr == nil {
+			if ln.Expr.Val == nil {
 				continue
 			}
 
-			yp := ln.Eval(m.Pos.X)
-			yn := ln.Eval(npos.X)
+			yp := ln.Expr.Eval(m.Pos.X, Gr.Params.Time)
+			yn := ln.Expr.Eval(npos.X, Gr.Params.Time)
 
 			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
-
-			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < ln.MaxX && npos.X > ln.MinX) && (npos.Y < ln.MaxY && npos.Y > ln.MinY) {
+			MinX := ln.MinX.Eval(npos.X, Gr.Params.Time)
+			MaxX := ln.MaxX.Eval(npos.X, Gr.Params.Time)
+			MinY := ln.MinY.Eval(npos.X, Gr.Params.Time)
+			MaxY := ln.MaxY.Eval(npos.X, Gr.Params.Time)
+			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < MaxX && npos.X > MinX) && (npos.Y < MaxY && npos.Y > MinY) {
 				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
 
 				dly := yn - yp // change in the lines y
@@ -459,12 +463,12 @@ func UpdateMarbles() {
 					mm := dmy / dx
 
 					xi = (npos.X*(ml-mm) + npos.Y - yn) / (ml - mm)
-					yi = ln.Eval(xi)
+					yi = ln.Expr.Eval(xi, Gr.Params.Time)
 					//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
 				}
 
-				yl := ln.Eval(xi - .01) // point to the left of x
-				yr := ln.Eval(xi + .01) // point to the right of x
+				yl := ln.Expr.Eval(xi-.01, Gr.Params.Time) // point to the left of x
+				yr := ln.Expr.Eval(xi+.01, Gr.Params.Time) // point to the right of x
 
 				//slp := (yr - yl) / .02
 				angLn := math32.Atan2(yr-yl, 0.02)
@@ -479,8 +483,10 @@ func UpdateMarbles() {
 				// fmt.Printf("angLn: %v  angN: %v  angI: %v  angII: %v  angNII: %v  angR: %v\n",
 				// 	RadToDeg(angLn), RadToDeg(angN), RadToDeg(angI), RadToDeg(angII), RadToDeg(angNII), RadToDeg(angR))
 
-				nvx := ln.Bounce * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
-				nvy := ln.Bounce * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
+				Bounce := ln.Bounce.Eval(npos.X, Gr.Params.Time)
+
+				nvx := Bounce * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
+				nvy := Bounce * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
 
 				m.Vel = mat32.Vec2{nvx, nvy}
 
@@ -508,66 +514,4 @@ func RunMarbles() {
 			break
 		}
 	}
-}
-
-var functions = map[string]govaluate.ExpressionFunction{
-	"cos": func(args ...interface{}) (interface{}, error) {
-		y := math.Cos(args[0].(float64))
-		return y, nil
-	},
-	"sin": func(args ...interface{}) (interface{}, error) {
-		y := math.Sin(args[0].(float64))
-		return y, nil
-	},
-	"tan": func(args ...interface{}) (interface{}, error) {
-		y := math.Tan(args[0].(float64))
-		return y, nil
-	},
-	"pow": func(args ...interface{}) (interface{}, error) {
-		y := math.Pow(args[0].(float64), args[1].(float64))
-		return y, nil
-	},
-	"abs": func(args ...interface{}) (interface{}, error) {
-		y := math.Abs(args[0].(float64))
-		return y, nil
-	},
-	"fact": func(args ...interface{}) (interface{}, error) {
-		y := FactorialMemoization(int(args[0].(float64)))
-		return y, nil
-	},
-	"ceil": func(args ...interface{}) (interface{}, error) {
-		y := math.Ceil(args[0].(float64))
-		return y, nil
-	},
-	"floor": func(args ...interface{}) (interface{}, error) {
-		y := math.Floor(args[0].(float64))
-		return y, nil
-	},
-	"mod": func(args ...interface{}) (interface{}, error) {
-		y := math.Mod(args[0].(float64), args[1].(float64))
-		return y, nil
-	},
-	"rand": func(args ...interface{}) (interface{}, error) {
-		y := float64(rand.Float32()) * args[0].(float64)
-		return y, nil
-	},
-}
-
-const LIM = 100
-
-var facts [LIM]float64
-
-func FactorialMemoization(n int) (res float64) {
-	if n < 0 {
-		return 1
-	}
-	if facts[n] != 0 {
-		res = facts[n]
-		return res
-	}
-	if n > 0 {
-		res = float64(n) * FactorialMemoization(n-1)
-		return res
-	}
-	return 1
 }

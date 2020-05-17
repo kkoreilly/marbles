@@ -1,0 +1,21 @@
+{
+  "Params": {
+    "NMarbles": 1000,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 10,
+    "TimeStep": 0.1,
+    "Time": 0
+  },
+  "Lines": [
+    {
+      "Eq": "5*cos(t)*cos(x*5*cos(t))+10*cos(t)-7",
+      "MinX": -10,
+      "MaxX": 10,
+      "Color": "black",
+      "Bounce": 0.95
+    }
+  ]
+}
