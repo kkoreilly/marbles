@@ -114,8 +114,8 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() {
-	ResetMarbles()
 	gr.CompileExprs()
+	ResetMarbles()
 	gr.Params.Time = 0
 	gr.Lines.Graph()
 }
@@ -137,6 +137,28 @@ func (gr *Graph) Step() {
 
 func (gr *Graph) CompileExprs() {
 	for _, ln := range gr.Lines {
+		if &ln.Expr == nil {
+			ln.Expr.Expr = "x"
+		}
+		if ln.Color == "" {
+			ln.Color = "black"
+		}
+		if &ln.Bounce == nil || ln.Bounce.Expr == "" {
+			ln.Bounce.Expr = "0.95"
+		}
+		if &ln.MinX == nil || ln.MinX.Expr == "" {
+			ln.MinX.Expr = "-10"
+		}
+		if &ln.MaxX == nil || ln.MaxX.Expr == "" {
+			ln.MaxX.Expr = "10"
+		}
+		if &ln.MinY == nil || ln.MinY.Expr == "" {
+			ln.MinY.Expr = "-10"
+		}
+		if &ln.MaxY == nil || ln.MaxY.Expr == "" {
+			ln.MaxY.Expr = "10"
+		}
+		fmt.Printf("Line: %v \n", ln)
 		ln.Compile()
 	}
 }

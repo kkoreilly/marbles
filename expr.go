@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Knetic/govaluate"
-	"log"
 	"math"
 	"math/rand"
 )
@@ -15,10 +15,11 @@ type Expr struct {
 
 func (ex *Expr) Compile() error {
 	var err error
+	fmt.Printf("expr: %v \n", ex)
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)
 	if err != nil {
 		ex.Val = nil
-		log.Println(err)
+		fmt.Printf("Error: %v \n", err)
 	}
 	if ex.Params == nil {
 		ex.Params = make(map[string]interface{}, 2)
@@ -27,6 +28,7 @@ func (ex *Expr) Compile() error {
 }
 
 func (ex *Expr) Eval(x, t float32) float32 {
+	// fmt.Printf("Ex: %v \n", ex.Expr)
 	if ex.Expr == "" {
 		return 0
 	}
