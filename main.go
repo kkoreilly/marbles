@@ -13,6 +13,12 @@ import (
 	"github.com/goki/mat32"
 )
 
+const (
+	width     = 1920
+	height    = 1080
+	GraphSize = 800
+)
+
 var Vp *gi.Viewport2D
 var EqTable *giv.TableView
 var ParamsEdit *giv.StructView
@@ -20,9 +26,7 @@ var SvgGraph *svg.SVG
 var SvgLines *svg.Group
 var SvgMarbles *svg.Group
 var SvgCoords *svg.Group
-
 var gmin, gmax, gsz, ginc mat32.Vec2
-var GraphSize float32 = 800
 
 func main() {
 	gimain.Main(func() {
@@ -31,42 +35,21 @@ func main() {
 }
 
 func mainrun() {
-	width := 1024
-	height := 1024
-
 	Gr.Defaults()
+	InitEquationChangeSlice()
 
 	rec := ki.Node{}          // receiver for events
 	rec.InitName(&rec, "rec") // this is essential for root objects not owned by other Ki tree nodes
 
-	gi.SetAppName("marbles")
+	gi.SetAppName("marblesApp")
 	gi.SetAppAbout("marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!")
 
-	win := gi.NewMainWindow("marbles", "Marbles", width, height)
+	win := gi.NewMainWindow("marblesApp", "Marbles", width, height)
 
 	Vp = win.WinViewport2D()
 	updt := Vp.UpdateStart()
 
-	// style sheet
-	var css = ki.Props{
-		"Action": ki.Props{
-			"background-color": gi.Prefs.Colors.Control, // gi.Color{255, 240, 240, 255},
-		},
-		"#combo": ki.Props{
-			"background-color": gi.Color{240, 255, 240, 255},
-		},
-		".hslides": ki.Props{
-			"background-color": gi.Color{240, 225, 255, 255},
-		},
-		"kbd": ki.Props{
-			"color": "blue",
-		},
-	}
-	// Vp.CSS = css
-	_ = css
-
 	mfr := win.SetMainFrame()
-
 	// the StructView will also show the Graph Toolbar which is main actions..
 	gstru := giv.AddNewStructView(mfr, "gstru")
 	gstru.Viewport = Vp // needs vp early for toolbar
@@ -91,8 +74,8 @@ func mainrun() {
 	SvgMarbles = svg.AddNewGroup(SvgGraph, "SvgMarbles")
 	SvgCoords = svg.AddNewGroup(SvgGraph, "SvgCoords")
 
-	gmin = mat32.Vec2{-10, -10}
-	gmax = mat32.Vec2{10, 10}
+	gmin = mat32.Vec2{X: -10, Y: -10}
+	gmax = mat32.Vec2{X: 10, Y: 10}
 	gsz = gmax.Sub(gmin)
 	ginc = gsz.DivScalar(GraphSize)
 
@@ -109,8 +92,7 @@ func mainrun() {
 	Gr.CompileExprs()
 	Gr.Lines.Graph()
 
-	//////////////////////////////////////////
-	//      Main Menu
+	// Main Menu
 
 	appnm := gi.AppName()
 	mmen := win.MainMenu
@@ -123,6 +105,11 @@ func mainrun() {
 	emen := win.MainMenu.ChildByName("Edit", 1).(*gi.Action)
 	emen.Menu = make(gi.Menu, 0, 10)
 	emen.Menu.AddCopyCutPaste(win)
+
+	gi.SetQuitCleanFunc(func() {
+		Gr.Stop()
+		gi.Quit()
+	})
 
 	win.MainMenuUpdated()
 	Vp.UpdateEndNoSig(updt)

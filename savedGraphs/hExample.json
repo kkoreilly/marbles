@@ -20,14 +20,26 @@
   "Lines": [
     {
       "Expr": {
-        "Expr": "x"
+        "Expr": "x-h"
       },
-      "MinX": -10,
-      "MaxX": 10,
-      "MinY": -10,
-      "MaxY": 10,
+      "MinX": {
+        "Expr": "-10"
+      },
+      "MaxX": {
+        "Expr": "10"
+      },
+      "MinY": {
+        "Expr": "-10"
+      },
+      "MaxY": {
+        "Expr": "10"
+      },
+      "Bounce": {
+        "Expr": "0.95"
+      },
       "Color": "black",
-      "Bounce": 0.95
+      "ColorSwitch": "none",
+      "TimesHit": 0
     }
   ]
 }

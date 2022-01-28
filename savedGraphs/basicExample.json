@@ -1,0 +1,88 @@
+{
+  "Params": {
+    "NMarbles": 10,
+    "NSteps": 10000,
+    "StartSpeed": 0,
+    "UpdtRate": 0.02,
+    "Gravity": 0.1,
+    "Width": 0,
+    "TimeStep": 0.01,
+    "Time": 0,
+    "MinSize": {
+      "X": -10,
+      "Y": -10
+    },
+    "MaxSize": {
+      "X": 10,
+      "Y": 10
+    }
+  },
+  "Lines": [
+    {
+      "Expr": {
+        "Expr": "sin(x)"
+      },
+      "MinX": {
+        "Expr": "-10"
+      },
+      "MaxX": {
+        "Expr": "10"
+      },
+      "MinY": {
+        "Expr": "-10"
+      },
+      "MaxY": {
+        "Expr": "10"
+      },
+      "Color": "black",
+      "ColorSwitch": "none",
+      "Bounce": {
+        "Expr": "0.95"
+      }
+    },
+    {
+      "Expr": {
+        "Expr": "2*(x-6)"
+      },
+      "MinX": {
+        "Expr": "-10"
+      },
+      "MaxX": {
+        "Expr": "10"
+      },
+      "MinY": {
+        "Expr": "-1"
+      },
+      "MaxY": {
+        "Expr": "10"
+      },
+      "Color": "red",
+      "ColorSwitch": "none",
+      "Bounce": {
+        "Expr": "0.95"
+      }
+    },
+    {
+      "Expr": {
+        "Expr": "-2*(x+6)"
+      },
+      "MinX": {
+        "Expr": "-10"
+      },
+      "MaxX": {
+        "Expr": "10"
+      },
+      "MinY": {
+        "Expr": "-1"
+      },
+      "MaxY": {
+        "Expr": "10"
+      },
+      "Color": "blue",
+      "ColorSwitch": "none",
+      "Bounce": {
+        "Expr": "0.95"
+      }
+    }
+  ]
+}
