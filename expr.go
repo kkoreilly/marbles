@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 
@@ -109,9 +108,9 @@ var functions = map[string]govaluate.ExpressionFunction{
 func (ex *Expr) Compile() error {
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)
-	if err != nil {
+	if HandleError(err) {
 		ex.Val = nil
-		fmt.Printf("Error: %v \n", err)
+		return err
 	}
 	if ex.Params == nil {
 		ex.Params = make(map[string]interface{}, 2)
@@ -128,7 +127,10 @@ func (ex *Expr) Eval(x, t float32, h int) float32 {
 	ex.Params["t"] = float64(t)
 	ex.Params["a"] = float64(10 * math.Sin(float64(t)))
 	ex.Params["h"] = float64(h)
-	yi, _ := ex.Val.Evaluate(ex.Params)
+	yi, err := ex.Val.Evaluate(ex.Params)
+	if HandleError(err) {
+		return 0
+	}
 	y := float32(yi.(float64))
 	return y
 }

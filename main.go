@@ -27,6 +27,8 @@ var SvgLines *svg.Group
 var SvgMarbles *svg.Group
 var SvgCoords *svg.Group
 var gmin, gmax, gsz, ginc mat32.Vec2
+var fpsText *gi.Label
+var errorText *gi.Label
 
 func main() {
 	gimain.Main(func() {
@@ -87,6 +89,20 @@ func mainrun() {
 	SvgGraph.SetProp("background-color", "white")
 	SvgGraph.SetProp("stroke-width", ".2pct")
 
+	statusBar := gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
+	statusBar.SetProp("background-color", "lightblue")
+	statusBar.SetStretchMaxWidth()
+	fpsText = gi.AddNewLabel(statusBar, "fpsText", "")
+	fpsText.SetProp("color", "black")
+	fpsText.SetProp("font-weight", "bold")
+	fpsText.SetStretchMaxWidth()
+	fpsText.Redrawable = true
+	errorText = gi.AddNewLabel(statusBar, "errorText", "")
+	errorText.SetProp("color", "black")
+	errorText.SetProp("font-weight", "bold")
+	errorText.SetStretchMaxWidth()
+	errorText.Redrawable = true
+
 	InitCoords()
 	ResetMarbles()
 	Gr.CompileExprs()
@@ -114,4 +130,12 @@ func mainrun() {
 	win.MainMenuUpdated()
 	Vp.UpdateEndNoSig(updt)
 	win.StartEventLoop()
+}
+
+func HandleError(err error) bool { // If there is an error, set the error text to the error and return true. Otherwise return false.
+	if err != nil {
+		errorText.SetText("Error: " + err.Error())
+		return true
+	}
+	return false
 }

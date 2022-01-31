@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math"
 	"strings"
+	"time"
 
 	"math/rand"
 	"strconv"
@@ -158,21 +158,25 @@ func (gr *Graph) Defaults() {
 // OpenJSON open from JSON file
 func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	b, err := ioutil.ReadFile(string(filename))
-	if err != nil {
-		fmt.Printf("%v", err)
+	if HandleError(err) {
 		return err
 	}
 	err = json.Unmarshal(b, gr)
+	if HandleError(err) {
+		return err
+	}
 	gr.Graph()
 	return err
 }
 func (gr *Graph) OpenAutoSave() error {
 	b, err := ioutil.ReadFile("autosave.json")
-	if err != nil {
-		fmt.Printf("%v", err)
+	if HandleError(err) {
 		return err
 	}
 	err = json.Unmarshal(b, gr)
+	if HandleError(err) {
+		return err
+	}
 	gr.Graph()
 	return err
 }
@@ -180,26 +184,20 @@ func (gr *Graph) OpenAutoSave() error {
 // SaveJSON save to JSON file
 func (gr *Graph) SaveJSON(filename gi.FileName) error {
 	b, err := json.MarshalIndent(gr, "", "  ")
-	if err != nil {
-		log.Println(err)
+	if HandleError(err) {
 		return err
 	}
 	err = ioutil.WriteFile(string(filename), b, 0644)
-	if err != nil {
-		log.Println(err)
-	}
+	HandleError(err)
 	return err
 }
 func (gr *Graph) AutoSave() error {
 	b, err := json.MarshalIndent(gr, "", "  ")
-	if err != nil {
-		log.Println(err)
+	if HandleError(err) {
 		return err
 	}
 	err = ioutil.WriteFile("autosave.json", b, 0644)
-	if err != nil {
-		log.Println(err)
-	}
+	HandleError(err)
 	return err
 }
 
@@ -208,6 +206,7 @@ func (gr *Graph) Graph() {
 	gr.CompileExprs()
 	ResetMarbles()
 	gr.Params.Time = 0
+	errorText.SetText("")
 	gr.Lines.Graph()
 	gr.AutoSave()
 }
@@ -293,24 +292,22 @@ func (ls *Lines) Defaults() {
 // OpenJSON open from JSON file
 func (ls *Lines) OpenJSON(filename gi.FileName) error {
 	b, err := ioutil.ReadFile(string(filename))
-	if err != nil {
+	if HandleError(err) {
 		return err
 	}
 	err = json.Unmarshal(b, ls)
+	HandleError(err)
 	return err
 }
 
 // SaveJSON save to JSON file
 func (ls *Lines) SaveJSON(filename gi.FileName) error {
 	b, err := json.MarshalIndent(ls, "", "  ")
-	if err != nil {
-		log.Println(err)
+	if HandleError(err) {
 		return err
 	}
 	err = ioutil.WriteFile(string(filename), b, 0644)
-	if err != nil {
-		log.Println(err)
-	}
+	HandleError(err)
 	return err
 }
 
@@ -364,9 +361,8 @@ func (ln *Line) Graph(lidx int) {
 	path.SetProp("stroke", clr)
 	var err error
 	ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
-	if err != nil {
+	if HandleError(err) {
 		ln.Expr.Val = nil
-		log.Println(err)
 		return
 	}
 
@@ -396,9 +392,7 @@ func EvalColorIf(clr string, h int) string {
 
 		expr := Expr{clr, nil, nil}
 		expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr.Expr, functions)
-		if err != nil {
-			panic(err)
-		}
+		HandleError(err)
 		expr.Params = make(map[string]interface{}, 2)
 		expr.Params["h"] = float64(h)
 		expr.Params["t"] = float64(Gr.Params.Time)
@@ -407,9 +401,7 @@ func EvalColorIf(clr string, h int) string {
 			expr.Params[d] = float64(k)
 		}
 		yi, err := expr.Val.Evaluate(expr.Params)
-		if err != nil {
-			panic(err)
-		}
+		HandleError(err)
 		yf := yi.(float64)
 		for k, d := range lineColors {
 			if yf == float64(k) {
@@ -617,8 +609,16 @@ func UpdateMarbles() {
 
 func RunMarbles() {
 	Stop = false
+	startFrames := 0
+	start := time.Now()
 	for i := 0; i < Gr.Params.NSteps; i++ {
 		UpdateMarbles()
+		if time.Since(start).Milliseconds() >= 1000 {
+			fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
+			start = time.Now()
+			startFrames = i
+		}
+
 		Gr.Params.Time += Gr.Params.TimeStep
 		if Stop {
 			break
