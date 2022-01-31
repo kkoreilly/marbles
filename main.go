@@ -29,6 +29,7 @@ var SvgCoords *svg.Group
 var gmin, gmax, gsz, ginc mat32.Vec2
 var fpsText *gi.Label
 var errorText *gi.Label
+var problemWithEval = false
 
 func main() {
 	gimain.Main(func() {

@@ -206,6 +206,7 @@ func (gr *Graph) Graph() {
 	gr.CompileExprs()
 	ResetMarbles()
 	gr.Params.Time = 0
+	problemWithEval = false
 	errorText.SetText("")
 	gr.Lines.Graph()
 	gr.AutoSave()
@@ -369,6 +370,9 @@ func (ln *Line) Graph(lidx int) {
 	ps := ""
 	start := true
 	for x := gmin.X; x < gmax.X; x += ginc.X {
+		if problemWithEval {
+			return
+		}
 		MinX := ln.MinX.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MaxX := ln.MaxX.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MinY := ln.MinY.Eval(x, Gr.Params.Time, ln.TimesHit)
