@@ -7,8 +7,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math"
+	"os"
 	"strings"
 	"time"
 
@@ -157,7 +157,7 @@ func (gr *Graph) Defaults() {
 
 // OpenJSON open from JSON file
 func (gr *Graph) OpenJSON(filename gi.FileName) error {
-	b, err := ioutil.ReadFile(string(filename))
+	b, err := os.ReadFile(string(filename))
 	if HandleError(err) {
 		return err
 	}
@@ -169,7 +169,7 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	return err
 }
 func (gr *Graph) OpenAutoSave() error {
-	b, err := ioutil.ReadFile("autosave.json")
+	b, err := os.ReadFile("localData/autosave.json")
 	if HandleError(err) {
 		return err
 	}
@@ -187,7 +187,7 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 	if HandleError(err) {
 		return err
 	}
-	err = ioutil.WriteFile(string(filename), b, 0644)
+	err = os.WriteFile(string(filename), b, 0644)
 	HandleError(err)
 	return err
 }
@@ -196,7 +196,7 @@ func (gr *Graph) AutoSave() error {
 	if HandleError(err) {
 		return err
 	}
-	err = ioutil.WriteFile("autosave.json", b, 0644)
+	err = os.WriteFile("localData/autosave.json", b, 0644)
 	HandleError(err)
 	return err
 }
@@ -288,28 +288,6 @@ func (ls *Lines) Defaults() {
 	(*ls)[0] = &ln
 	ln.Defaults(0)
 
-}
-
-// OpenJSON open from JSON file
-func (ls *Lines) OpenJSON(filename gi.FileName) error {
-	b, err := ioutil.ReadFile(string(filename))
-	if HandleError(err) {
-		return err
-	}
-	err = json.Unmarshal(b, ls)
-	HandleError(err)
-	return err
-}
-
-// SaveJSON save to JSON file
-func (ls *Lines) SaveJSON(filename gi.FileName) error {
-	b, err := json.MarshalIndent(ls, "", "  ")
-	if HandleError(err) {
-		return err
-	}
-	err = ioutil.WriteFile(string(filename), b, 0644)
-	HandleError(err)
-	return err
 }
 
 func (ls *Lines) Graph() {

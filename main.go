@@ -103,7 +103,6 @@ func mainrun() {
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
-
 	InitCoords()
 	ResetMarbles()
 	Gr.CompileExprs()
