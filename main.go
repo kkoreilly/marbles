@@ -115,6 +115,7 @@ func mainrun() {
 		})
 	})
 	TheSettings.Get()
+	Gr.Params.Defaults()
 	InitCoords()
 	ResetMarbles()
 	Gr.CompileExprs()

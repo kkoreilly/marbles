@@ -6,7 +6,7 @@
     "UpdtRate": 0.02,
     "Gravity": 0.1,
     "Width": 0,
-    "TimeStep": 0.1,
+    "TimeStep": 0.01,
     "MinSize": {
       "X": -10,
       "Y": -10
@@ -19,7 +19,7 @@
   "Lines": [
     {
       "Expr": {
-        "Expr": "1"
+        "Expr": "x"
       },
       "MinX": {
         "Expr": "-10"
@@ -36,8 +36,8 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "Color": "ifb(a,-10,-7,red,ifb(a,-7,-4,orange,ifb(a,-4,-1,yellow,ifb(a,-1,2,green,ifb(a,2,6,blue,purple)))))",
-      "ColorSwitch": "ifb(a,-10,-7,red,ifb(a,-7,-4,orange,ifb(a,-4,-1,yellow,ifb(a,-1,2,green,ifb(a,2,6,blue,purple)))))"
+      "Color": "black",
+      "ColorSwitch": "none"
     }
   ]
 }

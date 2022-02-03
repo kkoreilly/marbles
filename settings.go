@@ -37,6 +37,7 @@ func (se *Settings) Get() {
 		se.Save()
 		return
 	}
+
 }
 
 func (se *Settings) Save() {
@@ -46,6 +47,7 @@ func (se *Settings) Save() {
 	}
 	err = os.WriteFile("localData/settings.json", b, 0644)
 	HandleError(err)
+	Gr.Params.Defaults()
 }
 
 func (ln *LineDefaults) BasicDefaults() {
