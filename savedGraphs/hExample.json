@@ -7,7 +7,6 @@
     "Gravity": 0.1,
     "Width": 0,
     "TimeStep": 0.01,
-    "Time": 0,
     "MinSize": {
       "X": -10,
       "Y": -10
@@ -38,8 +37,7 @@
         "Expr": "0.95"
       },
       "Color": "black",
-      "ColorSwitch": "none",
-      "TimesHit": 0
+      "ColorSwitch": "none"
     }
   ]
 }

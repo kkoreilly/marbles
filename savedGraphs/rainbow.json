@@ -7,7 +7,6 @@
     "Gravity": 0.1,
     "Width": 0,
     "TimeStep": 0.1,
-    "Time": 0,
     "MinSize": {
       "X": -10,
       "Y": -10

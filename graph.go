@@ -42,7 +42,7 @@ type Line struct {
 	Bounce      Expr   `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
 	Color       string `desc:"color to draw the line in"`
 	ColorSwitch string `desc:"Switch the color of the marble that hits this line"`
-	TimesHit    int    `view:"-"`
+	TimesHit    int    `view:"-" json:"-"`
 }
 
 var EquationChangeSlice = []EquationChange{
@@ -230,25 +230,29 @@ func (gr *Graph) Step() {
 func (gr *Graph) CompileExprs() {
 	for _, ln := range gr.Lines {
 		if ln.Expr.Expr == "" {
-			ln.Expr.Expr = "x"
+			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
 		if ln.Color == "" {
-			ln.Color = "black"
+			if TheSettings.LineDefaults.Color == "default" {
+				ln.Color = "black"
+			} else {
+				ln.Color = TheSettings.LineDefaults.Color
+			}
 		}
 		if ln.Bounce.Expr == "" {
-			ln.Bounce.Expr = "0.95"
+			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 		}
 		if ln.MinX.Expr == "" {
-			ln.MinX.Expr = "-10"
+			ln.MinX.Expr = TheSettings.LineDefaults.MinX
 		}
 		if ln.MaxX.Expr == "" {
-			ln.MaxX.Expr = "10"
+			ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
 		}
 		if ln.MinY.Expr == "" {
-			ln.MinY.Expr = "-10"
+			ln.MinY.Expr = TheSettings.LineDefaults.MinY
 		}
 		if ln.MaxY.Expr == "" {
-			ln.MaxY.Expr = "10"
+			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
 		}
 		ln.TimesHit = 0
 		ln.MakeGraphable()
@@ -272,14 +276,18 @@ func (ln *Line) Compile() {
 }
 
 func (ln *Line) Defaults(lidx int) {
-	ln.Expr.Expr = "x"
-	ln.Color = colors[lidx%len(colors)]
-	ln.Bounce.Expr = "0.95"
-	ln.MinX.Expr = "-10"
-	ln.MaxX.Expr = "10"
-	ln.MinY.Expr = "-10"
-	ln.MaxY.Expr = "10"
-	ln.ColorSwitch = "none"
+	ln.Expr.Expr = TheSettings.LineDefaults.Expr
+	if TheSettings.LineDefaults.Color == "default" {
+		ln.Color = colors[lidx%len(colors)]
+	} else {
+		ln.Color = TheSettings.LineDefaults.Color
+	}
+	ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
+	ln.MinX.Expr = TheSettings.LineDefaults.MinX
+	ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
+	ln.MinY.Expr = TheSettings.LineDefaults.MinY
+	ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
+	ln.ColorSwitch = TheSettings.LineDefaults.ColorSwitch
 }
 
 func (ls *Lines) Defaults() {
@@ -313,25 +321,29 @@ func (ln *Line) Graph(lidx int) {
 		ln.Defaults(lidx)
 	}
 	if ln.Color == "" || ln.Color == "black" {
-		ln.Color = colors[lidx%len(colors)]
+		if TheSettings.LineDefaults.Color == "default" {
+			ln.Color = colors[lidx%len(colors)]
+		} else {
+			ln.Color = TheSettings.LineDefaults.Color
+		}
 	}
 	if ln.ColorSwitch == "" {
-		ln.ColorSwitch = "none"
+		ln.ColorSwitch = TheSettings.LineDefaults.ColorSwitch
 	}
 	if ln.Bounce.Expr == "" {
-		ln.Bounce.Expr = "0.95"
+		ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 	}
 	if ln.MinX.Expr == "" {
-		ln.MinX.Expr = "-10"
+		ln.MinX.Expr = TheSettings.LineDefaults.MinX
 	}
 	if ln.MaxX.Expr == "0" {
-		ln.MaxX.Expr = "10"
+		ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
 	}
 	if ln.MinY.Expr == "0" {
-		ln.MinY.Expr = "-10"
+		ln.MinY.Expr = TheSettings.LineDefaults.MinY
 	}
 	if ln.MaxY.Expr == "0" {
-		ln.MaxY.Expr = "10"
+		ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
 	}
 	path := SvgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
@@ -440,12 +452,24 @@ type Params struct {
 	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
 	Width      float32 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
 	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
-	Time       float32 `view:"-" inactive:"+" desc:"time in msecs since starting"`
+	Time       float32 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
 	MinSize    mat32.Vec2
 	MaxSize    mat32.Vec2
 }
 
 func (pr *Params) Defaults() {
+	pr.NMarbles = TheSettings.GraphDefaults.NMarbles
+	pr.NSteps = TheSettings.GraphDefaults.NSteps
+	pr.StartSpeed = TheSettings.GraphDefaults.StartSpeed
+	pr.UpdtRate = TheSettings.GraphDefaults.UpdtRate
+	pr.Gravity = TheSettings.GraphDefaults.Gravity
+	pr.TimeStep = TheSettings.GraphDefaults.TimeStep
+	pr.MinSize = TheSettings.GraphDefaults.MinSize
+	pr.MaxSize = TheSettings.GraphDefaults.MaxSize
+	pr.Width = TheSettings.GraphDefaults.Width
+}
+
+func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
 	pr.NSteps = 10000
 	pr.StartSpeed = 0
@@ -454,6 +478,7 @@ func (pr *Params) Defaults() {
 	pr.TimeStep = 0.01
 	pr.MinSize = mat32.Vec2{X: -10, Y: -10}
 	pr.MaxSize = mat32.Vec2{X: 10, Y: 10}
+	pr.Width = 0
 }
 
 func RadToDeg(rad float32) float32 {

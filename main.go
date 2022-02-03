@@ -40,7 +40,6 @@ func main() {
 func mainrun() {
 	Gr.Defaults()
 	InitEquationChangeSlice()
-
 	rec := ki.Node{}          // receiver for events
 	rec.InitName(&rec, "rec") // this is essential for root objects not owned by other Ki tree nodes
 
@@ -103,6 +102,19 @@ func mainrun() {
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
+	viewSettingsButton := gi.AddNewButton(statusBar, "viewSettingsButton")
+	viewSettingsButton.SetText("Settings")
+	viewSettingsButton.OnClicked(func() {
+		pSettings := TheSettings
+		giv.StructViewDialog(Vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				TheSettings.Save()
+			} else if sig == int64(gi.DialogCanceled) {
+				TheSettings = pSettings
+			}
+		})
+	})
+	TheSettings.Get()
 	InitCoords()
 	ResetMarbles()
 	Gr.CompileExprs()

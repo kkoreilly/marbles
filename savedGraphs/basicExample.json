@@ -7,7 +7,6 @@
     "Gravity": 0.1,
     "Width": 0,
     "TimeStep": 0.01,
-    "Time": 0,
     "MinSize": {
       "X": -10,
       "Y": -10
@@ -34,11 +33,11 @@
       "MaxY": {
         "Expr": "10"
       },
-      "Color": "black",
-      "ColorSwitch": "none",
       "Bounce": {
         "Expr": "0.95"
-      }
+      },
+      "Color": "black",
+      "ColorSwitch": "none"
     },
     {
       "Expr": {
@@ -56,11 +55,11 @@
       "MaxY": {
         "Expr": "10"
       },
-      "Color": "red",
-      "ColorSwitch": "none",
       "Bounce": {
         "Expr": "0.95"
-      }
+      },
+      "Color": "red",
+      "ColorSwitch": "none"
     },
     {
       "Expr": {
@@ -78,11 +77,11 @@
       "MaxY": {
         "Expr": "10"
       },
-      "Color": "blue",
-      "ColorSwitch": "none",
       "Bounce": {
         "Expr": "0.95"
-      }
+      },
+      "Color": "blue",
+      "ColorSwitch": "none"
     }
   ]
 }
