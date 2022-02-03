@@ -32,6 +32,7 @@ func (se *Settings) Get() {
 	if HandleError(err) {
 		se.LineDefaults.BasicDefaults()
 		se.GraphDefaults.BasicDefaults()
+		se.MarbleSettings.Defaults()
 		se.Save()
 		return
 	}
@@ -39,6 +40,7 @@ func (se *Settings) Get() {
 	if HandleError(err) {
 		se.LineDefaults.BasicDefaults()
 		se.GraphDefaults.BasicDefaults()
+		se.MarbleSettings.Defaults()
 		se.Save()
 		return
 	}
