@@ -5,6 +5,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gimain"
 	"github.com/goki/gi/giv"
@@ -92,7 +94,7 @@ func mainrun() {
 	statusBar := gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
 	statusBar.SetProp("background-color", "lightblue")
 	statusBar.SetStretchMaxWidth()
-	fpsText = gi.AddNewLabel(statusBar, "fpsText", "")
+	fpsText = gi.AddNewLabel(statusBar, "fpsText", "FPS: ")
 	fpsText.SetProp("color", "black")
 	fpsText.SetProp("font-weight", "bold")
 	fpsText.SetStretchMaxWidth()
@@ -102,6 +104,10 @@ func mainrun() {
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
+	versionText := gi.AddNewLabel(statusBar, "versionText", "")
+	versionText.SetProp("font-weight", "bold")
+	versionText.SetStretchMaxWidth()
+	versionText.SetText("Running version " + GetVersion())
 	viewSettingsButton := gi.AddNewButton(statusBar, "viewSettingsButton")
 	viewSettingsButton.SetText("Settings")
 	viewSettingsButton.OnClicked(func() {
@@ -151,4 +157,12 @@ func HandleError(err error) bool { // If there is an error, set the error text t
 		return true
 	}
 	return false
+}
+
+func GetVersion() string {
+	b, err := os.ReadFile("localData/version.txt")
+	if HandleError(err) {
+		return "Error getting version"
+	}
+	return string(b)
 }
