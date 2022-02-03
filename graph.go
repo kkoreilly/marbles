@@ -79,7 +79,8 @@ var EquationChangeSlice = []EquationChange{
 
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 var lineColors = []string{"black", "red", "blue", "green", "purple", "brown", "orange", "yellow", "white"}
-var MarbleRadius = .1
+
+// var MarbleRadius = .1
 var Stop = false
 
 // Graph represents the overall graph parameters -- lines and params
@@ -491,11 +492,15 @@ func GraphMarblesInit() {
 
 	SvgMarbles.DeleteChildren(true)
 	for i, m := range Marbles {
-		size := float32(MarbleRadius) * gsz.Y / 20
+		size := float32(TheSettings.MarbleSettings.MarbleSize) * gsz.Y / 20
 		// fmt.Printf("size: %v \n", size)
 		circle := svg.AddNewCircle(SvgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
 		circle.SetProp("stroke", "none")
-		circle.SetProp("fill", colors[i%len(colors)])
+		if TheSettings.MarbleSettings.MarbleColor == "default" {
+			circle.SetProp("fill", colors[i%len(colors)])
+		} else {
+			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
+		}
 	}
 	SvgGraph.UpdateEnd(updt)
 }

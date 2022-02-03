@@ -6,8 +6,13 @@ import (
 )
 
 type Settings struct {
-	LineDefaults  LineDefaults `view:"inline" label:"Line Defaults"`
-	GraphDefaults Params       `view:"inline" label:"Graph Parameter Defaults"`
+	LineDefaults   LineDefaults   `view:"inline" label:"Line Defaults"`
+	GraphDefaults  Params         `view:"inline" label:"Graph Parameter Defaults"`
+	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
+}
+type MarbleSettings struct {
+	MarbleColor string
+	MarbleSize  float64
 }
 type LineDefaults struct {
 	Expr        string
@@ -59,4 +64,9 @@ func (ln *LineDefaults) BasicDefaults() {
 	ln.MinY = "-10"
 	ln.MaxY = "10"
 	ln.ColorSwitch = "none"
+}
+
+func (ms *MarbleSettings) Defaults() {
+	ms.MarbleColor = "default"
+	ms.MarbleSize = 0.1
 }
