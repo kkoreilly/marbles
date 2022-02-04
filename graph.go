@@ -79,6 +79,7 @@ var EquationChangeSlice = []EquationChange{
 
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 var lineColors = []string{"black", "red", "blue", "green", "purple", "brown", "orange", "yellow", "white"}
+var LastSavedFile string
 
 // var MarbleRadius = .1
 var Stop = false
@@ -98,14 +99,20 @@ var KiT_Graph = kit.Types.AddType(&Graph{}, GraphProps)
 var GraphProps = ki.Props{
 	"ToolBar": ki.PropSlice{
 		{Name: "OpenJSON", Value: ki.Props{
-			"label": "Open...",
+			"label": "Open",
 			"desc":  "Opens line equations and params from a .json file.",
 			"icon":  "file-open",
 			"Args": ki.PropSlice{
 				{Name: "File Name", Value: ki.Props{
-					"ext": ".json",
+					"ext":     ".json",
+					"default": "savedGraphs/",
 				}},
 			},
+		}},
+		{Name: "SaveLast", Value: ki.Props{
+			"label": "Save",
+			"desc":  "Save line equations and params to the last opened / saved file.",
+			"icon":  "file-save",
 		}},
 		{Name: "SaveJSON", Value: ki.Props{
 			"label": "Save As...",
@@ -113,12 +120,13 @@ var GraphProps = ki.Props{
 			"icon":  "file-save",
 			"Args": ki.PropSlice{
 				{Name: "File Name", Value: ki.Props{
-					"ext": ".json",
+					"ext":     ".json",
+					"default": "savedGraphs/",
 				}},
 			},
 		}},
 		{Name: "OpenAutoSave", Value: ki.Props{
-			"label": "Open Autosaved...",
+			"label": "Open Autosaved",
 			"desc":  "Opens the most recently graphed set of equations and parameters.",
 			"icon":  "file-open",
 		}},
@@ -156,6 +164,14 @@ func (gr *Graph) Defaults() {
 	gr.Lines.Defaults()
 }
 
+func (gr *Graph) SaveLast() {
+	if LastSavedFile == "" {
+		errorText.SetText("no file has been opened or saved")
+	} else {
+		Gr.SaveJSON(gi.FileName(LastSavedFile))
+	}
+}
+
 // OpenJSON open from JSON file
 func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	b, err := os.ReadFile(string(filename))
@@ -166,6 +182,7 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	if HandleError(err) {
 		return err
 	}
+	LastSavedFile = string(filename)
 	gr.Graph()
 	return err
 }
@@ -190,6 +207,7 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 	}
 	err = os.WriteFile(string(filename), b, 0644)
 	HandleError(err)
+	LastSavedFile = string(filename)
 	return err
 }
 func (gr *Graph) AutoSave() error {

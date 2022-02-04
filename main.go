@@ -115,6 +115,7 @@ func mainrun() {
 		giv.StructViewDialog(Vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
+				Gr.Graph()
 			} else if sig == int64(gi.DialogCanceled) {
 				TheSettings = pSettings
 			}
