@@ -29,8 +29,11 @@ var SvgLines *svg.Group
 var SvgMarbles *svg.Group
 var SvgCoords *svg.Group
 var gmin, gmax, gsz, ginc mat32.Vec2
+var statusBar *gi.Frame
 var fpsText *gi.Label
 var errorText *gi.Label
+var versionText *gi.Label
+var mfr *gi.Frame
 var problemWithEval = false
 
 func main() {
@@ -53,7 +56,7 @@ func mainrun() {
 	Vp = win.WinViewport2D()
 	updt := Vp.UpdateStart()
 
-	mfr := win.SetMainFrame()
+	mfr = win.SetMainFrame()
 	// the StructView will also show the Graph Toolbar which is main actions..
 	gstru := giv.AddNewStructView(mfr, "gstru")
 	gstru.Viewport = Vp // needs vp early for toolbar
@@ -91,8 +94,7 @@ func mainrun() {
 	SvgGraph.SetProp("background-color", "white")
 	SvgGraph.SetProp("stroke-width", ".2pct")
 
-	statusBar := gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
-	statusBar.SetProp("background-color", "lightblue")
+	statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
 	statusBar.SetStretchMaxWidth()
 	fpsText = gi.AddNewLabel(statusBar, "fpsText", "FPS: ")
 	fpsText.SetProp("color", "black")
@@ -104,7 +106,7 @@ func mainrun() {
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
-	versionText := gi.AddNewLabel(statusBar, "versionText", "")
+	versionText = gi.AddNewLabel(statusBar, "versionText", "")
 	versionText.SetProp("font-weight", "bold")
 	versionText.SetStretchMaxWidth()
 	versionText.SetText("Running version " + GetVersion())
@@ -115,13 +117,18 @@ func mainrun() {
 		giv.StructViewDialog(Vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
+				Gr.Params.Defaults()
 				Gr.Graph()
+				UpdateColors()
+				ResetMarbles()
+				Vp.NeedsFullReRender()
 			} else if sig == int64(gi.DialogCanceled) {
 				TheSettings = pSettings
 			}
 		})
 	})
 	TheSettings.Get()
+	UpdateColors()
 	Gr.Params.Defaults()
 	InitCoords()
 	ResetMarbles()
@@ -166,4 +173,16 @@ func GetVersion() string {
 		return "Error getting version"
 	}
 	return string(b)
+}
+
+func UpdateColors() {
+	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
+	SvgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
+	mfr.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
+	fpsText.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
+	errorText.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
+	versionText.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
+	fpsText.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
+	errorText.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
+	versionText.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
 }

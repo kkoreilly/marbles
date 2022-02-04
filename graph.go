@@ -430,10 +430,10 @@ func InitCoords() {
 	SvgCoords.DeleteChildren(true)
 
 	xAxis := svg.AddNewLine(SvgCoords, "xAxis", -1000, 0, 1000, 0)
-	xAxis.SetProp("stroke", "#888")
+	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
 	yAxis := svg.AddNewLine(SvgCoords, "yAxis", 0, -1000, 0, 1000)
-	yAxis.SetProp("stroke", "#888")
+	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
 	SvgGraph.UpdateEnd(updt)
 }

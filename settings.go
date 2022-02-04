@@ -9,6 +9,15 @@ type Settings struct {
 	LineDefaults   LineDefaults   `view:"inline" label:"Line Defaults"`
 	GraphDefaults  Params         `view:"inline" label:"Graph Parameter Defaults"`
 	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
+	ColorSettings  ColorSettings  `view:"inline" label:"Color Settings"`
+}
+type ColorSettings struct {
+	BackgroundColor string
+	GraphColor      string
+	AxisColor       string
+	StatusBarColor  string
+	ButtonColor     string
+	StatusTextColor string
 }
 type MarbleSettings struct {
 	MarbleColor string
@@ -33,6 +42,7 @@ func (se *Settings) Get() {
 		se.LineDefaults.BasicDefaults()
 		se.GraphDefaults.BasicDefaults()
 		se.MarbleSettings.Defaults()
+		se.ColorSettings.Defaults()
 		se.Save()
 		return
 	}
@@ -41,6 +51,7 @@ func (se *Settings) Get() {
 		se.LineDefaults.BasicDefaults()
 		se.GraphDefaults.BasicDefaults()
 		se.MarbleSettings.Defaults()
+		se.ColorSettings.Defaults()
 		se.Save()
 		return
 	}
@@ -54,7 +65,6 @@ func (se *Settings) Save() {
 	}
 	err = os.WriteFile("localData/settings.json", b, 0644)
 	HandleError(err)
-	Gr.Params.Defaults()
 }
 
 func (ln *LineDefaults) BasicDefaults() {
@@ -71,4 +81,13 @@ func (ln *LineDefaults) BasicDefaults() {
 func (ms *MarbleSettings) Defaults() {
 	ms.MarbleColor = "default"
 	ms.MarbleSize = 0.1
+}
+
+func (cs *ColorSettings) Defaults() {
+	cs.BackgroundColor = "white"
+	cs.GraphColor = "white"
+	cs.AxisColor = "#888"
+	cs.StatusBarColor = "lightblue"
+	cs.ButtonColor = "white"
+	cs.StatusTextColor = "black"
 }
