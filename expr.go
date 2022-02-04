@@ -15,10 +15,12 @@ type Expr struct {
 	Params map[string]interface{}         `view:"-" json:"-"`
 }
 
+// Factorial variables
 const LIM = 100
 
 var facts [LIM]float64
 
+// Functions that can be used in expressions
 var functions = map[string]govaluate.ExpressionFunction{
 	"cos": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "cos")
@@ -186,6 +188,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	},
 }
 
+// Check if a function is passed the right number of arguments.
 func CheckArgs(needed, have int, name string) (bool, error) {
 	if needed != have {
 		return false, fmt.Errorf("function %v needs %v arguments, not %v arguments", name, needed, have)
@@ -193,6 +196,7 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 	return true, nil
 }
 
+// Get an expressin ready for evaluation.
 func (ex *Expr) Compile() error {
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)

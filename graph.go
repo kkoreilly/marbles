@@ -5,32 +5,24 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
-	"os"
 	"strings"
-	"time"
 
 	"math/rand"
-	"strconv"
 
 	"github.com/Knetic/govaluate"
-	"github.com/chewxy/math32"
-	"github.com/goki/gi/gi"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
 	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
 )
 
-type EquationChange struct {
-	Old string
-	New string
+// Type Graph contains the lines and parameters of a graph
+type Graph struct {
+	Params Params `view:"inline" desc:"the parameters for updating the marbles"`
+	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
 }
-
-// Lines is a collection of lines
-type Lines []*Line
 
 // Line represents one line with an equation etc
 type Line struct {
@@ -45,55 +37,43 @@ type Line struct {
 	TimesHit    int    `view:"-" json:"-"`
 }
 
-var EquationChangeSlice = []EquationChange{
-	{"^", "**"},
-	{"x(", "x*("},
-	{"t(", "t*("},
-	{"a(", "a*("},
-	{"ax", "a*x"},
-	{"xa", "x*a"},
-	{"tx", "t*x"},
-	{"xt", "x*t"},
-	{"at", "a*t"},
-	{"ta", "t*a"},
-	{"aa", "a*a"},
-	{"tt", "t*t"},
-	{"xx", "x*x"},
-	{"h(", "h*("},
-	{"hx", "h*x"},
-	{"xh", "x*h"},
-	{"ah", "a*h"},
-	{"ha", "h*a"},
-	{"th", "t*h"},
-	{"ht", "h*t"},
-	{"+.", "+0."},
-	{"-.", "-0."},
-	{"*.", "*0."},
-	{"/.", "/0."},
-	{")(", ")*("},
-	{"sqrt*(", "sqrt("},
-	{"cot*(", "cot("},
-	{"t*an(", "tan("},
-	{"a*tan(", "atan("},
+// Params is the parameters of the graph
+type Params struct {
+	NMarbles   int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
+	NSteps     int     `min:"100" max:"10000" step:"10" desc:"number of steps to take when running"`
+	StartSpeed float32 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
+	UpdtRate   float32 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
+	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
+	Width      float32 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
+	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
+	Time       float32 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
+	MinSize    mat32.Vec2
+	MaxSize    mat32.Vec2
 }
 
+// Lines is a collection of lines
+type Lines []*Line
+
+// colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
-var lineColors = []string{"black", "red", "blue", "green", "purple", "brown", "orange", "yellow", "white"}
+
+// evalColorIfColors are colors that can be used in an if statement in the color field
+var evalColorIfColors = []string{"black", "red", "blue", "green", "purple", "brown", "orange", "yellow", "white", "grey"}
+
+// Last Saved file is the last saved or opened file, used for the save button
 var LastSavedFile string
 
-// var MarbleRadius = .1
+// Stop is used to tell RunMarbles to stop
 var Stop = false
-
-// Graph represents the overall graph parameters -- lines and params
-type Graph struct {
-	Params Params `view:"inline" desc:"the parameters for updating the marbles"`
-	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
-}
 
 // Gr is current graph
 var Gr Graph
 
+// KiT_Graph is there to have the toolbar
 var KiT_Graph = kit.Types.AddType(&Graph{}, GraphProps)
+
+// X and Y axis are the x and y axis
+var xAxis, yAxis *svg.Line
 
 // GraphProps define the ToolBar for overall app
 var GraphProps = ki.Props{
@@ -102,6 +82,9 @@ var GraphProps = ki.Props{
 			"label": "Open",
 			"desc":  "Opens line equations and params from a .json file.",
 			"icon":  "file-open",
+			"ButtonBoxProps": ki.Props{
+				"background-color": "blue",
+			},
 			"Args": ki.PropSlice{
 				{Name: "File Name", Value: ki.Props{
 					"ext":     ".json",
@@ -153,71 +136,10 @@ var GraphProps = ki.Props{
 	},
 }
 
-func InitEquationChangeSlice() {
-	for i := 0; i < 10; i++ {
-		is := strconv.Itoa(i)
-		EquationChangeSlice = append(EquationChangeSlice, EquationChange{is + "(", is + "*("}, EquationChange{is + "x", is + "*x"}, EquationChange{is + "t", is + "*t"}, EquationChange{is + "a", is + "*a"}, EquationChange{is + "h", is + "*h"})
-	}
-}
+// Defaults sets the default parameters and lines for the graph, specified in settings
 func (gr *Graph) Defaults() {
 	gr.Params.Defaults()
 	gr.Lines.Defaults()
-}
-
-func (gr *Graph) SaveLast() {
-	if LastSavedFile == "" {
-		errorText.SetText("no file has been opened or saved")
-	} else {
-		Gr.SaveJSON(gi.FileName(LastSavedFile))
-	}
-}
-
-// OpenJSON open from JSON file
-func (gr *Graph) OpenJSON(filename gi.FileName) error {
-	b, err := os.ReadFile(string(filename))
-	if HandleError(err) {
-		return err
-	}
-	err = json.Unmarshal(b, gr)
-	if HandleError(err) {
-		return err
-	}
-	LastSavedFile = string(filename)
-	gr.Graph()
-	return err
-}
-func (gr *Graph) OpenAutoSave() error {
-	b, err := os.ReadFile("localData/autosave.json")
-	if HandleError(err) {
-		return err
-	}
-	err = json.Unmarshal(b, gr)
-	if HandleError(err) {
-		return err
-	}
-	gr.Graph()
-	return err
-}
-
-// SaveJSON save to JSON file
-func (gr *Graph) SaveJSON(filename gi.FileName) error {
-	b, err := json.MarshalIndent(gr, "", "  ")
-	if HandleError(err) {
-		return err
-	}
-	err = os.WriteFile(string(filename), b, 0644)
-	HandleError(err)
-	LastSavedFile = string(filename)
-	return err
-}
-func (gr *Graph) AutoSave() error {
-	b, err := json.MarshalIndent(gr, "", "  ")
-	if HandleError(err) {
-		return err
-	}
-	err = os.WriteFile("localData/autosave.json", b, 0644)
-	HandleError(err)
-	return err
 }
 
 // Graph updates graph for current equations, and resets marbles too
@@ -246,6 +168,7 @@ func (gr *Graph) Step() {
 	UpdateMarbles()
 }
 
+// Gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
 	for _, ln := range gr.Lines {
 		if ln.Expr.Expr == "" {
@@ -274,17 +197,12 @@ func (gr *Graph) CompileExprs() {
 			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
 		}
 		ln.TimesHit = 0
-		ln.MakeGraphable()
+		ln.LoopEquationChangeSlice()
 		ln.Compile()
 	}
 }
 
-func (ln *Line) MakeGraphable() { // Change things like 9x to 9*x to make the line graphable
-	for _, d := range EquationChangeSlice {
-		ln.Expr.Expr = strings.Replace(ln.Expr.Expr, d.Old, d.New, -1)
-	}
-}
-
+// Compiles all of the expressions in a line
 func (ln *Line) Compile() {
 	ln.Expr.Compile()
 	ln.Bounce.Compile()
@@ -294,6 +212,7 @@ func (ln *Line) Compile() {
 	ln.MaxY.Compile()
 }
 
+// Sets the line to the defaults specified in settings
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
 	if TheSettings.LineDefaults.Color == "default" {
@@ -309,6 +228,7 @@ func (ln *Line) Defaults(lidx int) {
 	ln.ColorSwitch = TheSettings.LineDefaults.ColorSwitch
 }
 
+// Makes the lines and then defaults them
 func (ls *Lines) Defaults() {
 	*ls = make(Lines, 1, 10)
 	ln := Line{}
@@ -317,6 +237,7 @@ func (ls *Lines) Defaults() {
 
 }
 
+// Graphs the lines
 func (ls *Lines) Graph() {
 	updt := SvgGraph.UpdateStart()
 	SvgGraph.ViewBox.Min = Gr.Params.MinSize
@@ -334,7 +255,7 @@ func (ls *Lines) Graph() {
 	SvgGraph.UpdateEnd(updt)
 }
 
-// Graph graphs this line in the SvgLines group
+// Graphs a single line
 func (ln *Line) Graph(lidx int) {
 	if ln.Expr.Expr == "" {
 		ln.Defaults(lidx)
@@ -399,6 +320,8 @@ func (ln *Line) Graph(lidx int) {
 	}
 	path.SetData(ps)
 }
+
+// Evaluates an if statement in the color or colorswitch field
 func EvalColorIf(clr string, h int) string {
 	if strings.Contains(clr, "if") {
 		var err error
@@ -410,13 +333,13 @@ func EvalColorIf(clr string, h int) string {
 		expr.Params["h"] = float64(h)
 		expr.Params["t"] = float64(Gr.Params.Time)
 		expr.Params["a"] = float64(10 * math.Sin(float64(Gr.Params.Time)))
-		for k, d := range lineColors {
+		for k, d := range evalColorIfColors {
 			expr.Params[d] = float64(k)
 		}
 		yi, err := expr.Val.Evaluate(expr.Params)
 		HandleError(err)
 		yf := yi.(float64)
-		for k, d := range lineColors {
+		for k, d := range evalColorIfColors {
 			if yf == float64(k) {
 				return d
 			}
@@ -425,27 +348,18 @@ func EvalColorIf(clr string, h int) string {
 	return clr
 }
 
+// Makes the x and y axis
 func InitCoords() {
 	updt := SvgGraph.UpdateStart()
 	SvgCoords.DeleteChildren(true)
 
-	xAxis := svg.AddNewLine(SvgCoords, "xAxis", -1000, 0, 1000, 0)
+	xAxis = svg.AddNewLine(SvgCoords, "xAxis", -1000, 0, 1000, 0)
 	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	yAxis := svg.AddNewLine(SvgCoords, "yAxis", 0, -1000, 0, 1000)
+	yAxis = svg.AddNewLine(SvgCoords, "yAxis", 0, -1000, 0, 1000)
 	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
 	SvgGraph.UpdateEnd(updt)
-}
-
-/////////////////////////////////////////////////////////////////////////
-
-//  Marbles
-
-type Marble struct {
-	Pos    mat32.Vec2
-	Vel    mat32.Vec2
-	PrvPos mat32.Vec2
 }
 
 func (mb *Marble) Init(diff float32) {
@@ -455,25 +369,6 @@ func (mb *Marble) Init(diff float32) {
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	mb.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
 	mb.PrvPos = mb.Pos
-}
-
-var Marbles []*Marble
-
-// Kai: put all these in a struct, and add a StructInlineView to edit them.
-// see your other code for how to do it..
-
-// Params holds our parameters
-type Params struct {
-	NMarbles   int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	NSteps     int     `min:"100" max:"10000" step:"10" desc:"number of steps to take when running"`
-	StartSpeed float32 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
-	UpdtRate   float32 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
-	Width      float32 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
-	Time       float32 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
-	MinSize    mat32.Vec2
-	MaxSize    mat32.Vec2
 }
 
 func (pr *Params) Defaults() {
@@ -498,160 +393,4 @@ func (pr *Params) BasicDefaults() {
 	pr.MinSize = mat32.Vec2{X: -10, Y: -10}
 	pr.MaxSize = mat32.Vec2{X: 10, Y: 10}
 	pr.Width = 0
-}
-
-func RadToDeg(rad float32) float32 {
-	return rad * 180 / math.Pi
-}
-
-// GraphMarblesInit initializes the graph drawing of the marbles
-func GraphMarblesInit() {
-	updt := SvgGraph.UpdateStart()
-
-	SvgMarbles.DeleteChildren(true)
-	for i, m := range Marbles {
-		size := float32(TheSettings.MarbleSettings.MarbleSize) * gsz.Y / 20
-		// fmt.Printf("size: %v \n", size)
-		circle := svg.AddNewCircle(SvgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
-		circle.SetProp("stroke", "none")
-		if TheSettings.MarbleSettings.MarbleColor == "default" {
-			circle.SetProp("fill", colors[i%len(colors)])
-		} else {
-			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
-		}
-	}
-	SvgGraph.UpdateEnd(updt)
-}
-
-// InitMarbles creates the marbles and puts them at their initial positions
-func InitMarbles() {
-	Marbles = make([]*Marble, 0)
-	for n := 0; n < Gr.Params.NMarbles; n++ {
-		diff := (gsz.Y / 20) * 2 * float32(n) / float32(Gr.Params.NMarbles)
-		m := Marble{}
-		m.Init(diff)
-		Marbles = append(Marbles, &m)
-	}
-}
-
-// ResetMarbles just calls InitMarbles and GraphMarblesInit
-func ResetMarbles() {
-	InitMarbles()
-	GraphMarblesInit()
-}
-
-func UpdateMarbles() {
-	wupdt := SvgGraph.TopUpdateStart()
-	defer SvgGraph.TopUpdateEnd(wupdt)
-
-	updt := SvgGraph.UpdateStart()
-	defer SvgGraph.UpdateEnd(updt)
-	SvgGraph.SetNeedsFullRender()
-
-	Gr.Lines.Graph()
-
-	for i, m := range Marbles {
-		var setColor = "none"
-
-		m.Vel.Y -= Gr.Params.Gravity * ((gsz.Y * gsz.X) / 400)
-		updtrate := Gr.Params.UpdtRate
-		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
-		ppos := m.Pos
-
-		for _, ln := range Gr.Lines {
-			if ln.Expr.Val == nil {
-				continue
-			}
-
-			yp := ln.Expr.Eval(m.Pos.X, Gr.Params.Time, ln.TimesHit)
-			yn := ln.Expr.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-
-			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
-			MinX := ln.MinX.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			MaxX := ln.MaxX.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			MinY := ln.MinY.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			MaxY := ln.MaxY.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < MaxX && npos.X > MinX) && (npos.Y < MaxY && npos.Y > MinY) {
-				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
-				ln.TimesHit++
-				setColor = EvalColorIf(ln.ColorSwitch, ln.TimesHit)
-
-				dly := yn - yp // change in the lines y
-				dx := npos.X - m.Pos.X
-
-				var yi, xi float32
-
-				if dx == 0 {
-
-					xi = npos.X
-					yi = yn
-
-				} else {
-
-					ml := dly / dx
-					dmy := npos.Y - m.Pos.Y
-					mm := dmy / dx
-
-					xi = (npos.X*(ml-mm) + npos.Y - yn) / (ml - mm)
-					yi = ln.Expr.Eval(xi, Gr.Params.Time, ln.TimesHit)
-					//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
-				}
-
-				yl := ln.Expr.Eval(xi-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
-				yr := ln.Expr.Eval(xi+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
-
-				//slp := (yr - yl) / .02
-				angLn := math32.Atan2(yr-yl, 0.02)
-				angN := angLn + math.Pi/2 // + 90 deg
-
-				angI := math32.Atan2(m.Vel.Y, m.Vel.X)
-				angII := angI + math.Pi
-
-				angNII := angN - angII
-				angR := math.Pi + 2*angNII
-
-				// fmt.Printf("angLn: %v  angN: %v  angI: %v  angII: %v  angNII: %v  angR: %v\n",
-				// 	RadToDeg(angLn), RadToDeg(angN), RadToDeg(angI), RadToDeg(angII), RadToDeg(angNII), RadToDeg(angR))
-
-				Bounce := ln.Bounce.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-
-				nvx := Bounce * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
-				nvy := Bounce * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
-
-				m.Vel = mat32.Vec2{X: nvx, Y: nvy}
-
-				m.Pos = mat32.Vec2{X: xi, Y: yi}
-
-			}
-		}
-
-		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(Gr.Params.UpdtRate))
-
-		circle := SvgMarbles.Child(i).(*svg.Circle)
-		circle.Pos = m.Pos
-		if setColor != "none" {
-			circle.SetProp("fill", setColor)
-		}
-
-	}
-}
-
-func RunMarbles() {
-	Stop = false
-	startFrames := 0
-	start := time.Now()
-	for i := 0; i < Gr.Params.NSteps; i++ {
-		UpdateMarbles()
-		if time.Since(start).Milliseconds() >= 1000 {
-			fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
-			start = time.Now()
-			startFrames = i
-		}
-
-		Gr.Params.Time += Gr.Params.TimeStep
-		if Stop {
-			break
-		}
-	}
 }

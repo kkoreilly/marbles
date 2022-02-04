@@ -9,13 +9,14 @@ import (
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gimain"
+	"github.com/goki/gi/gist"
 	"github.com/goki/gi/giv"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
 	"github.com/goki/mat32"
 )
 
-const (
+const ( // Width and height of the window, and size of the graph
 	width     = 1920
 	height    = 1080
 	GraphSize = 800
@@ -34,7 +35,10 @@ var fpsText *gi.Label
 var errorText *gi.Label
 var versionText *gi.Label
 var mfr *gi.Frame
+var gstru *giv.StructView
+var lns *giv.TableView
 var problemWithEval = false
+var viewSettingsButton *gi.Button
 
 func main() {
 	gimain.Main(func() {
@@ -43,10 +47,11 @@ func main() {
 }
 
 func mainrun() {
+	TheSettings.Get()
 	Gr.Defaults()
 	InitEquationChangeSlice()
-	rec := ki.Node{}          // receiver for events
-	rec.InitName(&rec, "rec") // this is essential for root objects not owned by other Ki tree nodes
+	rec := ki.Node{} // receiver for events
+	rec.InitName(&rec, "rec")
 
 	gi.SetAppName("marblesApp")
 	gi.SetAppAbout("marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!")
@@ -58,13 +63,13 @@ func mainrun() {
 
 	mfr = win.SetMainFrame()
 	// the StructView will also show the Graph Toolbar which is main actions..
-	gstru := giv.AddNewStructView(mfr, "gstru")
+	gstru = giv.AddNewStructView(mfr, "gstru")
 	gstru.Viewport = Vp // needs vp early for toolbar
 	gstru.SetProp("height", "4.5em")
 	gstru.SetStruct(&Gr)
 	ParamsEdit = gstru
 
-	lns := giv.AddNewTableView(mfr, "lns")
+	lns = giv.AddNewTableView(mfr, "lns")
 	lns.Viewport = Vp
 	lns.SetSlice(&Gr.Lines)
 	EqTable = lns
@@ -97,12 +102,10 @@ func mainrun() {
 	statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
 	statusBar.SetStretchMaxWidth()
 	fpsText = gi.AddNewLabel(statusBar, "fpsText", "FPS: ")
-	fpsText.SetProp("color", "black")
 	fpsText.SetProp("font-weight", "bold")
 	fpsText.SetStretchMaxWidth()
 	fpsText.Redrawable = true
 	errorText = gi.AddNewLabel(statusBar, "errorText", "")
-	errorText.SetProp("color", "black")
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
@@ -110,7 +113,7 @@ func mainrun() {
 	versionText.SetProp("font-weight", "bold")
 	versionText.SetStretchMaxWidth()
 	versionText.SetText("Running version " + GetVersion())
-	viewSettingsButton := gi.AddNewButton(statusBar, "viewSettingsButton")
+	viewSettingsButton = gi.AddNewButton(statusBar, "viewSettingsButton")
 	viewSettingsButton.SetText("Settings")
 	viewSettingsButton.OnClicked(func() {
 		pSettings := TheSettings
@@ -121,19 +124,17 @@ func mainrun() {
 				Gr.Graph()
 				UpdateColors()
 				ResetMarbles()
-				Vp.NeedsFullReRender()
 			} else if sig == int64(gi.DialogCanceled) {
 				TheSettings = pSettings
 			}
 		})
 	})
-	TheSettings.Get()
-	UpdateColors()
-	Gr.Params.Defaults()
+
 	InitCoords()
 	ResetMarbles()
 	Gr.CompileExprs()
 	Gr.Lines.Graph()
+	UpdateColors()
 
 	// Main Menu
 
@@ -159,7 +160,8 @@ func mainrun() {
 	win.StartEventLoop()
 }
 
-func HandleError(err error) bool { // If there is an error, set the error text to the error and return true. Otherwise return false.
+// Handle Error checks if there is an error. If there is, it sets the error text to the error, and returns true. Otherwise returns false.
+func HandleError(err error) bool {
 	if err != nil {
 		errorText.SetText("Error: " + err.Error())
 		return true
@@ -167,6 +169,7 @@ func HandleError(err error) bool { // If there is an error, set the error text t
 	return false
 }
 
+// Get Vesion finds the locally installed version and returns it
 func GetVersion() string {
 	b, err := os.ReadFile("localData/version.txt")
 	if HandleError(err) {
@@ -175,14 +178,39 @@ func GetVersion() string {
 	return string(b)
 }
 
+// Update Colors sets the colors of the app as specified in settings
 func UpdateColors() {
-	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
-	SvgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
+	// Set the background color of the app
 	mfr.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
-	fpsText.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
-	errorText.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
-	versionText.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
-	fpsText.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
-	errorText.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
-	versionText.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
+	lns.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
+	gstru.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
+	// Set the background color of the status bar and graph
+	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
+	clr, err := gist.ColorFromName(TheSettings.ColorSettings.StatusBarColor)
+	HandleError(err)
+	errorText.CurBgColor = clr
+	fpsText.CurBgColor = clr
+	SvgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
+	// Set the text color of the status bar
+	statusBar.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
+	// Set the color of the graph axis
+	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	// Set the text color of the graph and line controls
+	lns.SetProp("color", TheSettings.ColorSettings.LineTextColor)
+	gstru.SetProp("color", TheSettings.ColorSettings.GraphTextColor)
+	//Set the color of the settings button
+	viewSettingsButton.SetProp("background-color", TheSettings.ColorSettings.ButtonColor)
+	// Set the background color and button color for the toolbar
+	tb := gstru.ToolBar()
+	tb.SetProp("background-color", TheSettings.ColorSettings.ToolBarColor)
+	children := tb.Children()
+	for i := 0; true; i++ {
+		d, err := children.ElemTry(i)
+		if err != nil {
+			break
+		} else {
+			d.SetProp("background-color", TheSettings.ColorSettings.ToolBarButtonColor)
+		}
+	}
 }
