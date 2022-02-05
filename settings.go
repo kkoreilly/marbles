@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/goki/gi/gist"
+	"github.com/goki/ki/ki"
+	"github.com/goki/ki/kit"
 )
 
 type Settings struct {
@@ -14,17 +16,18 @@ type Settings struct {
 	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
 }
 type ColorSettings struct {
-	BackgroundColor    gist.Color `label:"Background Color"`
-	GraphColor         gist.Color `label:"Graph Background Color"`
-	AxisColor          gist.Color `label:"Graph Axis Color"`
-	StatusBarColor     gist.Color `label:"Status Bar Background Color"`
-	ButtonColor        gist.Color `label:"Button Color"`
-	StatusTextColor    gist.Color `label:"Status Bar Text Color"`
-	GraphTextColor     gist.Color `label:"Graph Controls Text Color"`
-	LineTextColor      gist.Color `label:"Line Text Color"`
-	ToolBarColor       gist.Color `label:"Toolbar Background Color"`
-	ToolBarButtonColor gist.Color `label:"Toolbar Button Color"`
-	GraphParamsColor   gist.Color `label:"Graph Parameters Background Color"`
+	BackgroundColor      gist.Color `label:"Background Color"`
+	GraphColor           gist.Color `label:"Graph Background Color"`
+	AxisColor            gist.Color `label:"Graph Axis Color"`
+	StatusBarColor       gist.Color `label:"Status Bar Background Color"`
+	ButtonColor          gist.Color `label:"Button Color"`
+	StatusTextColor      gist.Color `label:"Status Bar Text Color"`
+	GraphTextColor       gist.Color `label:"Graph Controls Text Color"`
+	LineTextColor        gist.Color `label:"Line Text Color"`
+	ToolBarColor         gist.Color `label:"Toolbar Background Color"`
+	ToolBarButtonColor   gist.Color `label:"Toolbar Button Color"`
+	GraphParamsColor     gist.Color `label:"Graph Parameters Background Color"`
+	LinesBackgroundColor gist.Color `label:"Lines Background Color"`
 }
 type MarbleSettings struct {
 	MarbleColor string
@@ -41,6 +44,21 @@ type LineDefaults struct {
 }
 
 var TheSettings Settings
+
+var SettingProps = ki.Props{
+	"ToolBar": ki.PropSlice{
+		{Name: "Reset", Value: ki.Props{
+			"label": "Reset Settings",
+		},
+		},
+	}}
+
+var KiT_TheSettings = kit.Types.AddType(&TheSettings, SettingProps)
+
+func (se *Settings) Reset() {
+	se.Defaults()
+	se.Save()
+}
 
 func (se *Settings) Get() {
 	b, err := os.ReadFile("localData/settings.json")
@@ -122,4 +140,5 @@ func (cs *ColorSettings) Defaults() {
 	cs.ToolBarColor = white
 	cs.ToolBarButtonColor = white
 	cs.GraphParamsColor = white
+	cs.LinesBackgroundColor = white
 }

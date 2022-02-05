@@ -209,4 +209,10 @@ func UpdateColors() {
 	}
 	// Set the background color for the graph parameters
 	gstru.StructGrid().SetProp("background-color", TheSettings.ColorSettings.GraphParamsColor)
+	// Set the background color for the lines
+	lFrame := lns.ChildByName("frame", -1)
+	lFrame.SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)
+	lFrame.ChildByName("header", -1).SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)
+	lFrame.ChildByName("grid-lay", -1).ChildByName("grid", -1).SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)
+
 }
