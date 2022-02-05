@@ -127,6 +127,9 @@ func mainrun() {
 			}
 		})
 	})
+	// treeview := giv.AddNewTreeView(statusBar, "treeview")
+	// treeview.SetRootNode(lns)
+	lns.ChildByName("toolbar", -1).Delete(true)
 
 	InitCoords()
 	ResetMarbles()

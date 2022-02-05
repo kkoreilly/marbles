@@ -6,12 +6,11 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"strings"
 
 	"math/rand"
 
 	"github.com/Knetic/govaluate"
+	"github.com/goki/gi/gist"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
 	"github.com/goki/ki/kit"
@@ -26,15 +25,14 @@ type Graph struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	Expr        Expr   `width:"60" label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
-	MinX        Expr   `width:"30" step:"1" desc:"Minimum x value for this line."`
-	MaxX        Expr   `step:"1" desc:"Maximum x value for this line."`
-	MinY        Expr   `step:"1" desc:"Minimum y value for this line."`
-	MaxY        Expr   `step:"1" desc:"Maximum y value for this line."`
-	Bounce      Expr   `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
-	Color       string `desc:"color to draw the line in"`
-	ColorSwitch string `desc:"Switch the color of the marble that hits this line"`
-	TimesHit    int    `view:"-" json:"-"`
+	Expr       Expr       `width:"60" label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
+	MinX       Expr       `width:"30" step:"1" desc:"Minimum x value for this line."`
+	MaxX       Expr       `step:"1" desc:"Maximum x value for this line."`
+	MinY       Expr       `step:"1" desc:"Minimum y value for this line."`
+	MaxY       Expr       `step:"1" desc:"Maximum y value for this line."`
+	Bounce     Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
+	LineColors LineColors `desc:"Line color and colorswitch" view:"no-inline"`
+	TimesHit   int        `view:"-" json:"-"`
 }
 
 // Params is the parameters of the graph
@@ -50,15 +48,16 @@ type Params struct {
 	MinSize    mat32.Vec2
 	MaxSize    mat32.Vec2
 }
+type LineColors struct {
+	Color       gist.Color `desc:"color to draw the line in" view:"no-inline"`
+	ColorSwitch gist.Color `desc:"Switch the color of the marble that hits this line" view:"no-inline"`
+}
 
 // Lines is a collection of lines
 type Lines []*Line
 
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
-
-// evalColorIfColors are colors that can be used in an if statement in the color field
-var evalColorIfColors = []string{"black", "red", "blue", "green", "purple", "brown", "orange", "yellow", "white", "grey"}
 
 // Last Saved file is the last saved or opened file, used for the save button
 var LastSavedFile string
@@ -130,6 +129,12 @@ var GraphProps = ki.Props{
 			"icon":            "step-fwd",
 			"no-update-after": true,
 		}},
+		{Name: "sep-ctrl", Value: ki.BlankProp{}},
+		{Name: "AddLine", Value: ki.Props{
+			"label": "Add New Line",
+			"desc":  "Adds a new line",
+			"icon":  "plus",
+		}},
 	},
 }
 
@@ -165,17 +170,25 @@ func (gr *Graph) Step() {
 	UpdateMarbles()
 }
 
+func (gr *Graph) AddLine() {
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0}
+	newLine.Defaults(rand.Intn(10))
+	Gr.Lines = append(Gr.Lines, newLine)
+}
+
 // Gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
 	for _, ln := range gr.Lines {
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
-		if ln.Color == "" {
-			if TheSettings.LineDefaults.Color == "default" {
-				ln.Color = "black"
+		if ln.LineColors.Color == gist.NilColor {
+			white, _ := gist.ColorFromName("white")
+			if TheSettings.LineDefaults.LineColors.Color == white {
+				black, _ := gist.ColorFromName("black")
+				ln.LineColors.Color = black
 			} else {
-				ln.Color = TheSettings.LineDefaults.Color
+				ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
 			}
 		}
 		if ln.Bounce.Expr == "" {
@@ -212,17 +225,19 @@ func (ln *Line) Compile() {
 // Sets the line to the defaults specified in settings
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
-	if TheSettings.LineDefaults.Color == "default" {
-		ln.Color = colors[lidx%len(colors)]
+	white, _ := gist.ColorFromName("white")
+	if TheSettings.LineDefaults.LineColors.Color == white {
+		color, _ := gist.ColorFromName(colors[lidx%len(colors)])
+		ln.LineColors.Color = color
 	} else {
-		ln.Color = TheSettings.LineDefaults.Color
+		ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
 	}
 	ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 	ln.MinX.Expr = TheSettings.LineDefaults.MinX
 	ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
 	ln.MinY.Expr = TheSettings.LineDefaults.MinY
 	ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
-	ln.ColorSwitch = TheSettings.LineDefaults.ColorSwitch
+	ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 }
 
 // Makes the lines and then defaults them
@@ -257,15 +272,17 @@ func (ln *Line) Graph(lidx int) {
 	if ln.Expr.Expr == "" {
 		ln.Defaults(lidx)
 	}
-	if ln.Color == "" || ln.Color == "black" {
-		if TheSettings.LineDefaults.Color == "default" {
-			ln.Color = colors[lidx%len(colors)]
+	if ln.LineColors.Color == gist.NilColor {
+		white, _ := gist.ColorFromName("white")
+		if TheSettings.LineDefaults.LineColors.Color == white {
+			color, _ := gist.ColorFromName(colors[lidx%len(colors)])
+			ln.LineColors.Color = color
 		} else {
-			ln.Color = TheSettings.LineDefaults.Color
+			ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
 		}
 	}
-	if ln.ColorSwitch == "" {
-		ln.ColorSwitch = TheSettings.LineDefaults.ColorSwitch
+	if ln.LineColors.ColorSwitch == gist.NilColor {
+		ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 	}
 	if ln.Bounce.Expr == "" {
 		ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
@@ -284,8 +301,8 @@ func (ln *Line) Graph(lidx int) {
 	}
 	path := SvgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
-	clr := ln.Color
-	clr = EvalColorIf(clr, ln.TimesHit)
+	clr := ln.LineColors.Color
+	// clr = EvalColorIf(clr, ln.TimesHit)
 	path.SetProp("stroke", clr)
 	var err error
 	ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
@@ -316,33 +333,6 @@ func (ln *Line) Graph(lidx int) {
 		}
 	}
 	path.SetData(ps)
-}
-
-// Evaluates an if statement in the color or colorswitch field
-func EvalColorIf(clr string, h int) string {
-	if strings.Contains(clr, "if") {
-		var err error
-
-		expr := Expr{clr, nil, nil}
-		expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr.Expr, functions)
-		HandleError(err)
-		expr.Params = make(map[string]interface{}, 2)
-		expr.Params["h"] = float64(h)
-		expr.Params["t"] = float64(Gr.Params.Time)
-		expr.Params["a"] = float64(10 * math.Sin(float64(Gr.Params.Time)))
-		for k, d := range evalColorIfColors {
-			expr.Params[d] = float64(k)
-		}
-		yi, err := expr.Val.Evaluate(expr.Params)
-		HandleError(err)
-		yf := yi.(float64)
-		for k, d := range evalColorIfColors {
-			if yf == float64(k) {
-				return d
-			}
-		}
-	}
-	return clr
 }
 
 // Makes the x and y axis

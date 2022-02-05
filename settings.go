@@ -31,14 +31,13 @@ type MarbleSettings struct {
 	MarbleSize  float64
 }
 type LineDefaults struct {
-	Expr        string
-	MinX        string
-	MaxX        string
-	MinY        string
-	MaxY        string
-	Bounce      string
-	Color       string
-	ColorSwitch string
+	Expr       string
+	MinX       string
+	MaxX       string
+	MinY       string
+	MaxY       string
+	Bounce     string
+	LineColors LineColors
 }
 
 var TheSettings Settings
@@ -92,13 +91,14 @@ func (se *Settings) Defaults() {
 
 func (ln *LineDefaults) BasicDefaults() {
 	ln.Expr = "x"
-	ln.Color = "default"
+	white, _ := gist.ColorFromName("white")
+	ln.LineColors.Color = white
 	ln.Bounce = "0.95"
 	ln.MinX = "-10"
 	ln.MaxX = "10"
 	ln.MinY = "-10"
 	ln.MaxY = "10"
-	ln.ColorSwitch = "none"
+	ln.LineColors.ColorSwitch = white
 }
 
 func (ms *MarbleSettings) Defaults() {

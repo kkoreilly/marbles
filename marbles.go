@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/chewxy/math32"
+	"github.com/goki/gi/gist"
 	"github.com/goki/gi/svg"
 	"github.com/goki/mat32"
 )
@@ -66,9 +67,10 @@ func UpdateMarbles() {
 	SvgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph()
+	white, _ := gist.ColorFromName("white")
 
 	for i, m := range Marbles {
-		var setColor = "none"
+		var setColor = white
 
 		m.Vel.Y -= Gr.Params.Gravity * ((gsz.Y * gsz.X) / 400)
 		updtrate := Gr.Params.UpdtRate
@@ -91,7 +93,8 @@ func UpdateMarbles() {
 			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < MaxX && npos.X > MinX) && (npos.Y < MaxY && npos.Y > MinY) {
 				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
 				ln.TimesHit++
-				setColor = EvalColorIf(ln.ColorSwitch, ln.TimesHit)
+				// setColor = EvalColorIf(ln.ColorSwitch, ln.TimesHit)
+				setColor = ln.LineColors.ColorSwitch
 
 				dly := yn - yp // change in the lines y
 				dx := npos.X - m.Pos.X
@@ -147,7 +150,8 @@ func UpdateMarbles() {
 
 		circle := SvgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
-		if setColor != "none" {
+
+		if setColor != white {
 			circle.SetProp("fill", setColor)
 		}
 

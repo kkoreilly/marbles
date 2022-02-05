@@ -7,8 +7,8 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
 * For lines
   * You can set the domain/range of lines you graph (Min/MaxX, Min/MaxY)
   * You can set bounciness for a line. If it is 1, the marble will not gain or lose speed after hitting the line. If bounciness is less than 1, marbles will lose speed when they hit the line. If it is greater than one, marbles will gain speed.
-  * You can set the color marbles that hit the line will change to (ColorSwitch) - none means the marbles stay the same color.
-  * You can also set the color for lines.
+  * You can set the color marbles that hit the line will change to (LineColors.ColorSwitch) - none means the marbles stay the same color.
+  * You can also set the color for lines (LineColors.Color).
 * For the whole graph
   * You can set the amount of marbles that spawn (NMarbles)
   * You can set the amount of steps the graph runs for (NSteps)
@@ -26,6 +26,12 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * Run runs the marbles for NSteps
   * Stop stops the marbles
   * Step runs the marbles for one step
+* Settings
+  * You can customize the default line that will be added if a line is empty
+  * You can customize the default graph parameters
+  * You can change the size and color of marbles, default means the marbles will spawn in different random colors. Note that collision is not affected by changing the size of the marbles, so it is not recommended to change the size too much or things will look weird.
+  * You can change the color of most things in the app
+* Important note for color and color switch: If you set color switch to white (RGBA(255, 255, 255, 255)), then the marbles will not change color upon hitting that line. It is strongly recommended that you have white as your default line color switch value in settings. Also, if you would like lines to automatically be in random different colors, keep the default color value for lines in settings at white. If you set it to something other than white, all new lines you make will be just that color by default.
 
 ## How to write equations
 
