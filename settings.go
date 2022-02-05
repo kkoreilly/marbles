@@ -24,6 +24,7 @@ type ColorSettings struct {
 	LineTextColor      gist.Color `label:"Line Text Color"`
 	ToolBarColor       gist.Color `label:"Toolbar Background Color"`
 	ToolBarButtonColor gist.Color `label:"Toolbar Button Color"`
+	GraphParamsColor   gist.Color `label:"Graph Parameters Background Color"`
 }
 type MarbleSettings struct {
 	MarbleColor string
@@ -120,4 +121,5 @@ func (cs *ColorSettings) Defaults() {
 	cs.LineTextColor = black
 	cs.ToolBarColor = white
 	cs.ToolBarButtonColor = white
+	cs.GraphParamsColor = white
 }

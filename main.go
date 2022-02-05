@@ -67,7 +67,6 @@ func mainrun() {
 	gstru.SetProp("height", "4.5em")
 	gstru.SetStruct(&Gr)
 	ParamsEdit = gstru
-
 	lns = giv.AddNewTableView(mfr, "lns")
 	lns.Viewport = Vp
 	lns.SetSlice(&Gr.Lines)
@@ -205,4 +204,6 @@ func UpdateColors() {
 	for _, d := range []ki.Ki(*children) {
 		d.SetProp("background-color", TheSettings.ColorSettings.ToolBarButtonColor)
 	}
+	// Set the background color for the graph parameters
+	gstru.StructGrid().SetProp("background-color", TheSettings.ColorSettings.GraphParamsColor)
 }
