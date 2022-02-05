@@ -9,7 +9,6 @@ import (
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gimain"
-	"github.com/goki/gi/gist"
 	"github.com/goki/gi/giv"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
@@ -186,10 +185,8 @@ func UpdateColors() {
 	gstru.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
 	// Set the background color of the status bar and graph
 	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
-	clr, err := gist.ColorFromName(TheSettings.ColorSettings.StatusBarColor)
-	HandleError(err)
-	errorText.CurBgColor = clr
-	fpsText.CurBgColor = clr
+	errorText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
+	fpsText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
 	SvgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
 	// Set the text color of the status bar
 	statusBar.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
@@ -205,12 +202,7 @@ func UpdateColors() {
 	tb := gstru.ToolBar()
 	tb.SetProp("background-color", TheSettings.ColorSettings.ToolBarColor)
 	children := tb.Children()
-	for i := 0; true; i++ {
-		d, err := children.ElemTry(i)
-		if err != nil {
-			break
-		} else {
-			d.SetProp("background-color", TheSettings.ColorSettings.ToolBarButtonColor)
-		}
+	for _, d := range []ki.Ki(*children) {
+		d.SetProp("background-color", TheSettings.ColorSettings.ToolBarButtonColor)
 	}
 }

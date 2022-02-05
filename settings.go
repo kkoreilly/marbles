@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"os"
+
+	"github.com/goki/gi/gist"
 )
 
 type Settings struct {
@@ -12,16 +14,16 @@ type Settings struct {
 	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
 }
 type ColorSettings struct {
-	BackgroundColor    string
-	GraphColor         string
-	AxisColor          string
-	StatusBarColor     string
-	ButtonColor        string
-	StatusTextColor    string
-	GraphTextColor     string
-	LineTextColor      string
-	ToolBarColor       string
-	ToolBarButtonColor string
+	BackgroundColor    gist.Color `label:"Background Color"`
+	GraphColor         gist.Color `label:"Graph Background Color"`
+	AxisColor          gist.Color `label:"Graph Axis Color"`
+	StatusBarColor     gist.Color `label:"Status Bar Background Color"`
+	ButtonColor        gist.Color `label:"Button Color"`
+	StatusTextColor    gist.Color `label:"Status Bar Text Color"`
+	GraphTextColor     gist.Color `label:"Graph Controls Text Color"`
+	LineTextColor      gist.Color `label:"Line Text Color"`
+	ToolBarColor       gist.Color `label:"Toolbar Background Color"`
+	ToolBarButtonColor gist.Color `label:"Toolbar Button Color"`
 }
 type MarbleSettings struct {
 	MarbleColor string
@@ -65,7 +67,7 @@ func (se *Settings) Get() {
 		se.MarbleSettings.Defaults()
 		se.Save()
 	}
-	if se.ColorSettings.BackgroundColor == "" {
+	if se.ColorSettings.BackgroundColor == gist.NilColor {
 		se.ColorSettings.Defaults()
 		se.Save()
 	}
@@ -104,14 +106,18 @@ func (ms *MarbleSettings) Defaults() {
 }
 
 func (cs *ColorSettings) Defaults() {
-	cs.BackgroundColor = "white"
-	cs.GraphColor = "white"
-	cs.AxisColor = "#888"
-	cs.StatusBarColor = "lightblue"
-	cs.ButtonColor = "white"
-	cs.StatusTextColor = "black"
-	cs.GraphTextColor = "black"
-	cs.LineTextColor = "black"
-	cs.ToolBarColor = "white"
-	cs.ToolBarButtonColor = "white"
+	white, _ := gist.ColorFromName("white")
+	grey, _ := gist.ColorFromName("grey")
+	black, _ := gist.ColorFromName("black")
+	lightblue, _ := gist.ColorFromName("lightblue")
+	cs.BackgroundColor = white
+	cs.GraphColor = white
+	cs.AxisColor = grey
+	cs.StatusBarColor = lightblue
+	cs.ButtonColor = white
+	cs.StatusTextColor = black
+	cs.GraphTextColor = black
+	cs.LineTextColor = black
+	cs.ToolBarColor = white
+	cs.ToolBarButtonColor = white
 }
