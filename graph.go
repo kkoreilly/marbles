@@ -130,6 +130,20 @@ var GraphProps = ki.Props{
 			"no-update-after": true,
 		}},
 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
+		{Name: "Upload", Value: ki.Props{
+			"label": "Upload Graph",
+			"desc":  "Allows other people to download your graph. Enter a name for your graph",
+			"icon":  "file-upload",
+			"Args": ki.PropSlice{
+				{Name: "Name", Value: ki.Props{}},
+			},
+		}},
+		{Name: "Download", Value: ki.Props{
+			"label": "Download Graph",
+			"desc":  "Download a graph from the global database",
+			"icon":  "file-download",
+		}},
+		{Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "AddLine", Value: ki.Props{
 			"label": "Add New Line",
 			"desc":  "Adds a new line",

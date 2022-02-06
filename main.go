@@ -137,6 +137,8 @@ func mainrun() {
 	Gr.Lines.Graph()
 	UpdateColors()
 
+	InitDB()
+
 	// Main Menu
 
 	appnm := gi.AppName()

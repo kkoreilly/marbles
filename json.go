@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/goki/gi/gi"
@@ -66,4 +67,49 @@ func (gr *Graph) AutoSave() error {
 	err = os.WriteFile("localData/autosave.json", b, 0644)
 	HandleError(err)
 	return err
+}
+
+// Uploads the graph to the global database
+func (gr *Graph) Upload(name string) {
+	b, err := json.Marshal(gr)
+	if HandleError(err) {
+		return
+	}
+	UploadGraph(name, string(b))
+}
+
+func (gr *Graph) Download() {
+	cgwin := gi.NewMainWindow("cgwin", "Choose a graph", width, height)
+	cgvp := cgwin.WinViewport2D()
+	updt := cgvp.UpdateStart()
+	cgmfr := cgwin.SetMainFrame()
+	titleText := gi.AddNewLabel(cgmfr, "titleText", "Pick a graph to download")
+	titleText.SetProp("font-size", "x-large")
+	gi.AddNewSeparator(cgmfr, "TitleSeparator", true)
+	graphs := GetGraphs()
+	for k, d := range graphs {
+		year, month, day := d.Date.Date()
+		nameText := gi.AddNewLabel(cgmfr, fmt.Sprintf("Graph%vNameText", k), "<b>Graph Name:</b> "+d.Name)
+		nameText.SetProp("font-size", "large")
+		dateText := gi.AddNewLabel(cgmfr, fmt.Sprintf("Graph%vDateText", k), fmt.Sprintf("Published On %v %v, %v", month.String(), day, year))
+		dateText.SetProp("font-size", "large")
+		chooseButton := gi.AddNewButton(cgmfr, fmt.Sprintf("Graph%vButton", k))
+		chooseButton.SetText("Open this graph")
+		graphData := d.Graph
+		chooseButton.OnClicked(func() {
+			cgwin.Close()
+			gr.OpenGraphFromString(graphData)
+		})
+		gi.AddNewSeparator(cgmfr, fmt.Sprintf("Graph%vSeparator", k), true)
+	}
+	cgvp.UpdateEndNoSig(updt)
+	cgwin.GoStartEventLoop()
+}
+
+func (gr *Graph) OpenGraphFromString(data string) {
+	err := json.Unmarshal([]byte(data), gr)
+	if HandleError(err) {
+		return
+	}
+	gr.Graph()
 }
