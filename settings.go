@@ -109,14 +109,13 @@ func (se *Settings) Defaults() {
 
 func (ln *LineDefaults) BasicDefaults() {
 	ln.Expr = "x"
-	white, _ := gist.ColorFromName("white")
-	ln.LineColors.Color = white
+	ln.LineColors.Color = gist.White
 	ln.Bounce = "0.95"
 	ln.MinX = "-10"
 	ln.MaxX = "10"
 	ln.MinY = "-10"
 	ln.MaxY = "10"
-	ln.LineColors.ColorSwitch = white
+	ln.LineColors.ColorSwitch = gist.White
 }
 
 func (ms *MarbleSettings) Defaults() {
@@ -125,20 +124,18 @@ func (ms *MarbleSettings) Defaults() {
 }
 
 func (cs *ColorSettings) Defaults() {
-	white, _ := gist.ColorFromName("white")
 	grey, _ := gist.ColorFromName("grey")
-	black, _ := gist.ColorFromName("black")
 	lightblue, _ := gist.ColorFromName("lightblue")
-	cs.BackgroundColor = white
-	cs.GraphColor = white
+	cs.BackgroundColor = gist.White
+	cs.GraphColor = gist.White
 	cs.AxisColor = grey
 	cs.StatusBarColor = lightblue
-	cs.ButtonColor = white
-	cs.StatusTextColor = black
-	cs.GraphTextColor = black
-	cs.LineTextColor = black
-	cs.ToolBarColor = white
-	cs.ToolBarButtonColor = white
-	cs.GraphParamsColor = white
-	cs.LinesBackgroundColor = white
+	cs.ButtonColor = gist.White
+	cs.StatusTextColor = gist.Black
+	cs.GraphTextColor = gist.Black
+	cs.LineTextColor = gist.Black
+	cs.ToolBarColor = gist.White
+	cs.ToolBarButtonColor = gist.White
+	cs.GraphParamsColor = gist.White
+	cs.LinesBackgroundColor = gist.White
 }

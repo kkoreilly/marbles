@@ -196,7 +196,7 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 	return true, nil
 }
 
-// Get an expressin ready for evaluation.
+// Get an expression ready for evaluation.
 func (ex *Expr) Compile() error {
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)

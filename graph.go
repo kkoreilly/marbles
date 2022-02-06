@@ -257,8 +257,7 @@ func (ln *Line) Compile() {
 // Sets the line to the defaults specified in settings
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
-	white, _ := gist.ColorFromName("white")
-	if TheSettings.LineDefaults.LineColors.Color == white {
+	if TheSettings.LineDefaults.LineColors.Color == gist.White {
 		color, _ := gist.ColorFromName(colors[lidx%len(colors)])
 		ln.LineColors.Color = color
 	} else {
@@ -308,8 +307,7 @@ func (ln *Line) Graph(lidx int) {
 		ln.Defaults(lidx)
 	}
 	if ln.LineColors.Color == gist.NilColor {
-		white, _ := gist.ColorFromName("white")
-		if TheSettings.LineDefaults.LineColors.Color == white {
+		if TheSettings.LineDefaults.LineColors.Color == gist.White {
 			color, _ := gist.ColorFromName(colors[lidx%len(colors)])
 			ln.LineColors.Color = color
 		} else {

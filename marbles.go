@@ -67,10 +67,9 @@ func UpdateMarbles() {
 	SvgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph(true)
-	white, _ := gist.ColorFromName("white")
 
 	for i, m := range Marbles {
-		var setColor = white
+		var setColor = gist.White
 
 		m.Vel.Y -= Gr.Params.Gravity * ((gsz.Y * gsz.X) / 400)
 		updtrate := Gr.Params.UpdtRate
@@ -151,7 +150,7 @@ func UpdateMarbles() {
 		circle := SvgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
 
-		if setColor != white {
+		if setColor != gist.White {
 			circle.SetProp("fill", setColor)
 		}
 
