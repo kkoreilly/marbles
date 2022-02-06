@@ -36,8 +36,20 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "Color": "black",
-      "ColorSwitch": "none"
+      "LineColors": {
+        "Color": {
+          "R": 0,
+          "G": 128,
+          "B": 0,
+          "A": 255
+        },
+        "ColorSwitch": {
+          "R": 255,
+          "G": 255,
+          "B": 255,
+          "A": 255
+        }
+      }
     },
     {
       "Expr": {
@@ -50,7 +62,7 @@
         "Expr": "10"
       },
       "MinY": {
-        "Expr": "-1"
+        "Expr": "-10"
       },
       "MaxY": {
         "Expr": "10"
@@ -58,8 +70,20 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "Color": "red",
-      "ColorSwitch": "none"
+      "LineColors": {
+        "Color": {
+          "R": 0,
+          "G": 255,
+          "B": 255,
+          "A": 255
+        },
+        "ColorSwitch": {
+          "R": 255,
+          "G": 255,
+          "B": 255,
+          "A": 255
+        }
+      }
     },
     {
       "Expr": {
@@ -72,7 +96,7 @@
         "Expr": "10"
       },
       "MinY": {
-        "Expr": "-1"
+        "Expr": "-10"
       },
       "MaxY": {
         "Expr": "10"
@@ -80,8 +104,20 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "Color": "blue",
-      "ColorSwitch": "none"
+      "LineColors": {
+        "Color": {
+          "R": 0,
+          "G": 0,
+          "B": 255,
+          "A": 255
+        },
+        "ColorSwitch": {
+          "R": 255,
+          "G": 255,
+          "B": 255,
+          "A": 255
+        }
+      }
     }
   ]
 }

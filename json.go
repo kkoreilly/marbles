@@ -103,7 +103,7 @@ func (gr *Graph) Download() {
 		gi.AddNewSeparator(cgmfr, fmt.Sprintf("Graph%vSeparator", k), true)
 	}
 	cgvp.UpdateEndNoSig(updt)
-	cgwin.GoStartEventLoop()
+	cgwin.StartEventLoop()
 }
 
 func (gr *Graph) OpenGraphFromString(data string) {
