@@ -186,7 +186,7 @@ func (gr *Graph) Step() {
 
 func (gr *Graph) AddLine() {
 	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0}
-	newLine.Defaults(rand.Intn(10))
+	// newLine.Defaults(rand.Intn(10))
 	Gr.Lines = append(Gr.Lines, newLine)
 }
 
@@ -196,15 +196,15 @@ func (gr *Graph) CompileExprs() {
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
-		if ln.LineColors.Color == gist.NilColor {
-			white, _ := gist.ColorFromName("white")
-			if TheSettings.LineDefaults.LineColors.Color == white {
-				black, _ := gist.ColorFromName("black")
-				ln.LineColors.Color = black
-			} else {
-				ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
-			}
-		}
+		// if ln.LineColors.Color == gist.NilColor {
+		// 	white, _ := gist.ColorFromName("white")
+		// 	if TheSettings.LineDefaults.LineColors.Color == white {
+		// 		black, _ := gist.ColorFromName("black")
+		// 		ln.LineColors.Color = black
+		// 	} else {
+		// 		ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
+		// 	}
+		// }
 		if ln.Bounce.Expr == "" {
 			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 		}
