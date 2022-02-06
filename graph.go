@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"math/rand"
 
@@ -33,6 +34,7 @@ type Line struct {
 	Bounce     Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
 	LineColors LineColors `desc:"Line color and colorswitch" view:"no-inline"`
 	TimesHit   int        `view:"-" json:"-"`
+	Changes    bool       `view:"-" json:"-"`
 }
 
 // Params is the parameters of the graph
@@ -58,6 +60,8 @@ type Lines []*Line
 
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
+
+var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot"}
 
 // Last Saved file is the last saved or opened file, used for the save button
 var LastSavedFile string
@@ -165,7 +169,7 @@ func (gr *Graph) Graph() {
 	gr.Params.Time = 0
 	problemWithEval = false
 	errorText.SetText("")
-	gr.Lines.Graph()
+	gr.Lines.Graph(false)
 	gr.AutoSave()
 }
 
@@ -185,7 +189,7 @@ func (gr *Graph) Step() {
 }
 
 func (gr *Graph) AddLine() {
-	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0}
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
 	// newLine.Defaults(rand.Intn(10))
 	Gr.Lines = append(Gr.Lines, newLine)
 }
@@ -193,6 +197,7 @@ func (gr *Graph) AddLine() {
 // Gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
 	for _, ln := range gr.Lines {
+		ln.Changes = false
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
@@ -220,10 +225,23 @@ func (gr *Graph) CompileExprs() {
 		if ln.MaxY.Expr == "" {
 			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
 		}
+		if CheckIfChanges(ln.Expr.Expr) || CheckIfChanges(ln.MinX.Expr) || CheckIfChanges(ln.MaxX.Expr) || CheckIfChanges(ln.MinY.Expr) || CheckIfChanges(ln.MaxY.Expr) || CheckIfChanges(ln.Bounce.Expr) {
+			ln.Changes = true
+		}
 		ln.TimesHit = 0
 		ln.LoopEquationChangeSlice()
 		ln.Compile()
 	}
+}
+
+func CheckIfChanges(expr string) bool {
+	for _, d := range functionsThatHaveHat {
+		expr = strings.ReplaceAll(expr, d, "")
+	}
+	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
+		return true
+	}
+	return false
 }
 
 // Compiles all of the expressions in a line
@@ -264,7 +282,7 @@ func (ls *Lines) Defaults() {
 }
 
 // Graphs the lines
-func (ls *Lines) Graph() {
+func (ls *Lines) Graph(fromMarbles bool) {
 	updt := SvgGraph.UpdateStart()
 	SvgGraph.ViewBox.Min = Gr.Params.MinSize
 	SvgGraph.ViewBox.Size = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
@@ -276,6 +294,9 @@ func (ls *Lines) Graph() {
 		SvgLines.SetNChildren(nln, svg.KiT_Path, "line")
 	}
 	for i, ln := range *ls {
+		if !ln.Changes && fromMarbles {
+			continue
+		}
 		ln.Graph(i)
 	}
 	SvgGraph.UpdateEnd(updt)

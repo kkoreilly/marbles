@@ -134,7 +134,7 @@ func mainrun() {
 	InitCoords()
 	ResetMarbles()
 	Gr.CompileExprs()
-	Gr.Lines.Graph()
+	Gr.Lines.Graph(false)
 	UpdateColors()
 
 	InitDB()

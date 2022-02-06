@@ -66,7 +66,7 @@ func UpdateMarbles() {
 	defer SvgGraph.UpdateEnd(updt)
 	SvgGraph.SetNeedsFullRender()
 
-	Gr.Lines.Graph()
+	Gr.Lines.Graph(true)
 	white, _ := gist.ColorFromName("white")
 
 	for i, m := range Marbles {
