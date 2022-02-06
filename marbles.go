@@ -21,6 +21,9 @@ type Marble struct {
 // Marbles contains all of the marbles
 var Marbles []*Marble
 
+// Whether marbles are currently being ran, used to prevent crashing with double click run marbles
+var runningMarbles bool
+
 // GraphMarblesInit initializes the graph drawing of the marbles
 func GraphMarblesInit() {
 	updt := SvgGraph.UpdateStart()
@@ -64,6 +67,10 @@ func UpdateMarbles() {
 
 	updt := SvgGraph.UpdateStart()
 	defer SvgGraph.UpdateEnd(updt)
+
+	// this line of code is causing the error "panic: AddTo bad path"
+	// not very helpful given that its just rendering everything so probably something else is causing the problem.
+	// Currently the main crashing error, easily replicable by just running marbles a bunch of times - will end up crashing
 	SvgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph(true)
@@ -149,7 +156,6 @@ func UpdateMarbles() {
 
 		circle := SvgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
-
 		if setColor != gist.White {
 			circle.SetProp("fill", setColor)
 		}
@@ -159,6 +165,10 @@ func UpdateMarbles() {
 
 // Run the marbles for NSteps
 func RunMarbles() {
+	if runningMarbles {
+		return
+	}
+	runningMarbles = true
 	Stop = false
 	startFrames := 0
 	start := time.Now()

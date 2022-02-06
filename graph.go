@@ -181,6 +181,7 @@ func (gr *Graph) Run() {
 // Stop stops the marbles
 func (gr *Graph) Stop() {
 	Stop = true
+	runningMarbles = false
 }
 
 // Step does one step update of marbles
