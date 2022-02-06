@@ -21,23 +21,18 @@ const ( // Width and height of the window, and size of the graph
 	GraphSize = 800
 )
 
-var Vp *gi.Viewport2D
-var EqTable *giv.TableView
-var ParamsEdit *giv.StructView
-var SvgGraph *svg.SVG
-var SvgLines *svg.Group
-var SvgMarbles *svg.Group
-var SvgCoords *svg.Group
-var gmin, gmax, gsz, ginc mat32.Vec2
-var statusBar *gi.Frame
-var fpsText *gi.Label
-var errorText *gi.Label
-var versionText *gi.Label
-var mfr *gi.Frame
-var gstru *giv.StructView
-var lns *giv.TableView
-var problemWithEval = false
-var viewSettingsButton *gi.Button
+var (
+	Vp                              *gi.Viewport2D
+	EqTable, lns                    *giv.TableView
+	ParamsEdit, gstru               *giv.StructView
+	SvgGraph                        *svg.SVG
+	SvgLines, SvgMarbles, SvgCoords *svg.Group
+	gmin, gmax, gsz, ginc           mat32.Vec2
+	mfr, statusBar                  *gi.Frame
+	fpsText, errorText, versionText *gi.Label
+	viewSettingsButton              *gi.Button
+	problemWithEval                 bool
+)
 
 func main() {
 	gimain.Main(func() {
@@ -152,10 +147,19 @@ func mainrun() {
 	emen := win.MainMenu.ChildByName("Edit", 1).(*gi.Action)
 	emen.Menu = make(gi.Menu, 0, 10)
 	emen.Menu.AddCopyCutPaste(win)
-
-	gi.SetQuitCleanFunc(func() {
+	inClosePrompt := false
+	win.SetCloseReqFunc(func(w *gi.Window) {
+		if inClosePrompt {
+			return
+		}
 		Gr.Stop()
-		gi.Quit()
+		gi.PromptDialog(Vp, gi.DlgOpts{Title: "Close", Prompt: "Close marbles app?"}, gi.AddOk, gi.AddCancel, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				gi.Quit()
+			} else {
+				inClosePrompt = false
+			}
+		})
 	})
 
 	win.MainMenuUpdated()

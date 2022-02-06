@@ -293,50 +293,50 @@ func (ls *Lines) Graph(fromMarbles bool) {
 		SvgLines.SetNChildren(nln, svg.KiT_Path, "line")
 	}
 	for i, ln := range *ls {
-		if !ln.Changes && fromMarbles {
+		if !ln.Changes && fromMarbles { // If the line doesn't change over time then we don't need to keep graphing it while running marbles
 			continue
 		}
-		ln.Graph(i)
+		ln.Graph(i, fromMarbles)
 	}
 	SvgGraph.UpdateEnd(updt)
 }
 
 // Graphs a single line
-func (ln *Line) Graph(lidx int) {
-	if ln.Expr.Expr == "" {
-		ln.Defaults(lidx)
-	}
-	if ln.LineColors.Color == gist.NilColor {
-		if TheSettings.LineDefaults.LineColors.Color == gist.White {
-			color, _ := gist.ColorFromName(colors[lidx%len(colors)])
-			ln.LineColors.Color = color
-		} else {
-			ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
+func (ln *Line) Graph(lidx int, fromMarbles bool) {
+	if !fromMarbles { // We only need to make sure the line is graphable once
+		if ln.Expr.Expr == "" {
+			ln.Defaults(lidx)
 		}
-	}
-	if ln.LineColors.ColorSwitch == gist.NilColor {
-		ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
-	}
-	if ln.Bounce.Expr == "" {
-		ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
-	}
-	if ln.MinX.Expr == "" {
-		ln.MinX.Expr = TheSettings.LineDefaults.MinX
-	}
-	if ln.MaxX.Expr == "0" {
-		ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
-	}
-	if ln.MinY.Expr == "0" {
-		ln.MinY.Expr = TheSettings.LineDefaults.MinY
-	}
-	if ln.MaxY.Expr == "0" {
-		ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
+		if ln.LineColors.Color == gist.NilColor {
+			if TheSettings.LineDefaults.LineColors.Color == gist.White {
+				color, _ := gist.ColorFromName(colors[lidx%len(colors)])
+				ln.LineColors.Color = color
+			} else {
+				ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
+			}
+		}
+		if ln.LineColors.ColorSwitch == gist.NilColor {
+			ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
+		}
+		if ln.Bounce.Expr == "" {
+			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
+		}
+		if ln.MinX.Expr == "" {
+			ln.MinX.Expr = TheSettings.LineDefaults.MinX
+		}
+		if ln.MaxX.Expr == "0" {
+			ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
+		}
+		if ln.MinY.Expr == "0" {
+			ln.MinY.Expr = TheSettings.LineDefaults.MinY
+		}
+		if ln.MaxY.Expr == "0" {
+			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
+		}
 	}
 	path := SvgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
-	clr := ln.LineColors.Color
-	// clr = EvalColorIf(clr, ln.TimesHit)
-	path.SetProp("stroke", clr)
+	path.SetProp("stroke", ln.LineColors.Color)
 	var err error
 	ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
 	if HandleError(err) {
