@@ -149,6 +149,9 @@ func mainrun() {
 	emen.Menu.AddCopyCutPaste(win)
 	inClosePrompt := false
 	win.SetCloseReqFunc(func(w *gi.Window) {
+		if !TheSettings.ConfirmQuit {
+			gi.Quit()
+		}
 		if inClosePrompt {
 			return
 		}

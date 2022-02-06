@@ -14,6 +14,7 @@ type Settings struct {
 	GraphDefaults  Params         `view:"inline" label:"Graph Parameter Defaults"`
 	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
 	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
+	ConfirmQuit    bool           `label:"Require confirmation before closing the app"`
 }
 type ColorSettings struct {
 	BackgroundColor      gist.Color `label:"Background Color"`
@@ -105,6 +106,7 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
+	se.ConfirmQuit = true
 }
 
 func (ln *LineDefaults) BasicDefaults() {
