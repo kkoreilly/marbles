@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -62,6 +64,30 @@ func InitEquationChangeSlice() {
 // Replace Equation Change Slice loops over the Equation Change slice and makes the replacements
 func (ln *Line) LoopEquationChangeSlice() {
 	for _, d := range EquationChangeSlice {
-		ln.Expr.Expr = strings.Replace(ln.Expr.Expr, d.Old, d.New, -1)
+		ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, d.Old, d.New)
 	}
+}
+
+func (ln *Line) CheckForDerivatives() {
+	re := regexp.MustCompile(`\[(.*?)\]`)
+	strs := strings.SplitAfter(ln.Expr.Expr, "]")
+	var results []string
+	for _, d := range strs {
+		submatchall := re.FindAllString(d, -1)
+		result := d
+		for _, element := range submatchall {
+			element = strings.ReplaceAll(element, "[", "")
+			element = strings.ReplaceAll(element, "]", "")
+			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, element, fmt.Sprintf("(%v, %v)", element, strings.ReplaceAll(element, "x", "x+0.001")))
+			// fmt.Println(ln.Expr.Expr)
+			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, "[", "")
+			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, "]", "")
+			// fmt.Println(ln.Expr.Expr)
+
+			result = re.ReplaceAllString(d, fmt.Sprintf("(%v, %v)", element, strings.ReplaceAll(element, "x", "x+0.001")))
+		}
+		results = append(results, result)
+	}
+	ln.Expr.Expr = strings.Join(results, "")
+
 }

@@ -237,6 +237,7 @@ func (gr *Graph) CompileExprs() {
 		}
 		ln.TimesHit = 0
 		ln.LoopEquationChangeSlice()
+		ln.CheckForDerivatives()
 		ln.Compile()
 	}
 }
@@ -362,6 +363,7 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 		MinY := ln.MinY.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MaxY := ln.MaxY.Eval(x, Gr.Params.Time, ln.TimesHit)
 		y := ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+
 		if x > MinX && x < MaxX && y > MinY && y < MaxY {
 
 			if start {

@@ -59,6 +59,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * rand(v) - graphs a random number between 0 and 1 multiplied by the number specified for every value of x - creates quite a bit of lag and not recommended to use.
   * ife(v1,v2,v3,v4) - If v1 is equal to v2, returns v3. Otherwise returns v4. 
   * ifb(v1,v2,v3,v4,v5) - If v1 is between v2 and v3, returns v4. Otherwise returns v5.
+  * d[f(x)] / d(f(x), f(x+0.001)) - Use d[f(x)] to take the derivative of a function. For example, d[sin(x)] is the same as cos(x). The actual function is d(f(x), f(x+0.001)), but d[f(x)] is much easier to write so I made it so you can write d[f(x)] and it will automatically change. That means if you type in d[sin(x)], it will change to d(sin(x), sin(x+0.001)). Don't be confused when this happens. Please note that this is not actually getting the derivative, it is just approximating it using the equation d[f(x)] = (f(x+0.001) - f(x)) / 0.001. Hopefully I can find a better system for this, but it does work.
 
 ## Known Bugs
 
