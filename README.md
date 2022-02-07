@@ -72,6 +72,3 @@ The app:
 
 The app can support a wide variety of functions:
 ![Marbles app lot of functions](https://github.com/kplat1/marblesInfo/raw/master/images/img2.png)
-
-Settings:
-![Marbles settings](https://github.com/kplat1/marblesInfo/raw/master/images/img3.png)
