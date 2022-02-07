@@ -84,7 +84,7 @@ func (ln *Line) CheckForDerivatives() {
 			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, "]", "")
 			// fmt.Println(ln.Expr.Expr)
 
-			result = re.ReplaceAllString(d, fmt.Sprintf("(%v, %v)", element, strings.ReplaceAll(element, "x", "x+0.001")))
+			result = re.ReplaceAllString(d, fmt.Sprintf("(%v, %v)", element, strings.ReplaceAll(element, "x", "(x+0.001)")))
 		}
 		results = append(results, result)
 	}
