@@ -42,6 +42,7 @@ var EquationChangeSlice = []EquationChange{
 	{"cot*(", "cot("},
 	{"t*an(", "tan("},
 	{"a*tan(", "atan("},
+	{"fact*(", "fact("},
 }
 
 // Init Equation Change Slice adds things that involve numbers to the EquationChangeSlice

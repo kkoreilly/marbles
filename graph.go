@@ -61,7 +61,7 @@ type Lines []*Line
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
-var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot"}
+var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact"}
 
 // Last Saved file is the last saved or opened file, used for the save button
 var LastSavedFile string
@@ -164,6 +164,9 @@ func (gr *Graph) Defaults() {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() {
+	if runningMarbles {
+		return
+	}
 	gr.CompileExprs()
 	ResetMarbles()
 	gr.Params.Time = 0
@@ -186,6 +189,9 @@ func (gr *Graph) Stop() {
 
 // Step does one step update of marbles
 func (gr *Graph) Step() {
+	if runningMarbles {
+		return
+	}
 	UpdateMarbles()
 }
 
