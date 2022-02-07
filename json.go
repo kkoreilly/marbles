@@ -8,12 +8,12 @@ import (
 	"github.com/goki/gi/gi"
 )
 
-// Save last saves to the last opened or saved file
+// SaveLast saves to the last opened or saved file
 func (gr *Graph) SaveLast() {
-	if LastSavedFile == "" {
+	if lastSavedFile == "" {
 		errorText.SetText("no file has been opened or saved")
 	} else {
-		Gr.SaveJSON(gi.FileName(LastSavedFile))
+		Gr.SaveJSON(gi.FileName(lastSavedFile))
 	}
 }
 
@@ -27,12 +27,12 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	if HandleError(err) {
 		return err
 	}
-	LastSavedFile = string(filename)
+	lastSavedFile = string(filename)
 	gr.Graph()
 	return err
 }
 
-// Open Autosave opens the last graphed graph, stays between sessions of the app
+// OpenAutoSave opens the last graphed graph, stays between sessions of the app
 func (gr *Graph) OpenAutoSave() error {
 	b, err := os.ReadFile("localData/autosave.json")
 	if HandleError(err) {
@@ -54,11 +54,11 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 	}
 	err = os.WriteFile(string(filename), b, 0644)
 	HandleError(err)
-	LastSavedFile = string(filename)
+	lastSavedFile = string(filename)
 	return err
 }
 
-// Autosave saves the graph to autosave.json, called automatically
+// AutoSave saves the graph to autosave.json, called automatically
 func (gr *Graph) AutoSave() error {
 	b, err := json.MarshalIndent(gr, "", "  ")
 	if HandleError(err) {
@@ -69,7 +69,7 @@ func (gr *Graph) AutoSave() error {
 	return err
 }
 
-// Uploads the graph to the global database
+// Upload uploads the graph to the global database
 func (gr *Graph) Upload(name string) {
 	b, err := json.Marshal(gr)
 	if HandleError(err) {
@@ -78,6 +78,7 @@ func (gr *Graph) Upload(name string) {
 	UploadGraph(name, string(b))
 }
 
+// Download downloads a graph from the database
 func (gr *Graph) Download() {
 	cgwin := gi.NewMainWindow("cgwin", "Choose a graph", width, height)
 	cgvp := cgwin.WinViewport2D()
@@ -106,6 +107,7 @@ func (gr *Graph) Download() {
 	cgwin.StartEventLoop()
 }
 
+// OpenGraphFromString opens a graph given its json string
 func (gr *Graph) OpenGraphFromString(data string) {
 	err := json.Unmarshal([]byte(data), gr)
 	if HandleError(err) {

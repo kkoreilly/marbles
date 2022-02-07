@@ -18,7 +18,7 @@ import (
 	"github.com/goki/mat32"
 )
 
-// Type Graph contains the lines and parameters of a graph
+// Graph contains the lines and parameters of a graph
 type Graph struct {
 	Params Params `view:"inline" desc:"the parameters for updating the marbles"`
 	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
@@ -50,6 +50,8 @@ type Params struct {
 	MinSize    mat32.Vec2
 	MaxSize    mat32.Vec2
 }
+
+// LineColors contains the color and colorswitch for a line
 type LineColors struct {
 	Color       gist.Color `desc:"color to draw the line in" view:"no-inline"`
 	ColorSwitch gist.Color `desc:"Switch the color of the marble that hits this line" view:"no-inline"`
@@ -63,19 +65,20 @@ var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orang
 
 var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand"}
 
-// Last Saved file is the last saved or opened file, used for the save button
-var LastSavedFile string
+// lastSavedFile is the last saved or opened file, used for the save button
+var lastSavedFile string
 
-// Stop is used to tell RunMarbles to stop
-var Stop = false
+// stop is used to tell RunMarbles to stop
+var stop = false
 
+// last evaluated x value
 var currentX float32
 
 // Gr is current graph
 var Gr Graph
 
-// KiT_Graph is there to have the toolbar
-var KiT_Graph = kit.Types.AddType(&Graph{}, GraphProps)
+// KiTGraph is there to have the toolbar
+var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
 
 // X and Y axis are the x and y axis
 var xAxis, yAxis *svg.Line
@@ -185,7 +188,7 @@ func (gr *Graph) Run() {
 
 // Stop stops the marbles
 func (gr *Graph) Stop() {
-	Stop = true
+	stop = true
 	runningMarbles = false
 }
 
@@ -197,13 +200,14 @@ func (gr *Graph) Step() {
 	UpdateMarbles()
 }
 
+// AddLine adds a new blank line
 func (gr *Graph) AddLine() {
 	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
 	// newLine.Defaults(rand.Intn(10))
 	Gr.Lines = append(Gr.Lines, newLine)
 }
 
-// Gets the lines of the graph ready for graphing
+// CompileExprs gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
 	for _, ln := range gr.Lines {
 		ln.Changes = false
@@ -244,6 +248,7 @@ func (gr *Graph) CompileExprs() {
 	}
 }
 
+// CheckIfChanges checks if an equation changes over time
 func CheckIfChanges(expr string) bool {
 	for _, d := range functionsThatHaveHat {
 		expr = strings.ReplaceAll(expr, d, "")
@@ -254,7 +259,7 @@ func CheckIfChanges(expr string) bool {
 	return false
 }
 
-// Compiles all of the expressions in a line
+// Compile compiles all of the expressions in a line
 func (ln *Line) Compile() {
 	ln.Expr.Compile()
 	ln.Bounce.Compile()
@@ -264,7 +269,7 @@ func (ln *Line) Compile() {
 	ln.MaxY.Compile()
 }
 
-// Sets the line to the defaults specified in settings
+// Defaults sets the line to the defaults specified in settings
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
 	if TheSettings.LineDefaults.LineColors.Color == gist.White {
@@ -281,7 +286,7 @@ func (ln *Line) Defaults(lidx int) {
 	ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 }
 
-// Makes the lines and then defaults them
+// Defaults makes the lines and then defaults them
 func (ls *Lines) Defaults() {
 	*ls = make(Lines, 1, 10)
 	ln := Line{}
@@ -290,17 +295,17 @@ func (ls *Lines) Defaults() {
 
 }
 
-// Graphs the lines
+// Graph graphs the lines
 func (ls *Lines) Graph(fromMarbles bool) {
-	updt := SvgGraph.UpdateStart()
-	SvgGraph.ViewBox.Min = Gr.Params.MinSize
-	SvgGraph.ViewBox.Size = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
+	updt := svgGraph.UpdateStart()
+	svgGraph.ViewBox.Min = Gr.Params.MinSize
+	svgGraph.ViewBox.Size = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
 	gmin = Gr.Params.MinSize
 	gmax = Gr.Params.MaxSize
 	gsz = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
 	nln := len(*ls)
-	if SvgLines.NumChildren() != nln {
-		SvgLines.SetNChildren(nln, svg.KiT_Path, "line")
+	if svgLines.NumChildren() != nln {
+		svgLines.SetNChildren(nln, svg.KiT_Path, "line")
 	}
 	for i, ln := range *ls {
 		if !ln.Changes && fromMarbles { // If the line doesn't change over time then we don't need to keep graphing it while running marbles
@@ -308,10 +313,10 @@ func (ls *Lines) Graph(fromMarbles bool) {
 		}
 		ln.Graph(i, fromMarbles)
 	}
-	SvgGraph.UpdateEnd(updt)
+	svgGraph.UpdateEnd(updt)
 }
 
-// Graphs a single line
+// Graph graphs a single line
 func (ln *Line) Graph(lidx int, fromMarbles bool) {
 	if !fromMarbles { // We only need to make sure the line is graphable once
 		if ln.Expr.Expr == "" {
@@ -344,7 +349,7 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
 		}
 	}
-	path := SvgLines.Child(lidx).(*svg.Path)
+	path := svgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
 	path.SetProp("stroke", ln.LineColors.Color)
 	var err error
@@ -379,20 +384,21 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 	path.SetData(ps)
 }
 
-// Makes the x and y axis
+// InitCoords makes the x and y axis
 func InitCoords() {
-	updt := SvgGraph.UpdateStart()
-	SvgCoords.DeleteChildren(true)
+	updt := svgGraph.UpdateStart()
+	svgCoords.DeleteChildren(true)
 
-	xAxis = svg.AddNewLine(SvgCoords, "xAxis", -1000, 0, 1000, 0)
+	xAxis = svg.AddNewLine(svgCoords, "xAxis", -1000, 0, 1000, 0)
 	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	yAxis = svg.AddNewLine(SvgCoords, "yAxis", 0, -1000, 0, 1000)
+	yAxis = svg.AddNewLine(svgCoords, "yAxis", 0, -1000, 0, 1000)
 	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	SvgGraph.UpdateEnd(updt)
+	svgGraph.UpdateEnd(updt)
 }
 
+// Init makes a marble
 func (mb *Marble) Init(diff float32) {
 	randNum := (rand.Float32() * 2) - 1
 	xPos := randNum * Gr.Params.Width
@@ -402,6 +408,7 @@ func (mb *Marble) Init(diff float32) {
 	mb.PrvPos = mb.Pos
 }
 
+// Defaults sets the graph parameters to the default settings
 func (pr *Params) Defaults() {
 	pr.NMarbles = TheSettings.GraphDefaults.NMarbles
 	pr.NSteps = TheSettings.GraphDefaults.NSteps
@@ -414,6 +421,7 @@ func (pr *Params) Defaults() {
 	pr.Width = TheSettings.GraphDefaults.Width
 }
 
+// BasicDefaults sets the default defaults for the graph parameters
 func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
 	pr.NSteps = 10000

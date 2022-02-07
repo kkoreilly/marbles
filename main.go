@@ -18,15 +18,15 @@ import (
 const ( // Width and height of the window, and size of the graph
 	width     = 1920
 	height    = 1080
-	GraphSize = 800
+	graphSize = 800
 )
 
 var (
-	Vp                              *gi.Viewport2D
-	EqTable, lns                    *giv.TableView
-	ParamsEdit, gstru               *giv.StructView
-	SvgGraph                        *svg.SVG
-	SvgLines, SvgMarbles, SvgCoords *svg.Group
+	vp                              *gi.Viewport2D
+	eqTable, lns                    *giv.TableView
+	paramsEdit, gstru               *giv.StructView
+	svgGraph                        *svg.SVG
+	svgLines, svgMarbles, svgCoords *svg.Group
 	gmin, gmax, gsz, ginc           mat32.Vec2
 	mfr, statusBar                  *gi.Frame
 	fpsText, errorText, versionText *gi.Label
@@ -52,45 +52,45 @@ func mainrun() {
 
 	win := gi.NewMainWindow("marblesApp", "Marbles", width, height)
 
-	Vp = win.WinViewport2D()
-	updt := Vp.UpdateStart()
+	vp = win.WinViewport2D()
+	updt := vp.UpdateStart()
 
 	mfr = win.SetMainFrame()
 	// the StructView will also show the Graph Toolbar which is main actions..
 	gstru = giv.AddNewStructView(mfr, "gstru")
-	gstru.Viewport = Vp // needs vp early for toolbar
+	gstru.Viewport = vp // needs vp early for toolbar
 	gstru.SetProp("height", "4.5em")
 	gstru.SetStruct(&Gr)
-	ParamsEdit = gstru
+	paramsEdit = gstru
 	lns = giv.AddNewTableView(mfr, "lns")
-	lns.Viewport = Vp
+	lns.Viewport = vp
 	lns.SetSlice(&Gr.Lines)
-	EqTable = lns
+	eqTable = lns
 
 	frame := gi.AddNewFrame(mfr, "frame", gi.LayoutHoriz)
 
-	SvgGraph = svg.AddNewSVG(frame, "graph")
-	SvgGraph.SetProp("min-width", GraphSize)
-	SvgGraph.SetProp("min-height", GraphSize)
-	SvgGraph.SetStretchMaxWidth()
-	SvgGraph.SetStretchMaxHeight()
+	svgGraph = svg.AddNewSVG(frame, "graph")
+	svgGraph.SetProp("min-width", graphSize)
+	svgGraph.SetProp("min-height", graphSize)
+	svgGraph.SetStretchMaxWidth()
+	svgGraph.SetStretchMaxHeight()
 
-	SvgLines = svg.AddNewGroup(SvgGraph, "SvgLines")
-	SvgMarbles = svg.AddNewGroup(SvgGraph, "SvgMarbles")
-	SvgCoords = svg.AddNewGroup(SvgGraph, "SvgCoords")
+	svgLines = svg.AddNewGroup(svgGraph, "SvgLines")
+	svgMarbles = svg.AddNewGroup(svgGraph, "SvgMarbles")
+	svgCoords = svg.AddNewGroup(svgGraph, "SvgCoords")
 
 	gmin = mat32.Vec2{X: -10, Y: -10}
 	gmax = mat32.Vec2{X: 10, Y: 10}
 	gsz = gmax.Sub(gmin)
-	ginc = gsz.DivScalar(GraphSize)
+	ginc = gsz.DivScalar(graphSize)
 
-	SvgGraph.ViewBox.Min = gmin
-	SvgGraph.ViewBox.Size = gsz
-	SvgGraph.Norm = true
-	SvgGraph.InvertY = true
-	SvgGraph.Fill = true
-	SvgGraph.SetProp("background-color", "white")
-	SvgGraph.SetProp("stroke-width", ".2pct")
+	svgGraph.ViewBox.Min = gmin
+	svgGraph.ViewBox.Size = gsz
+	svgGraph.Norm = true
+	svgGraph.InvertY = true
+	svgGraph.Fill = true
+	svgGraph.SetProp("background-color", "white")
+	svgGraph.SetProp("stroke-width", ".2pct")
 
 	statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
 	statusBar.SetStretchMaxWidth()
@@ -110,7 +110,7 @@ func mainrun() {
 	viewSettingsButton.SetText("Settings")
 	viewSettingsButton.OnClicked(func() {
 		pSettings := TheSettings
-		giv.StructViewDialog(Vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
 				Gr.Params.Defaults()
@@ -156,7 +156,7 @@ func mainrun() {
 		if !TheSettings.ConfirmQuit {
 			gi.Quit()
 		}
-		gi.PromptDialog(Vp, gi.DlgOpts{Title: "Close", Prompt: "Close marbles app?"}, gi.AddOk, gi.AddCancel, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		gi.PromptDialog(vp, gi.DlgOpts{Title: "Close", Prompt: "Close marbles app?"}, gi.AddOk, gi.AddCancel, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				gi.Quit()
 			} else {
@@ -166,11 +166,11 @@ func mainrun() {
 	})
 
 	win.MainMenuUpdated()
-	Vp.UpdateEndNoSig(updt)
+	vp.UpdateEndNoSig(updt)
 	win.StartEventLoop()
 }
 
-// Handle Error checks if there is an error. If there is, it sets the error text to the error, and returns true. Otherwise returns false.
+// HandleError checks if there is an error. If there is, it sets the error text to the error, and returns true. Otherwise returns false.
 func HandleError(err error) bool {
 	if err != nil {
 		errorText.SetText("Error: " + err.Error())
@@ -179,7 +179,7 @@ func HandleError(err error) bool {
 	return false
 }
 
-// Get Vesion finds the locally installed version and returns it
+// GetVersion finds the locally installed version and returns it
 func GetVersion() string {
 	b, err := os.ReadFile("localData/version.txt")
 	if HandleError(err) {
@@ -188,7 +188,7 @@ func GetVersion() string {
 	return string(b)
 }
 
-// Update Colors sets the colors of the app as specified in settings
+// UpdateColors sets the colors of the app as specified in settings
 func UpdateColors() {
 	// Set the background color of the app
 	mfr.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
@@ -198,7 +198,7 @@ func UpdateColors() {
 	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
 	errorText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
 	fpsText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
-	SvgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
+	svgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
 	// Set the text color of the status bar
 	statusBar.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
 	// Set the color of the graph axis

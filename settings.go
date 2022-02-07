@@ -9,6 +9,7 @@ import (
 	"github.com/goki/ki/kit"
 )
 
+// Settings are the settings the app has
 type Settings struct {
 	LineDefaults   LineDefaults   `view:"inline" label:"Line Defaults"`
 	GraphDefaults  Params         `view:"inline" label:"Graph Parameter Defaults"`
@@ -16,6 +17,8 @@ type Settings struct {
 	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
 	ConfirmQuit    bool           `label:"Require confirmation before closing the app"`
 }
+
+// ColorSettings are the background and text colors of the app
 type ColorSettings struct {
 	BackgroundColor      gist.Color `label:"Background Color"`
 	GraphColor           gist.Color `label:"Graph Background Color"`
@@ -30,10 +33,14 @@ type ColorSettings struct {
 	GraphParamsColor     gist.Color `label:"Graph Parameters Background Color"`
 	LinesBackgroundColor gist.Color `label:"Lines Background Color"`
 }
+
+// MarbleSettings are the settings for the marbles in the app
 type MarbleSettings struct {
 	MarbleColor string
 	MarbleSize  float64
 }
+
+// LineDefaults are the settings for the default line
 type LineDefaults struct {
 	Expr       string
 	MinX       string
@@ -44,8 +51,10 @@ type LineDefaults struct {
 	LineColors LineColors
 }
 
+// TheSettings is the instance of settings
 var TheSettings Settings
 
+// SettingProps is the toolbar for settings
 var SettingProps = ki.Props{
 	"ToolBar": ki.PropSlice{
 		{Name: "Reset", Value: ki.Props{
@@ -54,13 +63,16 @@ var SettingProps = ki.Props{
 		},
 	}}
 
-var KiT_TheSettings = kit.Types.AddType(&TheSettings, SettingProps)
+// KiTTheSettings is for the toolbar
+var KiTTheSettings = kit.Types.AddType(&TheSettings, SettingProps)
 
+// Reset resets the settings to defaults
 func (se *Settings) Reset() {
 	se.Defaults()
 	se.Save()
 }
 
+// Get gets the settings from localdata/settings.json
 func (se *Settings) Get() {
 	b, err := os.ReadFile("localData/settings.json")
 	if err != nil {
@@ -93,6 +105,7 @@ func (se *Settings) Get() {
 
 }
 
+// Save saves the settings to localData/settings.json
 func (se *Settings) Save() {
 	b, err := json.MarshalIndent(se, "", "  ")
 	if HandleError(err) {
@@ -101,6 +114,8 @@ func (se *Settings) Save() {
 	err = os.WriteFile("localData/settings.json", b, 0644)
 	HandleError(err)
 }
+
+// Defaults defaults the settings
 func (se *Settings) Defaults() {
 	se.LineDefaults.BasicDefaults()
 	se.GraphDefaults.BasicDefaults()
@@ -109,6 +124,7 @@ func (se *Settings) Defaults() {
 	se.ConfirmQuit = true
 }
 
+// BasicDefaults sets the line defaults to their defaults
 func (ln *LineDefaults) BasicDefaults() {
 	ln.Expr = "x"
 	ln.LineColors.Color = gist.White
@@ -120,11 +136,13 @@ func (ln *LineDefaults) BasicDefaults() {
 	ln.LineColors.ColorSwitch = gist.White
 }
 
+// Defaults sets the marble settings to their defaults
 func (ms *MarbleSettings) Defaults() {
 	ms.MarbleColor = "default"
 	ms.MarbleSize = 0.1
 }
 
+// Defaults sets the color settings to their defaults
 func (cs *ColorSettings) Defaults() {
 	grey, _ := gist.ColorFromName("grey")
 	lightblue, _ := gist.ColorFromName("lightblue")

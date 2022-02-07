@@ -26,13 +26,13 @@ var runningMarbles bool
 
 // GraphMarblesInit initializes the graph drawing of the marbles
 func GraphMarblesInit() {
-	updt := SvgGraph.UpdateStart()
+	updt := svgGraph.UpdateStart()
 
-	SvgMarbles.DeleteChildren(true)
+	svgMarbles.DeleteChildren(true)
 	for i, m := range Marbles {
 		size := float32(TheSettings.MarbleSettings.MarbleSize) * gsz.Y / 20
 		// fmt.Printf("size: %v \n", size)
-		circle := svg.AddNewCircle(SvgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
+		circle := svg.AddNewCircle(svgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
 		circle.SetProp("stroke", "none")
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
 			circle.SetProp("fill", colors[i%len(colors)])
@@ -40,7 +40,7 @@ func GraphMarblesInit() {
 			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
 		}
 	}
-	SvgGraph.UpdateEnd(updt)
+	svgGraph.UpdateEnd(updt)
 }
 
 // InitMarbles creates the marbles and puts them at their initial positions
@@ -60,18 +60,18 @@ func ResetMarbles() {
 	GraphMarblesInit()
 }
 
-// Update the marbles for one step
+// UpdateMarbles updates the marbles for one step
 func UpdateMarbles() {
-	wupdt := SvgGraph.TopUpdateStart()
-	defer SvgGraph.TopUpdateEnd(wupdt)
+	wupdt := svgGraph.TopUpdateStart()
+	defer svgGraph.TopUpdateEnd(wupdt)
 
-	updt := SvgGraph.UpdateStart()
-	defer SvgGraph.UpdateEnd(updt)
+	updt := svgGraph.UpdateStart()
+	defer svgGraph.UpdateEnd(updt)
 
 	// this line of code is causing the error "panic: AddTo bad path"
 	// not very helpful given that its just rendering everything so probably something else is causing the problem.
 	// Currently the main crashing error, easily replicable by just running marbles a bunch of times - will end up crashing
-	SvgGraph.SetNeedsFullRender()
+	svgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph(true)
 
@@ -154,7 +154,7 @@ func UpdateMarbles() {
 		m.PrvPos = ppos
 		m.Pos = m.Pos.Add(m.Vel.MulScalar(Gr.Params.UpdtRate))
 
-		circle := SvgMarbles.Child(i).(*svg.Circle)
+		circle := svgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
 		if setColor != gist.White {
 			circle.SetProp("fill", setColor)
@@ -163,13 +163,13 @@ func UpdateMarbles() {
 	}
 }
 
-// Run the marbles for NSteps
+// RunMarbles runs the marbles for NSteps
 func RunMarbles() {
 	if runningMarbles {
 		return
 	}
 	runningMarbles = true
-	Stop = false
+	stop = false
 	startFrames := 0
 	start := time.Now()
 	for i := 0; i < Gr.Params.NSteps; i++ {
@@ -181,13 +181,13 @@ func RunMarbles() {
 		}
 
 		Gr.Params.Time += Gr.Params.TimeStep
-		if Stop {
+		if stop {
 			break
 		}
 	}
 }
 
-// Turn radians to degrees
+// RadToDeg turns radians to degrees
 func RadToDeg(rad float32) float32 {
 	return rad * 180 / math.Pi
 }

@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-// Equation Change type has the string that needs to be replaced and what to replace it with
+// EquationChange type has the string that needs to be replaced and what to replace it with
 type EquationChange struct {
 	Old string
 	New string
 }
 
-// Equation Change Slice is all of the strings that should be changed
+// EquationChangeSlice is all of the strings that should be changed
 var EquationChangeSlice = []EquationChange{
 	{"^", "**"},
 	{"x(", "x*("},
@@ -45,7 +45,7 @@ var EquationChangeSlice = []EquationChange{
 	{"fact*(", "fact("},
 }
 
-// Init Equation Change Slice adds things that involve numbers to the EquationChangeSlice
+// InitEquationChangeSlice adds things that involve numbers to the EquationChangeSlice
 func InitEquationChangeSlice() {
 	for i := 0; i < 10; i++ {
 		is := strconv.Itoa(i)
@@ -59,7 +59,7 @@ func InitEquationChangeSlice() {
 	}
 }
 
-// Replace Equation Change Slice loops over the Equation Change slice and makes the replacements
+// LoopEquationChangeSlice loops over the Equation Change slice and makes the replacements
 func (ln *Line) LoopEquationChangeSlice() {
 	for _, d := range EquationChangeSlice {
 		ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, d.Old, d.New)

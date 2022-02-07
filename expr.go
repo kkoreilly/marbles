@@ -8,17 +8,17 @@ import (
 	"github.com/Knetic/govaluate"
 )
 
-// Expression
+// Expr is an expression
 type Expr struct {
 	Expr   string                         `label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
 	Val    *govaluate.EvaluableExpression `view:"-" json:"-"`
 	Params map[string]interface{}         `view:"-" json:"-"`
 }
 
-// Factorial variables
-const LIM = 100
+// factorial variables
+const lim = 100
 
-var facts [LIM]float64
+var facts [lim]float64
 
 // Functions that can be used in expressions
 var functions = map[string]govaluate.ExpressionFunction{
@@ -199,11 +199,12 @@ var functions = map[string]govaluate.ExpressionFunction{
 	},
 }
 
+// Deriv takes the derivative given value 1 and two, and the difference in x between them
 func Deriv(val1, val2, inc float64) float64 {
 	return (val2 - val1) / inc
 }
 
-// Check if a function is passed the right number of arguments.
+// CheckArgs checks if a function is passed the right number of arguments.
 func CheckArgs(needed, have int, name string) (bool, error) {
 	if needed != have {
 		return false, fmt.Errorf("function %v needs %v arguments, not %v arguments", name, needed, have)
@@ -211,7 +212,7 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 	return true, nil
 }
 
-// Get an expression ready for evaluation.
+// Compile gets an expression ready for evaluation.
 func (ex *Expr) Compile() error {
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)
@@ -246,7 +247,7 @@ func (ex *Expr) Eval(x, t float32, h int) float32 {
 	return y
 }
 
-// Used to take the factorial for the fact() function
+// FactorialMemoization is used to take the factorial for the fact() function
 func FactorialMemoization(n int) (res float64) {
 	if n < 0 {
 		return 1
