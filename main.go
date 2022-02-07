@@ -149,13 +149,13 @@ func mainrun() {
 	emen.Menu.AddCopyCutPaste(win)
 	inClosePrompt := false
 	win.SetCloseReqFunc(func(w *gi.Window) {
-		if !TheSettings.ConfirmQuit {
-			gi.Quit()
-		}
 		if inClosePrompt {
 			return
 		}
 		Gr.Stop()
+		if !TheSettings.ConfirmQuit {
+			gi.Quit()
+		}
 		gi.PromptDialog(Vp, gi.DlgOpts{Title: "Close", Prompt: "Close marbles app?"}, gi.AddOk, gi.AddCancel, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				gi.Quit()

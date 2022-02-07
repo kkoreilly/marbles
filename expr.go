@@ -191,15 +191,16 @@ var functions = map[string]govaluate.ExpressionFunction{
 		if !ok {
 			return float64(0), err
 		}
+		inc := 0.001
 		ln := Gr.Lines[int(args[0].(float64))]
 		val1 := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
-		val2 := float64(ln.Expr.Eval(currentX+0.001, Gr.Params.Time, ln.TimesHit))
-		return Deriv(val1, val2), nil
+		val2 := float64(ln.Expr.Eval(currentX+float32(inc), Gr.Params.Time, ln.TimesHit))
+		return Deriv(val1, val2, inc), nil
 	},
 }
 
-func Deriv(val1, val2 float64) float64 {
-	return (val2 - val1) / 0.001
+func Deriv(val1, val2, inc float64) float64 {
+	return (val2 - val1) / inc
 }
 
 // Check if a function is passed the right number of arguments.
@@ -231,6 +232,7 @@ func (ex *Expr) Eval(x, t float32, h int) float32 {
 	if ex.Expr == "" {
 		return 0
 	}
+	currentX = x
 	ex.Params["x"] = float64(x)
 	ex.Params["t"] = float64(t)
 	ex.Params["a"] = float64(10 * math.Sin(float64(t)))

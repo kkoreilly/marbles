@@ -61,7 +61,7 @@ type Lines []*Line
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
-var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact"}
+var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand"}
 
 // Last Saved file is the last saved or opened file, used for the save button
 var LastSavedFile string
@@ -360,7 +360,6 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 		if problemWithEval {
 			return
 		}
-		currentX = x
 		MinX := ln.MinX.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MaxX := ln.MaxX.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MinY := ln.MinY.Eval(x, Gr.Params.Time, ln.TimesHit)
