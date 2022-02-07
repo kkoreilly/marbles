@@ -69,6 +69,8 @@ var LastSavedFile string
 // Stop is used to tell RunMarbles to stop
 var Stop = false
 
+var currentX float32
+
 // Gr is current graph
 var Gr Graph
 
@@ -237,7 +239,7 @@ func (gr *Graph) CompileExprs() {
 		}
 		ln.TimesHit = 0
 		ln.LoopEquationChangeSlice()
-		ln.CheckForDerivatives()
+		// ln.CheckForDerivatives()
 		ln.Compile()
 	}
 }
@@ -358,6 +360,7 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 		if problemWithEval {
 			return
 		}
+		currentX = x
 		MinX := ln.MinX.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MaxX := ln.MaxX.Eval(x, Gr.Params.Time, ln.TimesHit)
 		MinY := ln.MinY.Eval(x, Gr.Params.Time, ln.TimesHit)

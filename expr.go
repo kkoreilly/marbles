@@ -187,13 +187,19 @@ var functions = map[string]govaluate.ExpressionFunction{
 		return args[3].(float64), nil
 	},
 	"d": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "d")
+		ok, err := CheckArgs(1, len(args), "d")
 		if !ok {
 			return float64(0), err
 		}
-		result := (args[1].(float64) - args[0].(float64)) / 0.001
-		return result, nil
+		ln := Gr.Lines[int(args[0].(float64))]
+		val1 := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
+		val2 := float64(ln.Expr.Eval(currentX+0.001, Gr.Params.Time, ln.TimesHit))
+		return Deriv(val1, val2), nil
 	},
+}
+
+func Deriv(val1, val2 float64) float64 {
+	return (val2 - val1) / 0.001
 }
 
 // Check if a function is passed the right number of arguments.
@@ -215,6 +221,8 @@ func (ex *Expr) Compile() error {
 	if ex.Params == nil {
 		ex.Params = make(map[string]interface{}, 2)
 	}
+	ex.Params["pi"] = math.Pi
+	ex.Params["e"] = math.E
 	return err
 }
 
