@@ -64,3 +64,14 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
 
 * Marbles will go sometimes through lines, especially if the lines are moving (using t or a)
 * On functions like tan(x), where x is undefined at a point, the app will draw a vertical line. 
+
+# Images
+
+The app:
+![Marbles app](https://github.com/kplat1/marblesInfo/raw/master/images/img1.png)
+
+The app can support a wide variety of functions:
+![Marbles app lot of functions](https://github.com/kplat1/marblesInfo/raw/master/images/img2.png)
+
+Settings:
+![Marbles settings](https://github.com/kplat1/marblesInfo/raw/master/images/img3.png)
