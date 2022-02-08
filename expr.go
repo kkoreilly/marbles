@@ -198,7 +198,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 		return Deriv(val1, val2, inc), nil
 	},
 	"f": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "d")
+		ok, err := CheckArgs(1, len(args), "f")
 		if !ok {
 			return float64(0), err
 		}
