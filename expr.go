@@ -197,6 +197,15 @@ var functions = map[string]govaluate.ExpressionFunction{
 		val2 := float64(ln.Expr.Eval(currentX+float32(inc), Gr.Params.Time, ln.TimesHit))
 		return Deriv(val1, val2, inc), nil
 	},
+	"f": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "d")
+		if !ok {
+			return float64(0), err
+		}
+		ln := Gr.Lines[int(args[0].(float64))]
+		val := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
+		return val, nil
+	},
 }
 
 // Deriv takes the derivative given value 1 and two, and the difference in x between them

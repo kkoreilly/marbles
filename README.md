@@ -59,6 +59,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * rand(v) - graphs a random number between 0 and 1 multiplied by the number specified for every value of x - creates quite a bit of lag and not recommended to use.
   * ife(v1,v2,v3,v4) - If v1 is equal to v2, returns v3. Otherwise returns v4. 
   * ifb(v1,v2,v3,v4,v5) - If v1 is between v2 and v3, returns v4. Otherwise returns v5.
+  * f(index) - Value is the value of equation specified. You can see the index of a line to the left of the equation.
   * d(index) - Takes the derivative of the equation at that index. For example, if line 0 is y = sin(x), d(0) is the same as cos(x). If line 4 is y = (e^x)-x^2, d(4) will be equal to (e^x)-2x. You can view the index of a line to the left of its equation. Please note that this function just gets an approximation of the derivative, not the actual derivative.
 
 ## Known Bugs

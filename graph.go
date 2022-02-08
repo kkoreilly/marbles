@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"math/rand"
@@ -255,6 +257,21 @@ func CheckIfChanges(expr string) bool {
 	}
 	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
 		return true
+	}
+	if strings.Contains(expr, "d") {
+
+		re := regexp.MustCompile(`d\((.*?)\)`)
+		strs := re.FindAllString(expr, -1)
+		for _, d := range strs {
+			d = strings.ReplaceAll(d, "d", "")
+			d = strings.ReplaceAll(d, "(", "")
+			d = strings.ReplaceAll(d, ")", "")
+			i, err := strconv.Atoi(d)
+			if HandleError(err) {
+				return false
+			}
+			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+		}
 	}
 	return false
 }
