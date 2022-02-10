@@ -16,6 +16,7 @@ type Settings struct {
 	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
 	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
 	ConfirmQuit    bool           `label:"Require confirmation before closing the app"`
+	PrettyJSON     bool           `label:"Save graphs and settings as formatted JSON"`
 }
 
 // ColorSettings are the background and text colors of the app
@@ -107,7 +108,13 @@ func (se *Settings) Get() {
 
 // Save saves the settings to localData/settings.json
 func (se *Settings) Save() {
-	b, err := json.MarshalIndent(se, "", "  ")
+	var b []byte
+	var err error
+	if TheSettings.PrettyJSON {
+		b, err = json.MarshalIndent(se, "", "  ")
+	} else {
+		b, err = json.Marshal(se)
+	}
 	if HandleError(err) {
 		return
 	}
@@ -122,6 +129,7 @@ func (se *Settings) Defaults() {
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
 	se.ConfirmQuit = true
+	se.PrettyJSON = true
 }
 
 // BasicDefaults sets the line defaults to their defaults

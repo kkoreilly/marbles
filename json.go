@@ -48,7 +48,13 @@ func (gr *Graph) OpenAutoSave() error {
 
 // SaveJSON saves a graph to a JSON file
 func (gr *Graph) SaveJSON(filename gi.FileName) error {
-	b, err := json.MarshalIndent(gr, "", "  ")
+	var b []byte
+	var err error
+	if TheSettings.PrettyJSON {
+		b, err = json.MarshalIndent(gr, "", "  ")
+	} else {
+		b, err = json.Marshal(gr)
+	}
 	if HandleError(err) {
 		return err
 	}
@@ -60,7 +66,13 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 
 // AutoSave saves the graph to autosave.json, called automatically
 func (gr *Graph) AutoSave() error {
-	b, err := json.MarshalIndent(gr, "", "  ")
+	var b []byte
+	var err error
+	if TheSettings.PrettyJSON {
+		b, err = json.MarshalIndent(gr, "", "  ")
+	} else {
+		b, err = json.Marshal(gr)
+	}
 	if HandleError(err) {
 		return err
 	}
