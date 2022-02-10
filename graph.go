@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"math/rand"
 
@@ -160,6 +161,11 @@ var GraphProps = ki.Props{
 			"desc":  "Adds a new line",
 			"icon":  "plus",
 		}},
+		{Name: "AddObjective", Value: ki.Props{
+			"label": "Add New Objective",
+			"desc":  "Adds a new objective. This is a small line that disappears when hit with a marble. Try to build a graph that sends marbles through the objective. Add multiple objectives for a bigger challenge.",
+			"icon":  "plus",
+		}},
 	},
 }
 
@@ -206,7 +212,21 @@ func (gr *Graph) Step() {
 func (gr *Graph) AddLine() {
 	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
 	// newLine.Defaults(rand.Intn(10))
-	Gr.Lines = append(Gr.Lines, newLine)
+	gr.Lines = append(gr.Lines, newLine)
+}
+
+// AddObjective adds a new objective
+func (gr *Graph) AddObjective() {
+	rand.Seed(time.Now().UnixNano())
+	eq := fmt.Sprintf("%f", 18*(rand.Float64()-0.5))
+	randNum := rand.Float64()
+	xPosN := fmt.Sprintf("%f", (18*(randNum-0.5))-1)
+	xPosP := fmt.Sprintf("%f", (18*(randNum-0.5))+1)
+	clr, _ := gist.ColorFromName("orange")
+	newLine := &Line{Expr{eq, nil, nil}, Expr{xPosN, nil, nil}, Expr{xPosP, nil, nil}, Expr{"-10", nil, nil}, Expr{"ifb(h, -1, 1, 10, -10)", nil, nil}, Expr{"", nil, nil}, LineColors{clr, gist.NilColor}, 0, true}
+	newLine.Compile()
+	gr.Lines = append(gr.Lines, newLine)
+	gr.Graph()
 }
 
 // CompileExprs gets the lines of the graph ready for graphing
