@@ -62,6 +62,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * f(index) - Value is the value of equation specified. You can see the index of a line to the left of the equation.
   * d(index) - Takes the derivative of the equation at that index. For example, if line 0 is y = sin(x), d(0) is the same as cos(x). If line 4 is y = (e^x)-x^2, d(4) will be equal to (e^x)-2x. You can view the index of a line to the left of its equation. Please note that this function just gets an approximation of the derivative, not the actual derivative.
   * sd(index) - Same as d except takes the second derivative of the equation.
+  * i(index, a, b) - Takes the integral (area under the curve) of the equation specified by the index from a to b.
 
 ## Known Bugs
 
