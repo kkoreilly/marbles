@@ -242,7 +242,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 		min := args[1].(float64)
 		max := args[2].(float64)
 		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(min, max, ln.TimesHit, 16)
+		val := ln.Expr.Integrate(min, max, ln.TimesHit)
 		return val, nil
 	},
 	"F": func(args ...interface{}) (interface{}, error) {
@@ -251,13 +251,13 @@ var functions = map[string]govaluate.ExpressionFunction{
 			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(0, currentX, ln.TimesHit, 16)
+		val := ln.Expr.Integrate(0, currentX, ln.TimesHit)
 		return val, nil
 	},
 }
 
 // Integrate returns the integral of an expression
-func (ex *Expr) Integrate(min, max float64, h int, accuracy int) float64 {
+func (ex *Expr) Integrate(min, max float64, h int) float64 {
 	var vals []float64
 	sign := float64(1)
 	diff := max - min
@@ -269,9 +269,13 @@ func (ex *Expr) Integrate(min, max float64, h int, accuracy int) float64 {
 		sign = -1
 		min, max = max, min
 	}
+	accuracy := 16
 	dx := diff / float64(accuracy)
 	for x := min; x <= max; x += dx {
 		vals = append(vals, ex.Eval(x, Gr.Params.Time, h))
+	}
+	if len(vals) != accuracy+1 {
+		vals = append(vals, ex.Eval(max, Gr.Params.Time, h))
 	}
 	val := integrate.Romberg(vals, dx)
 	return sign * val
