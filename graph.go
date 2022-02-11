@@ -66,7 +66,7 @@ type Lines []*Line
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
-var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand"}
+var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand", "ad"}
 
 // lastSavedFile is the last saved or opened file, used for the save button
 var lastSavedFile string
@@ -284,6 +284,36 @@ func CheckIfChanges(expr string) bool {
 		strs := re.FindAllString(expr, -1)
 		for _, d := range strs {
 			d = strings.ReplaceAll(d, "d", "")
+			d = strings.ReplaceAll(d, "(", "")
+			d = strings.ReplaceAll(d, ")", "")
+			i, err := strconv.Atoi(d)
+			if HandleError(err) {
+				return false
+			}
+			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+		}
+	}
+	if strings.Contains(expr, "F") {
+
+		re := regexp.MustCompile(`F\((.*?)\)`)
+		strs := re.FindAllString(expr, -1)
+		for _, d := range strs {
+			d = strings.ReplaceAll(d, "F", "")
+			d = strings.ReplaceAll(d, "(", "")
+			d = strings.ReplaceAll(d, ")", "")
+			i, err := strconv.Atoi(d)
+			if HandleError(err) {
+				return false
+			}
+			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+		}
+	}
+	if strings.Contains(expr, "f") {
+
+		re := regexp.MustCompile(`f\((.*?)\)`)
+		strs := re.FindAllString(expr, -1)
+		for _, d := range strs {
+			d = strings.ReplaceAll(d, "f", "")
 			d = strings.ReplaceAll(d, "(", "")
 			d = strings.ReplaceAll(d, ")", "")
 			i, err := strconv.Atoi(d)

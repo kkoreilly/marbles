@@ -242,40 +242,39 @@ var functions = map[string]govaluate.ExpressionFunction{
 		min := args[1].(float64)
 		max := args[2].(float64)
 		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(min, max, ln.TimesHit)
+		val := ln.Expr.Integrate(min, max, ln.TimesHit, 16)
 		return val, nil
 	},
-	"ad": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "ad")
+	"F": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "F")
 		if !ok {
 			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(0, math.Abs(currentX), ln.TimesHit)
+		val := ln.Expr.Integrate(0, currentX, ln.TimesHit, 16)
 		return val, nil
 	},
 }
 
 // Integrate returns the integral of an expression
-func (ex *Expr) Integrate(min, max float64, h int) float64 {
+func (ex *Expr) Integrate(min, max float64, h int, accuracy int) float64 {
 	var vals []float64
 	sign := float64(1)
-	if max == 0 {
-		max = 1
-	}
 	diff := max - min
 	if diff == 0 {
-		diff = 1
+		return 0
 	}
 	if diff < 0 {
 		diff = -diff
 		sign = -1
+		min, max = max, min
 	}
-	dx := diff / 2
-	for x := sign * min; x <= sign*max; x += dx {
+	dx := diff / float64(accuracy)
+	for x := min; x <= max; x += dx {
 		vals = append(vals, ex.Eval(x, Gr.Params.Time, h))
 	}
-	return integrate.Romberg(vals, dx)
+	val := integrate.Romberg(vals, dx)
+	return sign * val
 }
 
 // Deriv takes the derivative given value 1 and two, and the difference in x between them
