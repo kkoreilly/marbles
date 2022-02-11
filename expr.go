@@ -7,6 +7,7 @@ import (
 
 	"github.com/Knetic/govaluate"
 	"gonum.org/v1/gonum/diff/fd"
+	"gonum.org/v1/gonum/integrate"
 )
 
 // Expr is an expression
@@ -232,6 +233,34 @@ var functions = map[string]govaluate.ExpressionFunction{
 			Formula: fd.Central2nd,
 		})
 		return val, nil
+	},
+	"i": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(3, len(args), "i")
+		if !ok {
+			return 0, err
+		}
+		sign := float64(1)
+		ln := Gr.Lines[int(args[0].(float64))]
+		var vals []float64
+		min := args[1].(float64)
+		max := args[2].(float64)
+		if max == 0 {
+			max = 1
+		}
+		diff := max - min
+		if diff == 0 {
+			diff = 1
+		}
+		if diff < 0 {
+			diff = -diff
+			sign = -1
+		}
+		dx := diff / 2
+		for x := sign * min; x <= sign*max; x += dx {
+			vals = append(vals, ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit))
+		}
+		val := integrate.Romberg(vals, dx)
+		return sign * val, nil
 	},
 }
 

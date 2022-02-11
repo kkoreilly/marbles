@@ -293,6 +293,27 @@ func CheckIfChanges(expr string) bool {
 			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
 		}
 	}
+	if strings.Contains(expr, "i") {
+
+		re := regexp.MustCompile(`i\((.*?)\)`)
+		strs := re.FindAllString(expr, -1)
+		for _, d := range strs {
+			d = strings.ReplaceAll(d, "i", "")
+			d = strings.ReplaceAll(d, "(", "")
+			d = strings.ReplaceAll(d, ")", "")
+			args := strings.Split(d, ",")
+			for k, a := range args {
+				if k > 0 {
+					continue
+				}
+				i, err := strconv.Atoi(a)
+				if HandleError(err) {
+					continue
+				}
+				return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+			}
+		}
+	}
 	return false
 }
 
