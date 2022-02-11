@@ -239,29 +239,43 @@ var functions = map[string]govaluate.ExpressionFunction{
 		if !ok {
 			return 0, err
 		}
-		sign := float64(1)
-		ln := Gr.Lines[int(args[0].(float64))]
-		var vals []float64
 		min := args[1].(float64)
 		max := args[2].(float64)
-		if max == 0 {
-			max = 1
-		}
-		diff := max - min
-		if diff == 0 {
-			diff = 1
-		}
-		if diff < 0 {
-			diff = -diff
-			sign = -1
-		}
-		dx := diff / 2
-		for x := sign * min; x <= sign*max; x += dx {
-			vals = append(vals, ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit))
-		}
-		val := integrate.Romberg(vals, dx)
-		return sign * val, nil
+		ln := Gr.Lines[int(args[0].(float64))]
+		val := ln.Expr.Integrate(min, max, ln.TimesHit)
+		return val, nil
 	},
+	"ad": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "ad")
+		if !ok {
+			return 0, err
+		}
+		ln := Gr.Lines[int(args[0].(float64))]
+		val := ln.Expr.Integrate(0, math.Abs(currentX), ln.TimesHit)
+		return val, nil
+	},
+}
+
+// Integrate returns the integral of an expression
+func (ex *Expr) Integrate(min, max float64, h int) float64 {
+	var vals []float64
+	sign := float64(1)
+	if max == 0 {
+		max = 1
+	}
+	diff := max - min
+	if diff == 0 {
+		diff = 1
+	}
+	if diff < 0 {
+		diff = -diff
+		sign = -1
+	}
+	dx := diff / 2
+	for x := sign * min; x <= sign*max; x += dx {
+		vals = append(vals, ex.Eval(x, Gr.Params.Time, h))
+	}
+	return integrate.Romberg(vals, dx)
 }
 
 // Deriv takes the derivative given value 1 and two, and the difference in x between them
