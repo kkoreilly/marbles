@@ -5,7 +5,10 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gimain"
@@ -138,7 +141,13 @@ func mainrun() {
 
 	appnm := gi.AppName()
 	mmen := win.MainMenu
-	mmen.ConfigMenus([]string{appnm, "Edit", "Window"})
+	mmen.ConfigMenus([]string{appnm, "File", "Edit", "Window", "Objectives"})
+
+	fmen := win.MainMenu.ChildByName("File", 0).(*gi.Action)
+	fmen.Menu = make(gi.Menu, 0, 10)
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Save", ShortcutKey: gi.KeyFunMenuSave}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		fmt.Println(giv.CallMethod(Gr, "SaveJSON", vp))
+	})
 
 	amen := win.MainMenu.ChildByName(appnm, 0).(*gi.Action)
 	amen.Menu = make(gi.Menu, 0, 10)
@@ -147,6 +156,17 @@ func mainrun() {
 	emen := win.MainMenu.ChildByName("Edit", 1).(*gi.Action)
 	emen.Menu = make(gi.Menu, 0, 10)
 	emen.Menu.AddCopyCutPaste(win)
+
+	omen := win.MainMenu.ChildByName("Objectives", 2).(*gi.Action)
+	omen.Menu = make(gi.Menu, 0, 10)
+	omen.Menu.AddAction(gi.ActOpts{Label: "Generate Objectives"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		rand.Seed(time.Now().UnixNano())
+		nObjs := rand.Intn(3) + 3
+		for i := 0; i < nObjs; i++ {
+			Gr.AddObjective()
+		}
+
+	})
 	inClosePrompt := false
 	win.SetCloseReqFunc(func(w *gi.Window) {
 		if inClosePrompt {

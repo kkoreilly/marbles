@@ -161,11 +161,6 @@ var GraphProps = ki.Props{
 			"desc":  "Adds a new line",
 			"icon":  "plus",
 		}},
-		{Name: "AddObjective", Value: ki.Props{
-			"label": "Add New Objective",
-			"desc":  "Adds a new objective. This is a small line that disappears when hit with a marble. Try to build a graph that sends marbles through the objective. Add multiple objectives for a bigger challenge.",
-			"icon":  "plus",
-		}},
 	},
 }
 
