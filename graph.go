@@ -44,12 +44,12 @@ type Line struct {
 type Params struct {
 	NMarbles   int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
 	NSteps     int     `min:"100" max:"10000" step:"10" desc:"number of steps to take when running"`
-	StartSpeed float32 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
-	UpdtRate   float32 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	Gravity    float32 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
-	Width      float32 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	TimeStep   float32 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
-	Time       float32 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
+	StartSpeed float64 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
+	UpdtRate   float64 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
+	Gravity    float64 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
+	Width      float64 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
+	TimeStep   float64 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
+	Time       float64 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
 	MinSize    mat32.Vec2
 	MaxSize    mat32.Vec2
 }
@@ -75,7 +75,7 @@ var lastSavedFile string
 var stop = false
 
 // last evaluated x value
-var currentX float32
+var currentX float64
 
 // Gr is current graph
 var Gr Graph
@@ -402,13 +402,14 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 		if problemWithEval {
 			return
 		}
-		MinX := ln.MinX.Eval(x, Gr.Params.Time, ln.TimesHit)
-		MaxX := ln.MaxX.Eval(x, Gr.Params.Time, ln.TimesHit)
-		MinY := ln.MinY.Eval(x, Gr.Params.Time, ln.TimesHit)
-		MaxY := ln.MaxY.Eval(x, Gr.Params.Time, ln.TimesHit)
-		y := ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+		fx := float64(x)
+		MinX := ln.MinX.Eval(fx, Gr.Params.Time, ln.TimesHit)
+		MaxX := ln.MaxX.Eval(fx, Gr.Params.Time, ln.TimesHit)
+		MinY := ln.MinY.Eval(fx, Gr.Params.Time, ln.TimesHit)
+		MaxY := ln.MaxY.Eval(fx, Gr.Params.Time, ln.TimesHit)
+		y := ln.Expr.Eval(fx, Gr.Params.Time, ln.TimesHit)
 
-		if x > MinX && x < MaxX && y > MinY && y < MaxY {
+		if fx > MinX && fx < MaxX && y > MinY && y < MaxY {
 
 			if start {
 				ps += fmt.Sprintf("M %v %v ", x, y)
@@ -437,9 +438,9 @@ func InitCoords() {
 
 // Init makes a marble
 func (mb *Marble) Init(diff float32) {
-	randNum := (rand.Float32() * 2) - 1
+	randNum := (rand.Float64() * 2) - 1
 	xPos := randNum * Gr.Params.Width
-	mb.Pos = mat32.Vec2{X: xPos, Y: Gr.Params.MaxSize.Y - diff}
+	mb.Pos = mat32.Vec2{X: float32(xPos), Y: Gr.Params.MaxSize.Y - diff}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	mb.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
 	mb.PrvPos = mb.Pos

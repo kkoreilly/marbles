@@ -9,6 +9,7 @@ require (
 	github.com/goki/ki v1.1.4
 	github.com/goki/mat32 v1.0.9
 	github.com/lib/pq v1.10.4
+	gonum.org/v1/gonum v0.9.3
 )
 
 require (

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/Knetic/govaluate"
+	"gonum.org/v1/gonum/diff/fd"
 )
 
 // Expr is an expression
@@ -25,7 +26,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"cos": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "cos")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Cos(args[0].(float64))
 		return y, nil
@@ -33,7 +34,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"sin": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "sin")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Sin(args[0].(float64))
 		return y, nil
@@ -41,7 +42,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"tan": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "tan")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Tan(args[0].(float64))
 		return y, nil
@@ -49,7 +50,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"pow": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(2, len(args), "pow")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Pow(args[0].(float64), args[1].(float64))
 		return y, nil
@@ -57,7 +58,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"abs": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "abs")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Abs(args[0].(float64))
 		return y, nil
@@ -65,7 +66,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"fact": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "fact")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := FactorialMemoization(int(args[0].(float64)))
 		return y, nil
@@ -73,7 +74,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"ceil": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "ceil")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Ceil(args[0].(float64))
 		return y, nil
@@ -81,7 +82,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"floor": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "floor")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Floor(args[0].(float64))
 		return y, nil
@@ -89,7 +90,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"mod": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(2, len(args), "mod")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Mod(args[0].(float64), args[1].(float64))
 		return y, nil
@@ -97,7 +98,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"rand": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "rand")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := float64(rand.Float32()) * args[0].(float64)
 		return y, nil
@@ -105,7 +106,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"sqrt": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "sqrt")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Sqrt(args[0].(float64))
 		return y, nil
@@ -113,7 +114,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"ln": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "ln")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Log(args[0].(float64))
 		return y, nil
@@ -121,7 +122,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"csc": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "csc")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := 1 / math.Sin(args[0].(float64))
 		return y, nil
@@ -129,7 +130,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"sec": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "sec")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := 1 / math.Cos(args[0].(float64))
 		return y, nil
@@ -137,7 +138,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"cot": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "cot")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := 1 / math.Tan(args[0].(float64))
 		return y, nil
@@ -145,7 +146,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"asin": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "asin")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Asin(args[0].(float64))
 		return y, nil
@@ -153,7 +154,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"acos": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "acos")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Acos(args[0].(float64))
 		return y, nil
@@ -161,7 +162,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"atan": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "atan")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		y := math.Atan(args[0].(float64))
 		return y, nil
@@ -169,7 +170,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"ifb": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(5, len(args), "ifb")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		if (args[0].(float64) > args[1].(float64)) && (args[0].(float64) < args[2].(float64)) {
 			return args[3].(float64), nil
@@ -179,39 +180,65 @@ var functions = map[string]govaluate.ExpressionFunction{
 	"ife": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(4, len(args), "ife")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		if args[0].(float64) == args[1].(float64) {
 			return args[2].(float64), nil
 		}
 		return args[3].(float64), nil
 	},
-	"d": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "d")
-		if !ok {
-			return float64(0), err
-		}
-		inc := 0.001
-		ln := Gr.Lines[int(args[0].(float64))]
-		val1 := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
-		val2 := float64(ln.Expr.Eval(currentX+float32(inc), Gr.Params.Time, ln.TimesHit))
-		return Deriv(val1, val2, inc), nil
-	},
+	// "d": func(args ...interface{}) (interface{}, error) {
+	// 	ok, err := CheckArgs(1, len(args), "d")
+	// 	if !ok {
+	// 		return 0, err
+	// 	}
+	// 	inc := 0.001
+	// 	ln := Gr.Lines[int(args[0].(float64))]
+	// 	val1 := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
+	// 	val2 := float64(ln.Expr.Eval(currentX+inc, Gr.Params.Time, ln.TimesHit))
+	// 	return Deriv(val1, val2, inc), nil
+	// },
 	"f": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "f")
 		if !ok {
-			return float64(0), err
+			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
 		val := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
 		return val, nil
 	},
+	"d": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "d")
+		if !ok {
+			return 0, err
+		}
+		ln := Gr.Lines[int(args[0].(float64))]
+		val := fd.Derivative(func(x float64) float64 {
+			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+		}, currentX, &fd.Settings{
+			Formula: fd.Central,
+		})
+		return val, nil
+	},
+	"sd": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "sd")
+		if !ok {
+			return 0, err
+		}
+		ln := Gr.Lines[int(args[0].(float64))]
+		val := fd.Derivative(func(x float64) float64 {
+			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+		}, currentX, &fd.Settings{
+			Formula: fd.Central2nd,
+		})
+		return val, nil
+	},
 }
 
 // Deriv takes the derivative given value 1 and two, and the difference in x between them
-func Deriv(val1, val2, inc float64) float64 {
-	return (val2 - val1) / inc
-}
+// func Deriv(val1, val2, inc float64) float64 {
+// 	return (val2 - val1) / inc
+// }
 
 // CheckArgs checks if a function is passed the right number of arguments.
 func CheckArgs(needed, have int, name string) (bool, error) {
@@ -238,21 +265,21 @@ func (ex *Expr) Compile() error {
 }
 
 // Eval gives the y value of the function for given x, t and h value
-func (ex *Expr) Eval(x, t float32, h int) float32 {
+func (ex *Expr) Eval(x, t float64, h int) float64 {
 	if ex.Expr == "" {
 		return 0
 	}
 	currentX = x
-	ex.Params["x"] = float64(x)
-	ex.Params["t"] = float64(t)
-	ex.Params["a"] = float64(10 * math.Sin(float64(t)))
-	ex.Params["h"] = float64(h)
+	ex.Params["x"] = x
+	ex.Params["t"] = t
+	ex.Params["a"] = 10 * math.Sin(t)
+	ex.Params["h"] = h
 	yi, err := ex.Val.Evaluate(ex.Params)
 	if HandleError(err) {
 		problemWithEval = true
 		return 0
 	}
-	y := float32(yi.(float64))
+	y := yi.(float64)
 	return y
 }
 

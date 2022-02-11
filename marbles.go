@@ -78,8 +78,8 @@ func UpdateMarbles() {
 	for i, m := range Marbles {
 		var setColor = gist.White
 
-		m.Vel.Y -= Gr.Params.Gravity * ((gsz.Y * gsz.X) / 400)
-		updtrate := Gr.Params.UpdtRate
+		m.Vel.Y -= float32(Gr.Params.Gravity) * ((gsz.Y * gsz.X) / 400)
+		updtrate := float32(Gr.Params.UpdtRate)
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
 
@@ -88,15 +88,15 @@ func UpdateMarbles() {
 				continue
 			}
 
-			yp := ln.Expr.Eval(m.Pos.X, Gr.Params.Time, ln.TimesHit)
-			yn := ln.Expr.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
+			yp := ln.Expr.Eval(float64(m.Pos.X), Gr.Params.Time, ln.TimesHit)
+			yn := ln.Expr.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
 
 			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
-			MinX := ln.MinX.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			MaxX := ln.MaxX.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			MinY := ln.MinY.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			MaxY := ln.MaxY.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
-			if ((npos.Y < yn && m.Pos.Y >= yp) || (npos.Y > yn && m.Pos.Y <= yp)) && (npos.X < MaxX && npos.X > MinX) && (npos.Y < MaxY && npos.Y > MinY) {
+			MinX := ln.MinX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			MaxX := ln.MaxX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			MinY := ln.MinY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			MaxY := ln.MaxY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && (float64(npos.X) < MaxX && float64(npos.X) > MinX) && (float64(npos.Y) < MaxY && float64(npos.Y) > MinY) {
 				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
 				ln.TimesHit++
 				// setColor = EvalColorIf(ln.ColorSwitch, ln.TimesHit)
@@ -110,24 +110,24 @@ func UpdateMarbles() {
 				if dx == 0 {
 
 					xi = npos.X
-					yi = yn
+					yi = float32(yn)
 
 				} else {
 
-					ml := dly / dx
+					ml := float32(dly) / dx
 					dmy := npos.Y - m.Pos.Y
 					mm := dmy / dx
 
-					xi = (npos.X*(ml-mm) + npos.Y - yn) / (ml - mm)
-					yi = ln.Expr.Eval(xi, Gr.Params.Time, ln.TimesHit)
+					xi = (npos.X*(ml-mm) + npos.Y - float32(yn)) / (ml - mm)
+					yi = float32(ln.Expr.Eval(float64(xi), Gr.Params.Time, ln.TimesHit))
 					//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
 				}
 
-				yl := ln.Expr.Eval(xi-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
-				yr := ln.Expr.Eval(xi+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
+				yl := ln.Expr.Eval(float64(xi)-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
+				yr := ln.Expr.Eval(float64(xi)+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
 
 				//slp := (yr - yl) / .02
-				angLn := math32.Atan2(yr-yl, 0.02)
+				angLn := math32.Atan2(float32(yr-yl), 0.02)
 				angN := angLn + math.Pi/2 // + 90 deg
 
 				angI := math32.Atan2(m.Vel.Y, m.Vel.X)
@@ -139,10 +139,10 @@ func UpdateMarbles() {
 				// fmt.Printf("angLn: %v  angN: %v  angI: %v  angII: %v  angNII: %v  angR: %v\n",
 				// 	RadToDeg(angLn), RadToDeg(angN), RadToDeg(angI), RadToDeg(angII), RadToDeg(angNII), RadToDeg(angR))
 
-				Bounce := ln.Bounce.Eval(npos.X, Gr.Params.Time, ln.TimesHit)
+				Bounce := ln.Bounce.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
 
-				nvx := Bounce * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
-				nvy := Bounce * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
+				nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
+				nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
 
 				m.Vel = mat32.Vec2{X: nvx, Y: nvy}
 
@@ -152,7 +152,7 @@ func UpdateMarbles() {
 		}
 
 		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(Gr.Params.UpdtRate))
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(Gr.Params.UpdtRate)))
 
 		circle := svgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
