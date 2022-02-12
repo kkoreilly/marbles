@@ -49,10 +49,10 @@ func mainrun() {
 	rec := ki.Node{} // receiver for events
 	rec.InitName(&rec, "rec")
 
-	gi.SetAppName("marblesApp")
+	gi.SetAppName("marbles")
 	gi.SetAppAbout("marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!")
 
-	win := gi.NewMainWindow("marblesApp", "Marbles", width, height)
+	win := gi.NewMainWindow("marbles", "Marbles", width, height)
 
 	vp = win.WinViewport2D()
 	updt := vp.UpdateStart()
@@ -186,6 +186,18 @@ func mainrun() {
 		})
 	})
 	fmen.Menu.AddSeparator("sep2")
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Upload Graph", Shortcut: "Control+U"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		gi.StringPromptDialog(vp, "", "", gi.DlgOpts{Title: "Upload Graph", Prompt: "Upload your graph for anyone else to see. Enter a name for your graph:"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
+				Gr.Upload(gi.StringPromptDialogValue(dlg))
+			}
+		})
+	})
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Download Graph", Shortcut: "Control+D"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		Gr.Download()
+	})
+	fmen.Menu.AddSeparator("sep3")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Settings", ShortcutKey: gi.KeyFunMenuSaveAlt}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		pSettings := TheSettings
 		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
