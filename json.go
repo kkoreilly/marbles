@@ -10,10 +10,10 @@ import (
 
 // SaveLast saves to the last opened or saved file
 func (gr *Graph) SaveLast() {
-	if lastSavedFile == "" {
+	if currentFile == "" {
 		errorText.SetText("no file has been opened or saved")
 	} else {
-		Gr.SaveJSON(gi.FileName(lastSavedFile))
+		Gr.SaveJSON(gi.FileName(currentFile))
 	}
 }
 
@@ -27,7 +27,8 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	if HandleError(err) {
 		return err
 	}
-	lastSavedFile = string(filename)
+	currentFile = string(filename)
+	UpdateCurrentFileText()
 	gr.Graph()
 	return err
 }
@@ -60,7 +61,8 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 	}
 	err = os.WriteFile(string(filename), b, 0644)
 	HandleError(err)
-	lastSavedFile = string(filename)
+	currentFile = string(filename)
+	UpdateCurrentFileText()
 	return err
 }
 

@@ -68,8 +68,8 @@ var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orang
 
 var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand", "ad"}
 
-// lastSavedFile is the last saved or opened file, used for the save button
-var lastSavedFile string
+// currentFile is the last saved or opened file, used for the save button
+var currentFile string
 
 // stop is used to tell RunMarbles to stop
 var stop = false
@@ -89,39 +89,39 @@ var xAxis, yAxis *svg.Line
 // GraphProps define the ToolBar for overall app
 var GraphProps = ki.Props{
 	"ToolBar": ki.PropSlice{
-		{Name: "OpenJSON", Value: ki.Props{
-			"label": "Open",
-			"desc":  "Opens line equations and params from a .json file.",
-			"icon":  "file-open",
-			"Args": ki.PropSlice{
-				{Name: "File Name", Value: ki.Props{
-					"ext":     ".json",
-					"default": "savedGraphs/",
-				}},
-			},
-		}},
-		{Name: "SaveLast", Value: ki.Props{
-			"label": "Save",
-			"desc":  "Save line equations and params to the last opened / saved file.",
-			"icon":  "file-save",
-		}},
-		{Name: "SaveJSON", Value: ki.Props{
-			"label": "Save As...",
-			"desc":  "Saves line equations and params to a .json file.",
-			"icon":  "file-save",
-			"Args": ki.PropSlice{
-				{Name: "File Name", Value: ki.Props{
-					"ext":     ".json",
-					"default": "savedGraphs/",
-				}},
-			},
-		}},
-		{Name: "OpenAutoSave", Value: ki.Props{
-			"label": "Open Autosaved",
-			"desc":  "Opens the most recently graphed set of equations and parameters.",
-			"icon":  "file-open",
-		}},
-		{Name: "sep-ctrl", Value: ki.BlankProp{}},
+		// {Name: "OpenJSON", Value: ki.Props{
+		// 	"label": "Open",
+		// 	"desc":  "Opens line equations and params from a .json file.",
+		// 	"icon":  "file-open",
+		// 	"Args": ki.PropSlice{
+		// 		{Name: "File Name", Value: ki.Props{
+		// 			"ext":     ".json",
+		// 			"default": "savedGraphs/",
+		// 		}},
+		// 	},
+		// }},
+		// {Name: "SaveLast", Value: ki.Props{
+		// 	"label": "Save",
+		// 	"desc":  "Save line equations and params to the last opened / saved file.",
+		// 	"icon":  "file-save",
+		// }},
+		// {Name: "SaveJSON", Value: ki.Props{
+		// 	"label": "Save As...",
+		// 	"desc":  "Saves line equations and params to a .json file.",
+		// 	"icon":  "file-save",
+		// 	"Args": ki.PropSlice{
+		// 		{Name: "File Name", Value: ki.Props{
+		// 			"ext":     ".json",
+		// 			"default": "savedGraphs/",
+		// 		}},
+		// 	},
+		// }},
+		// {Name: "OpenAutoSave", Value: ki.Props{
+		// 	"label": "Open Autosaved",
+		// 	"desc":  "Opens the most recently graphed set of equations and parameters.",
+		// 	"icon":  "file-open",
+		// }},
+		// {Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "Graph", Value: ki.Props{
 			"desc": "updates graph for current equations",
 			"icon": "file-image",
@@ -222,6 +222,15 @@ func (gr *Graph) AddObjective() {
 	newLine.Compile()
 	gr.Lines = append(gr.Lines, newLine)
 	gr.Graph()
+}
+
+// Reset resets the graph to its starting position
+func (gr *Graph) Reset() {
+	currentFile = ""
+	UpdateCurrentFileText()
+	gr.Lines = nil
+	gr.Lines.Defaults()
+	gr.Params.Defaults()
 }
 
 // CompileExprs gets the lines of the graph ready for graphing

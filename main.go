@@ -5,9 +5,9 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/goki/gi/gi"
@@ -25,16 +25,15 @@ const ( // Width and height of the window, and size of the graph
 )
 
 var (
-	vp                              *gi.Viewport2D
-	eqTable, lns                    *giv.TableView
-	paramsEdit, gstru               *giv.StructView
-	svgGraph                        *svg.SVG
-	svgLines, svgMarbles, svgCoords *svg.Group
-	gmin, gmax, gsz, ginc           mat32.Vec2
-	mfr, statusBar                  *gi.Frame
-	fpsText, errorText, versionText *gi.Label
-	viewSettingsButton              *gi.Button
-	problemWithEval                 bool
+	vp                                               *gi.Viewport2D
+	eqTable, lns                                     *giv.TableView
+	paramsEdit, gstru                                *giv.StructView
+	svgGraph                                         *svg.SVG
+	svgLines, svgMarbles, svgCoords                  *svg.Group
+	gmin, gmax, gsz, ginc                            mat32.Vec2
+	mfr, statusBar                                   *gi.Frame
+	fpsText, errorText, versionText, currentFileText *gi.Label
+	problemWithEval                                  bool
 )
 
 func main() {
@@ -105,29 +104,34 @@ func mainrun() {
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
+	currentFileText = gi.AddNewLabel(statusBar, "currentFileText", "untitled.json")
+	currentFileText.SetProp("font-weight", "bold")
+	currentFileText.SetStretchMaxWidth()
+	currentFileText.Redrawable = true
 	versionText = gi.AddNewLabel(statusBar, "versionText", "")
 	versionText.SetProp("font-weight", "bold")
 	versionText.SetStretchMaxWidth()
 	versionText.SetText("Running version " + GetVersion())
-	viewSettingsButton = gi.AddNewButton(statusBar, "viewSettingsButton")
-	viewSettingsButton.SetText("Settings")
-	viewSettingsButton.OnClicked(func() {
-		pSettings := TheSettings
-		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-			if sig == int64(gi.DialogAccepted) {
-				TheSettings.Save()
-				Gr.Params.Defaults()
-				Gr.Graph()
-				UpdateColors()
-				ResetMarbles()
-			} else if sig == int64(gi.DialogCanceled) {
-				TheSettings = pSettings
-			}
-		})
-	})
+	// viewSettingsButton = gi.AddNewButton(statusBar, "viewSettingsButton")
+	// viewSettingsButton.SetText("Settings")
+	// viewSettingsButton.OnClicked(func() {
+	// 	pSettings := TheSettings
+	// 	giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	// 		if sig == int64(gi.DialogAccepted) {
+	// 			TheSettings.Save()
+	// 			Gr.Params.Defaults()
+	// 			Gr.Graph()
+	// 			UpdateColors()
+	// 			ResetMarbles()
+	// 		} else if sig == int64(gi.DialogCanceled) {
+	// 			TheSettings = pSettings
+	// 		}
+	// 	})
+	// })
 	// treeview := giv.AddNewTreeView(statusBar, "treeview")
-	// treeview.SetRootNode(lns)
+	// treeview.SetRootNode(gstru)
 	lns.ChildByName("toolbar", -1).Delete(true)
+	gstru.ChildByName("toolbar", -1).ChildByName("UpdtView", -1).Delete(true)
 
 	InitCoords()
 	ResetMarbles()
@@ -145,8 +149,56 @@ func mainrun() {
 
 	fmen := win.MainMenu.ChildByName("File", 0).(*gi.Action)
 	fmen.Menu = make(gi.Menu, 0, 10)
+	fmen.Menu.AddAction(gi.ActOpts{Label: "New", ShortcutKey: gi.KeyFunMenuNew}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		Gr.Reset()
+	})
+	fmen.Menu.AddSeparator("sep0")
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Open", ShortcutKey: gi.KeyFunMenuOpen}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
+				Gr.OpenJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
+			}
+		})
+	})
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Open Autosave", ShortcutKey: gi.KeyFunMenuOpenAlt1}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		Gr.OpenAutoSave()
+	})
+	fmen.Menu.AddSeparator("sep1")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Save", ShortcutKey: gi.KeyFunMenuSave}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		fmt.Println(giv.CallMethod(Gr, "SaveJSON", vp))
+		if currentFile != "" {
+			Gr.SaveLast()
+		} else {
+			giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+				if sig == int64(gi.DialogAccepted) {
+					dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
+					Gr.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
+				}
+			})
+		}
+	})
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as", ShortcutKey: gi.KeyFunMenuSaveAs}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
+				Gr.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
+			}
+		})
+	})
+	fmen.Menu.AddSeparator("sep2")
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Settings", ShortcutKey: gi.KeyFunMenuSaveAlt}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		pSettings := TheSettings
+		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				TheSettings.Save()
+				Gr.Params.Defaults()
+				Gr.Graph()
+				UpdateColors()
+				ResetMarbles()
+			} else if sig == int64(gi.DialogCanceled) {
+				TheSettings = pSettings
+			}
+		})
 	})
 
 	amen := win.MainMenu.ChildByName(appnm, 0).(*gi.Action)
@@ -218,6 +270,7 @@ func UpdateColors() {
 	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
 	errorText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
 	fpsText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
+	currentFileText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
 	svgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
 	// Set the text color of the status bar
 	statusBar.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
@@ -227,8 +280,6 @@ func UpdateColors() {
 	// Set the text color of the graph and line controls
 	lns.SetProp("color", TheSettings.ColorSettings.LineTextColor)
 	gstru.SetProp("color", TheSettings.ColorSettings.GraphTextColor)
-	//Set the color of the settings button
-	viewSettingsButton.SetProp("background-color", TheSettings.ColorSettings.ButtonColor)
 	// Set the background color and button color for the toolbar
 	tb := gstru.ToolBar()
 	tb.SetProp("background-color", TheSettings.ColorSettings.ToolBarColor)
@@ -243,5 +294,22 @@ func UpdateColors() {
 	lFrame.SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)
 	lFrame.ChildByName("header", -1).SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)
 	lFrame.ChildByName("grid-lay", -1).ChildByName("grid", -1).SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)
+
+}
+
+// UpdateCurrentFileText updates the current file text
+func UpdateCurrentFileText() {
+	if currentFile == "" {
+		currentFileText.SetText("untitled.json")
+	}
+	strs := strings.Split(currentFile, "savedGraphs")
+	for k, d := range strs {
+		if k != 1 {
+			continue
+		}
+		d = strings.ReplaceAll(d, `\`, "")
+		d = strings.ReplaceAll(d, `/`, "")
+		currentFileText.SetText(d)
+	}
 
 }
