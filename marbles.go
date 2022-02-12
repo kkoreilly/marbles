@@ -172,17 +172,33 @@ func RunMarbles() {
 	stop = false
 	startFrames := 0
 	start := time.Now()
-	for i := 0; i < Gr.Params.NSteps; i++ {
-		UpdateMarbles()
-		if time.Since(start).Milliseconds() >= 1000 {
-			fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
-			start = time.Now()
-			startFrames = i
-		}
+	if Gr.Params.NSteps == -1 {
+		for i := 0; true; i++ {
+			UpdateMarbles()
+			if time.Since(start).Milliseconds() >= 1000 {
+				fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
+				start = time.Now()
+				startFrames = i
+			}
 
-		Gr.Params.Time += Gr.Params.TimeStep
-		if stop {
-			break
+			Gr.Params.Time += Gr.Params.TimeStep
+			if stop {
+				return
+			}
+		}
+	} else {
+		for i := 0; i < Gr.Params.NSteps; i++ {
+			UpdateMarbles()
+			if time.Since(start).Milliseconds() >= 1000 {
+				fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
+				start = time.Now()
+				startFrames = i
+			}
+
+			Gr.Params.Time += Gr.Params.TimeStep
+			if stop {
+				return
+			}
 		}
 	}
 }

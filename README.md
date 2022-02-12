@@ -11,7 +11,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * You can also set the color for lines (LineColors.Color).
 * For the whole graph
   * You can set the amount of marbles that spawn (NMarbles)
-  * You can set the amount of steps the graph runs for (NSteps)
+  * You can set the amount of steps the graph runs for (NSteps). Set to -1 to run until marbles are stopped.
   * You can set the starting speed of the marbles (StartSpeed)
   * You can set the update rate of the marbles (UpdtRate)
   * You can set the gravity of the marbles (Gravity)

@@ -43,7 +43,7 @@ type Line struct {
 // Params is the parameters of the graph
 type Params struct {
 	NMarbles   int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	NSteps     int     `min:"100" max:"100000" step:"10" desc:"number of steps to take when running"`
+	NSteps     int     `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
 	StartSpeed float64 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
 	UpdtRate   float64 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
 	Gravity    float64 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
@@ -517,7 +517,7 @@ func (pr *Params) Defaults() {
 // BasicDefaults sets the default defaults for the graph parameters
 func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
-	pr.NSteps = 100000
+	pr.NSteps = -1
 	pr.StartSpeed = 0
 	pr.UpdtRate = .02
 	pr.Gravity = 0.1

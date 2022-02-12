@@ -1,7 +1,7 @@
 {
   "Params": {
     "NMarbles": 10,
-    "NSteps": 10000,
+    "NSteps": -1,
     "StartSpeed": 0,
     "UpdtRate": 0.02,
     "Gravity": 0.1,
