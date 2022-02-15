@@ -11,12 +11,13 @@ import (
 
 // Settings are the settings the app has
 type Settings struct {
-	LineDefaults   LineDefaults   `view:"inline" label:"Line Defaults"`
-	GraphDefaults  Params         `view:"inline" label:"Graph Parameter Defaults"`
-	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
-	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
-	ConfirmQuit    bool           `label:"Require confirmation before closing the app"`
-	PrettyJSON     bool           `label:"Save graphs and settings as formatted JSON"`
+	LineDefaults    LineDefaults   `view:"inline" label:"Line Defaults"`
+	GraphDefaults   Params         `view:"inline" label:"Graph Parameter Defaults"`
+	MarbleSettings  MarbleSettings `view:"inline" label:"Marble Settings"`
+	ColorSettings   ColorSettings  `view:"no-inline" label:"Color Settings"`
+	NTrackingFrames int            `label:"Number of frames to draw tracking lines"`
+	ConfirmQuit     bool           `label:"Require confirmation before closing the app"`
+	PrettyJSON      bool           `label:"Save graphs and settings as formatted JSON"`
 }
 
 // ColorSettings are the background and text colors of the app
@@ -128,6 +129,7 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
+	se.NTrackingFrames = 100
 	se.ConfirmQuit = true
 	se.PrettyJSON = true
 }

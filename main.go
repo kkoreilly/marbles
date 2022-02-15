@@ -25,15 +25,15 @@ const ( // Width and height of the window, and size of the graph
 )
 
 var (
-	vp                                               *gi.Viewport2D
-	eqTable, lns                                     *giv.TableView
-	paramsEdit, gstru                                *giv.StructView
-	svgGraph                                         *svg.SVG
-	svgLines, svgMarbles, svgCoords                  *svg.Group
-	gmin, gmax, gsz, ginc                            mat32.Vec2
-	mfr, statusBar                                   *gi.Frame
-	fpsText, errorText, versionText, currentFileText *gi.Label
-	problemWithEval                                  bool
+	vp                                                *gi.Viewport2D
+	eqTable, lns                                      *giv.TableView
+	paramsEdit, gstru                                 *giv.StructView
+	svgGraph                                          *svg.SVG
+	svgLines, svgMarbles, svgCoords, svgTrackingLines *svg.Group
+	gmin, gmax, gsz, ginc                             mat32.Vec2
+	mfr, statusBar                                    *gi.Frame
+	fpsText, errorText, versionText, currentFileText  *gi.Label
+	problemWithEval                                   bool
 )
 
 func main() {
@@ -80,6 +80,7 @@ func mainrun() {
 	svgLines = svg.AddNewGroup(svgGraph, "SvgLines")
 	svgMarbles = svg.AddNewGroup(svgGraph, "SvgMarbles")
 	svgCoords = svg.AddNewGroup(svgGraph, "SvgCoords")
+	svgTrackingLines = svg.AddNewGroup(svgGraph, "SvgTrackingLines")
 
 	gmin = mat32.Vec2{X: -10, Y: -10}
 	gmax = mat32.Vec2{X: 10, Y: 10}

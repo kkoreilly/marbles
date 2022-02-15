@@ -159,6 +159,10 @@ func UpdateMarbles() {
 		if setColor != gist.White {
 			circle.SetProp("fill", setColor)
 		}
+		if TheSettings.NTrackingFrames != 0 {
+			line := svg.AddNewLine(svgTrackingLines, "line", m.PrvPos.X, m.PrvPos.Y, m.Pos.X, m.Pos.Y)
+			line.SetProp("stroke", "black")
+		}
 
 	}
 }
@@ -171,34 +175,27 @@ func RunMarbles() {
 	runningMarbles = true
 	stop = false
 	startFrames := 0
+	trackingStartFrames := 0
 	start := time.Now()
-	if Gr.Params.NSteps == -1 {
-		for i := 0; true; i++ {
-			UpdateMarbles()
-			if time.Since(start).Milliseconds() >= 1000 {
-				fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
-				start = time.Now()
-				startFrames = i
-			}
-
-			Gr.Params.Time += Gr.Params.TimeStep
-			if stop {
-				return
-			}
+	nsteps := Gr.Params.NSteps
+	if nsteps == -1 {
+		nsteps = 1000000000000
+	}
+	for i := 0; i < nsteps; i++ {
+		UpdateMarbles()
+		if time.Since(start).Milliseconds() >= 1000 {
+			fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
+			start = time.Now()
+			startFrames = i
 		}
-	} else {
-		for i := 0; i < Gr.Params.NSteps; i++ {
-			UpdateMarbles()
-			if time.Since(start).Milliseconds() >= 1000 {
-				fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
-				start = time.Now()
-				startFrames = i
-			}
+		if (i-trackingStartFrames > TheSettings.NTrackingFrames) && TheSettings.NTrackingFrames != 0 {
+			svgTrackingLines.DeleteChildren(true)
+			trackingStartFrames = i
+		}
 
-			Gr.Params.Time += Gr.Params.TimeStep
-			if stop {
-				return
-			}
+		Gr.Params.Time += Gr.Params.TimeStep
+		if stop {
+			return
 		}
 	}
 }
