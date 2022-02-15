@@ -204,7 +204,6 @@ func mainrun() {
 		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
-				Gr.Params.Defaults()
 				Gr.Graph()
 				UpdateColors()
 				ResetMarbles()

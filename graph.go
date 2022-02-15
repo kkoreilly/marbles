@@ -225,7 +225,7 @@ func (gr *Graph) AddObjective() {
 	gr.Graph()
 }
 
-// Reset resets the graph to its starting position
+// Reset resets the graph to its starting position (one default line and default params)
 func (gr *Graph) Reset() {
 	currentFile = ""
 	UpdateCurrentFileText()

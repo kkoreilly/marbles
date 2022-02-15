@@ -55,7 +55,7 @@ type LineDefaults struct {
 
 // TrackingLineSettings contains the tracking line settings
 type TrackingLineSettings struct {
-	NTrackingFrames int
+	NTrackingFrames int `min:"0" step:"10"`
 	LineColor       gist.Color
 }
 
