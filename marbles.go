@@ -163,7 +163,13 @@ func UpdateMarbles() {
 			line := svg.AddNewLine(svgTrackingLines, "line", m.PrvPos.X, m.PrvPos.Y, m.Pos.X, m.Pos.Y)
 			clr := TheSettings.TrackingLineSettings.LineColor
 			if clr == gist.White {
-				clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
+				switch circle.Prop("fill").(type) {
+				case string:
+					clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
+				case gist.Color:
+					clr = circle.Prop("fill").(gist.Color)
+				}
+
 			}
 			line.SetProp("stroke", clr)
 		}
