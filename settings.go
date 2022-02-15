@@ -129,7 +129,7 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
-	se.NTrackingFrames = 100
+	se.NTrackingFrames = 0
 	se.ConfirmQuit = true
 	se.PrettyJSON = true
 }
