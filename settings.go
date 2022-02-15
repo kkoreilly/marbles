@@ -11,13 +11,13 @@ import (
 
 // Settings are the settings the app has
 type Settings struct {
-	LineDefaults    LineDefaults   `view:"inline" label:"Line Defaults"`
-	GraphDefaults   Params         `view:"inline" label:"Graph Parameter Defaults"`
-	MarbleSettings  MarbleSettings `view:"inline" label:"Marble Settings"`
-	ColorSettings   ColorSettings  `view:"no-inline" label:"Color Settings"`
-	NTrackingFrames int            `label:"Number of frames to draw tracking lines"`
-	ConfirmQuit     bool           `label:"Require confirmation before closing the app"`
-	PrettyJSON      bool           `label:"Save graphs and settings as formatted JSON"`
+	LineDefaults         LineDefaults         `view:"inline" label:"Line Defaults"`
+	GraphDefaults        Params               `view:"inline" label:"Graph Parameter Defaults"`
+	MarbleSettings       MarbleSettings       `view:"inline" label:"Marble Settings"`
+	ColorSettings        ColorSettings        `view:"no-inline" label:"Color Settings"`
+	TrackingLineSettings TrackingLineSettings `view:"inline"`
+	ConfirmQuit          bool                 `label:"Require confirmation before closing the app"`
+	PrettyJSON           bool                 `label:"Save graphs and settings as formatted JSON"`
 }
 
 // ColorSettings are the background and text colors of the app
@@ -51,6 +51,12 @@ type LineDefaults struct {
 	MaxY       string
 	Bounce     string
 	LineColors LineColors
+}
+
+// TrackingLineSettings contains the tracking line settings
+type TrackingLineSettings struct {
+	NTrackingFrames int
+	LineColor       gist.Color
 }
 
 // TheSettings is the instance of settings
@@ -129,9 +135,15 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
-	se.NTrackingFrames = 0
+	se.TrackingLineSettings.Defaults()
 	se.ConfirmQuit = true
 	se.PrettyJSON = true
+}
+
+// Defaults sets the default settings for the tracking lines.
+func (ts *TrackingLineSettings) Defaults() {
+	ts.NTrackingFrames = 0
+	ts.LineColor = gist.White
 }
 
 // BasicDefaults sets the line defaults to their defaults

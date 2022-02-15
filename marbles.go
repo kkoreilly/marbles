@@ -159,9 +159,13 @@ func UpdateMarbles() {
 		if setColor != gist.White {
 			circle.SetProp("fill", setColor)
 		}
-		if TheSettings.NTrackingFrames != 0 {
+		if TheSettings.TrackingLineSettings.NTrackingFrames != 0 {
 			line := svg.AddNewLine(svgTrackingLines, "line", m.PrvPos.X, m.PrvPos.Y, m.Pos.X, m.Pos.Y)
-			line.SetProp("stroke", "black")
+			clr := TheSettings.TrackingLineSettings.LineColor
+			if clr == gist.White {
+				clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
+			}
+			line.SetProp("stroke", clr)
 		}
 
 	}
@@ -188,7 +192,7 @@ func RunMarbles() {
 			start = time.Now()
 			startFrames = i
 		}
-		if (i-trackingStartFrames > TheSettings.NTrackingFrames) && TheSettings.NTrackingFrames != 0 {
+		if (i-trackingStartFrames > TheSettings.TrackingLineSettings.NTrackingFrames) && TheSettings.TrackingLineSettings.NTrackingFrames != 0 {
 			svgTrackingLines.DeleteChildren(true)
 			trackingStartFrames = i
 		}
