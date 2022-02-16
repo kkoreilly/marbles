@@ -146,7 +146,7 @@ func mainrun() {
 
 	appnm := gi.AppName()
 	mmen := win.MainMenu
-	mmen.ConfigMenus([]string{appnm, "File", "Edit", "Window", "Objectives"})
+	mmen.ConfigMenus([]string{appnm, "File", "Edit", "Objectives"})
 
 	fmen := win.MainMenu.ChildByName("File", 0).(*gi.Action)
 	fmen.Menu = make(gi.Menu, 0, 10)

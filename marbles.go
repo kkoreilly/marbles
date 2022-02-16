@@ -64,6 +64,11 @@ func ResetMarbles() {
 
 // UpdateMarbles updates the marbles for one step
 func UpdateMarbles() {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 	wupdt := svgGraph.TopUpdateStart()
 	defer svgGraph.TopUpdateEnd(wupdt)
 

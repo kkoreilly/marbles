@@ -18,6 +18,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * You can set the range in which the marbles can spawn, 0 makes them spawn in a straight vertical line (Width)
   * You can set the amount the variable t increases every step (TimeStep)
   * You can set the size of the graph (Min/MaxX, Min/MaxY)
+  * TrackingSettings - See the section on tracking settings
 * Controls
   * Open allows you to open a saved json file of a graph
   * Save allows you to save a graph to a json file
@@ -29,8 +30,10 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
 * Settings
   * You can customize the default line that will be added if a line is empty
   * You can customize the default graph parameters
-  * You can change the size and color of marbles, default means the marbles will spawn in different random colors. Note that collision is not affected by changing the size of the marbles, so it is not recommended to change the size too much or things will look weird.
+  * You can change the size and color of marbles, default means the marbles will spawn in different random colors. Note that collision is not affected by changing the size of the marbles, so it is not recommended to change the size too much or things will look weird
+  * TrackingSettings - see section on tracking settings.
   * You can change the color of most things in the app
+* Tracking Settings
 * Upload and Download graphs
   * You can upload a graph you make by clicking upload graph and giving it a name. Anyone else can download that graph if they want to. Your graph will be automatically deleted after a week.
   * You can view graphs other people have uploaded by clicking download graph and choosing a graph. It will open that graph and you can run it and make any changes to it you want. You can save the graph to your device and do anything you want with it.
