@@ -42,16 +42,23 @@ type Line struct {
 
 // Params is the parameters of the graph
 type Params struct {
-	NMarbles   int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	NSteps     int     `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
-	StartSpeed float64 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
-	UpdtRate   float64 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	Gravity    float64 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
-	Width      float64 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	TimeStep   float64 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
-	Time       float64 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
-	MinSize    mat32.Vec2
-	MaxSize    mat32.Vec2
+	NMarbles         int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
+	NSteps           int     `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
+	StartSpeed       float64 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
+	UpdtRate         float64 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
+	Gravity          float64 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
+	Width            float64 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
+	TimeStep         float64 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
+	Time             float64 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
+	MinSize          mat32.Vec2
+	MaxSize          mat32.Vec2
+	TrackingSettings GraphTrackingSettings `view:"no-inline"`
+}
+
+// GraphTrackingSettings contains tracking line settings and a bool for whether the graph should override user settings.
+type GraphTrackingSettings struct {
+	Override         bool `label:"Override user tracking settings. If false, TrackingSettings has no effect"`
+	TrackingSettings TrackingSettings
 }
 
 // LineColors contains the color and colorswitch for a line
@@ -513,6 +520,7 @@ func (pr *Params) Defaults() {
 	pr.MinSize = TheSettings.GraphDefaults.MinSize
 	pr.MaxSize = TheSettings.GraphDefaults.MaxSize
 	pr.Width = TheSettings.GraphDefaults.Width
+	pr.TrackingSettings = TheSettings.GraphDefaults.TrackingSettings
 }
 
 // BasicDefaults sets the default defaults for the graph parameters
@@ -526,4 +534,6 @@ func (pr *Params) BasicDefaults() {
 	pr.MinSize = mat32.Vec2{X: -10, Y: -10}
 	pr.MaxSize = mat32.Vec2{X: 10, Y: 10}
 	pr.Width = 0
+	pr.TrackingSettings.Override = false
+	pr.TrackingSettings.TrackingSettings.Defaults()
 }

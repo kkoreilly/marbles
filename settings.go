@@ -11,13 +11,13 @@ import (
 
 // Settings are the settings the app has
 type Settings struct {
-	LineDefaults         LineDefaults         `view:"inline" label:"Line Defaults"`
-	GraphDefaults        Params               `view:"inline" label:"Graph Parameter Defaults"`
-	MarbleSettings       MarbleSettings       `view:"inline" label:"Marble Settings"`
-	ColorSettings        ColorSettings        `view:"no-inline" label:"Color Settings"`
-	TrackingLineSettings TrackingLineSettings `view:"inline"`
-	ConfirmQuit          bool                 `label:"Require confirmation before closing the app"`
-	PrettyJSON           bool                 `label:"Save graphs and settings as formatted JSON"`
+	LineDefaults     LineDefaults     `view:"inline" label:"Line Defaults"`
+	GraphDefaults    Params           `view:"inline" label:"Graph Param Defaults"`
+	MarbleSettings   MarbleSettings   `view:"inline" label:"Marble Settings"`
+	ColorSettings    ColorSettings    `view:"no-inline" label:"Color Settings"`
+	TrackingSettings TrackingSettings `view:"inline"`
+	ConfirmQuit      bool             `label:"Confirm App Close"`
+	PrettyJSON       bool             `label:"Save formatted JSON"`
 }
 
 // ColorSettings are the background and text colors of the app
@@ -53,8 +53,8 @@ type LineDefaults struct {
 	LineColors LineColors
 }
 
-// TrackingLineSettings contains the tracking line settings
-type TrackingLineSettings struct {
+// TrackingSettings contains the tracking line settings
+type TrackingSettings struct {
 	NTrackingFrames int `min:"0" step:"10"`
 	LineColor       gist.Color
 }
@@ -135,13 +135,13 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
-	se.TrackingLineSettings.Defaults()
+	se.TrackingSettings.Defaults()
 	se.ConfirmQuit = true
 	se.PrettyJSON = true
 }
 
 // Defaults sets the default settings for the tracking lines.
-func (ts *TrackingLineSettings) Defaults() {
+func (ts *TrackingSettings) Defaults() {
 	ts.NTrackingFrames = 0
 	ts.LineColor = gist.White
 }

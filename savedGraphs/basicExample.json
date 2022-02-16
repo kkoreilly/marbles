@@ -14,6 +14,18 @@
     "MaxSize": {
       "X": 10,
       "Y": 10
+    },
+    "TrackingSettings": {
+      "Override": false,
+      "TrackingSettings": {
+        "NTrackingFrames": 0,
+        "LineColor": {
+          "R": 255,
+          "G": 255,
+          "B": 255,
+          "A": 255
+        }
+      }
     }
   },
   "Lines": [

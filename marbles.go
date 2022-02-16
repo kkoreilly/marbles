@@ -159,9 +159,13 @@ func UpdateMarbles() {
 		if setColor != gist.White {
 			circle.SetProp("fill", setColor)
 		}
-		if TheSettings.TrackingLineSettings.NTrackingFrames != 0 {
+		tls := TheSettings.TrackingSettings
+		if Gr.Params.TrackingSettings.Override {
+			tls = Gr.Params.TrackingSettings.TrackingSettings
+		}
+		if tls.NTrackingFrames != 0 {
 			line := svg.AddNewLine(svgTrackingLines, "line", m.PrvPos.X, m.PrvPos.Y, m.Pos.X, m.Pos.Y)
-			clr := TheSettings.TrackingLineSettings.LineColor
+			clr := tls.LineColor
 			if clr == gist.White {
 				switch circle.Prop("fill").(type) {
 				case string:
@@ -188,6 +192,10 @@ func RunMarbles() {
 	trackingStartFrames := 0
 	start := time.Now()
 	nsteps := Gr.Params.NSteps
+	tls := TheSettings.TrackingSettings
+	if Gr.Params.TrackingSettings.Override {
+		tls = Gr.Params.TrackingSettings.TrackingSettings
+	}
 	if nsteps == -1 {
 		nsteps = 1000000000000
 	}
@@ -198,7 +206,7 @@ func RunMarbles() {
 			start = time.Now()
 			startFrames = i
 		}
-		if (i-trackingStartFrames > TheSettings.TrackingLineSettings.NTrackingFrames) && TheSettings.TrackingLineSettings.NTrackingFrames != 0 {
+		if (i-trackingStartFrames > tls.NTrackingFrames) && tls.NTrackingFrames != 0 {
 			svgTrackingLines.DeleteChildren(true)
 			trackingStartFrames = i
 		}
