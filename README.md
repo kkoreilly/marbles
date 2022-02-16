@@ -34,6 +34,10 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * TrackingSettings - see section on tracking settings.
   * You can change the color of most things in the app
 * Tracking Settings
+ * Tracking allows you to view the paths of marbles. You can set tracking settings in your user settings. The tracking settings set in your user settings will apply for any graph that does not have its own settings with override. For each graph, in graph parameters, you may set tracking settings. These tracking settings only take effect if override is on. Only set graph tracking settings if the purpose of the graph is something created by tracking.
+  * NTrackingFrames: How many frames to track marble activity and graph it. After this amount of frames has passed, all tracking lines are cleared and new tracking lines start. If NTrackingFrames is set to 0, tracking is disabled.
+  * Accuracy: Accuracy is how many times per 100 frames the tracking lines are updated. Accuracy can be any integer from 1 to 100. The higher accuracy the more accurate and less choppy the tracking lines will be. However higher accuracy will worsen performance.
+  * Line Color: The color of the tracking lines. If set to white, the color of the tracking lines will be the color of the marble creating the tracking line.
 * Upload and Download graphs
   * You can upload a graph you make by clicking upload graph and giving it a name. Anyone else can download that graph if they want to. Your graph will be automatically deleted after a week.
   * You can view graphs other people have uploaded by clicking download graph and choosing a graph. It will open that graph and you can run it and make any changes to it you want. You can save the graph to your device and do anything you want with it.
