@@ -40,7 +40,7 @@ func GraphMarblesInit() {
 			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
 		}
 		circle.SetProp("fslr", 0)
-		circle.SetProp("lpos", mat32.Vec2{X: 0, Y: 0})
+		circle.SetProp("lpos", mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y})
 	}
 	svgGraph.UpdateEnd(updt)
 }
