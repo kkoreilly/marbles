@@ -19,6 +19,7 @@
       "Override": false,
       "TrackingSettings": {
         "NTrackingFrames": 0,
+        "Accuracy": 20,
         "LineColor": {
           "R": 255,
           "G": 255,

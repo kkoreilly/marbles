@@ -56,6 +56,7 @@ type LineDefaults struct {
 // TrackingSettings contains the tracking line settings
 type TrackingSettings struct {
 	NTrackingFrames int `min:"0" step:"10"`
+	Accuracy        int `min:"1" max:"100" step:"5"`
 	LineColor       gist.Color
 }
 
@@ -143,6 +144,7 @@ func (se *Settings) Defaults() {
 // Defaults sets the default settings for the tracking lines.
 func (ts *TrackingSettings) Defaults() {
 	ts.NTrackingFrames = 0
+	ts.Accuracy = 20
 	ts.LineColor = gist.White
 }
 

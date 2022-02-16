@@ -39,6 +39,8 @@ func GraphMarblesInit() {
 		} else {
 			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
 		}
+		circle.SetProp("fslr", 0)
+		circle.SetProp("lpos", mat32.Vec2{X: 0, Y: 0})
 	}
 	svgGraph.UpdateEnd(updt)
 }
@@ -164,18 +166,26 @@ func UpdateMarbles() {
 			tls = Gr.Params.TrackingSettings.TrackingSettings
 		}
 		if tls.NTrackingFrames != 0 {
-			line := svg.AddNewLine(svgTrackingLines, "line", m.PrvPos.X, m.PrvPos.Y, m.Pos.X, m.Pos.Y)
-			clr := tls.LineColor
-			if clr == gist.White {
-				switch circle.Prop("fill").(type) {
-				case string:
-					clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
-				case gist.Color:
-					clr = circle.Prop("fill").(gist.Color)
-				}
+			fslr := circle.Prop("fslr").(int)
+			if fslr <= 100/tls.Accuracy {
+				circle.SetProp("fslr", fslr+1)
+			} else {
+				lpos := circle.Prop("lpos").(mat32.Vec2)
+				circle.SetProp("fslr", 0)
+				circle.SetProp("lpos", m.Pos)
+				line := svg.AddNewLine(svgTrackingLines, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
+				clr := tls.LineColor
+				if clr == gist.White {
+					switch circle.Prop("fill").(type) {
+					case string:
+						clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
+					case gist.Color:
+						clr = circle.Prop("fill").(gist.Color)
+					}
 
+				}
+				line.SetProp("stroke", clr)
 			}
-			line.SetProp("stroke", clr)
 		}
 
 	}
