@@ -200,36 +200,36 @@ var functions = map[string]govaluate.ExpressionFunction{
 	// 	return Deriv(val1, val2, inc), nil
 	// },
 	"f": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "f")
+		ok, err := CheckArgs(2, len(args), "f")
 		if !ok {
 			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
-		val := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
+		val := float64(ln.Expr.Eval(args[1].(float64), Gr.Params.Time, ln.TimesHit))
 		return val, nil
 	},
 	"d": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "d")
+		ok, err := CheckArgs(2, len(args), "d")
 		if !ok {
 			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
 		val := fd.Derivative(func(x float64) float64 {
 			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
-		}, currentX, &fd.Settings{
+		}, args[1].(float64), &fd.Settings{
 			Formula: fd.Central,
 		})
 		return val, nil
 	},
 	"sd": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "sd")
+		ok, err := CheckArgs(2, len(args), "sd")
 		if !ok {
 			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
 		val := fd.Derivative(func(x float64) float64 {
 			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
-		}, currentX, &fd.Settings{
+		}, args[1].(float64), &fd.Settings{
 			Formula: fd.Central2nd,
 		})
 		return val, nil
@@ -246,12 +246,12 @@ var functions = map[string]govaluate.ExpressionFunction{
 		return val, nil
 	},
 	"F": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "F")
+		ok, err := CheckArgs(2, len(args), "F")
 		if !ok {
 			return 0, err
 		}
 		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(0, currentX, ln.TimesHit)
+		val := ln.Expr.Integrate(0, args[1].(float64), ln.TimesHit)
 		return val, nil
 	},
 }

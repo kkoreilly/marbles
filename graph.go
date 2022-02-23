@@ -69,7 +69,7 @@ type Lines []*Line
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
-var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand", "ad"}
+var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand", "ad", "true", "false"}
 
 // currentFile is the last saved or opened file, used for the save button
 var currentFile string
@@ -276,10 +276,7 @@ func CheckIfChanges(expr string) bool {
 	for _, d := range functionsThatHaveHat {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
-	if strings.Contains(expr, "a") || strings.Contains(expr, "h") {
-		return true
-	}
-	if strings.Contains(expr, "t") && !strings.Contains(expr, "true") {
+	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
 		return true
 	}
 	if strings.Contains(expr, "d") {
