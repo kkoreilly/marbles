@@ -5,7 +5,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
 ## Features
 
 * For lines
-  * You can set the domain/range of lines you graph (Min/MaxX, Min/MaxY)
+  * You can set a condition that has to be true for the line to be graphed (GraphIf). For example you could do x>3 or you could do y<5. Operators such as || and && are supported.
   * You can set bounciness for a line. If it is 1, the marble will not gain or lose speed after hitting the line. If bounciness is less than 1, marbles will lose speed when they hit the line. If it is greater than one, marbles will gain speed.
   * You can set the color marbles that hit the line will change to (LineColors.ColorSwitch) - none means the marbles stay the same color.
   * You can also set the color for lines (LineColors.Color).

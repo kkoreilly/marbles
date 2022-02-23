@@ -78,6 +78,7 @@ func UpdateMarbles() {
 	// this line of code is causing the error "panic: AddTo bad path"
 	// not very helpful given that its just rendering everything so probably something else is causing the problem.
 	// Currently the main crashing error, easily replicable by just running marbles a bunch of times - will end up crashing
+
 	svgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph(true)
@@ -89,7 +90,6 @@ func UpdateMarbles() {
 		updtrate := float32(Gr.Params.UpdtRate)
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
-
 		for _, ln := range Gr.Lines {
 			if ln.Expr.Val == nil {
 				continue
@@ -99,12 +99,10 @@ func UpdateMarbles() {
 			yn := ln.Expr.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
 
 			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
-			MinX := ln.MinX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			MaxX := ln.MaxX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			MinY := ln.MinY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			MaxY := ln.MaxY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && (float64(npos.X) < MaxX && float64(npos.X) > MinX) && (float64(npos.Y) < MaxY && float64(npos.Y) > MinY) {
-				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
+			GraphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, Gr.Params.Time, ln.TimesHit)
+			MinX, MaxX, MinY, MaxY := gmin.X, gmax.X, gmin.Y, gmax.Y
+			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && GraphIf && npos.Y > MinY && npos.Y < MaxY && npos.X > MinX && npos.X < MaxX {
+				// fmt.Printf("Collided! Equation is: %v \n", ln.Expr.Expr)
 				ln.TimesHit++
 				// setColor = EvalColorIf(ln.ColorSwitch, ln.TimesHit)
 				setColor = ln.LineColors.ColorSwitch
@@ -214,11 +212,9 @@ func UpdateMarblesNoGraph() {
 			yn := ln.Expr.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
 
 			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
-			MinX := ln.MinX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			MaxX := ln.MaxX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			MinY := ln.MinY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			MaxY := ln.MaxY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && (float64(npos.X) < MaxX && float64(npos.X) > MinX) && (float64(npos.Y) < MaxY && float64(npos.Y) > MinY) {
+			GraphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, Gr.Params.Time, ln.TimesHit)
+			MinX, MaxX, MinY, MaxY := gmin.X, gmax.X, gmin.Y, gmax.Y
+			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && GraphIf && npos.Y > MinY && npos.Y < MaxY && npos.X > MinX && npos.X < MaxX {
 				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
 				ln.TimesHit++
 

@@ -330,6 +330,26 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 	return y
 }
 
+// EvalBool checks if a statement is true based on the x, y, t and h values
+func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
+	if ex.Expr == "" {
+		return true
+	}
+	currentX = x
+	ex.Params["x"] = x
+	ex.Params["t"] = t
+	ex.Params["a"] = 10 * math.Sin(t)
+	ex.Params["h"] = h
+	ex.Params["y"] = y
+	ri, err := ex.Val.Evaluate(ex.Params)
+	if HandleError(err) {
+		problemWithEval = true
+		return true
+	}
+	r := ri.(bool)
+	return r
+}
+
 // FactorialMemoization is used to take the factorial for the fact() function
 func FactorialMemoization(n int) (res float64) {
 	if n < 0 {

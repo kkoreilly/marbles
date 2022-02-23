@@ -5,10 +5,8 @@
 package main
 
 import (
-	"math/rand"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gimain"
@@ -146,7 +144,7 @@ func mainrun() {
 
 	appnm := gi.AppName()
 	mmen := win.MainMenu
-	mmen.ConfigMenus([]string{appnm, "File", "Edit", "Objectives"})
+	mmen.ConfigMenus([]string{appnm, "File", "Edit"})
 
 	fmen := win.MainMenu.ChildByName("File", 0).(*gi.Action)
 	fmen.Menu = make(gi.Menu, 0, 10)
@@ -221,16 +219,6 @@ func mainrun() {
 	emen.Menu = make(gi.Menu, 0, 10)
 	emen.Menu.AddCopyCutPaste(win)
 
-	omen := win.MainMenu.ChildByName("Objectives", 2).(*gi.Action)
-	omen.Menu = make(gi.Menu, 0, 10)
-	omen.Menu.AddAction(gi.ActOpts{Label: "Generate Objectives"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		rand.Seed(time.Now().UnixNano())
-		nObjs := rand.Intn(3) + 3
-		for i := 0; i < nObjs; i++ {
-			Gr.AddObjective()
-		}
-
-	})
 	inClosePrompt := false
 	win.SetCloseReqFunc(func(w *gi.Window) {
 		if inClosePrompt {

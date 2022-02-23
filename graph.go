@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"math/rand"
 
@@ -30,10 +29,7 @@ type Graph struct {
 // Line represents one line with an equation etc
 type Line struct {
 	Expr       Expr       `width:"60" label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
-	MinX       Expr       `width:"30" step:"1" desc:"Minimum x value for this line."`
-	MaxX       Expr       `step:"1" desc:"Maximum x value for this line."`
-	MinY       Expr       `step:"1" desc:"Minimum y value for this line."`
-	MaxY       Expr       `step:"1" desc:"Maximum y value for this line."`
+	GraphIf    Expr       `width:"60" desc:"Graph this line if this condition is true. Ex: x>3"`
 	Bounce     Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
 	LineColors LineColors `desc:"Line color and colorswitch" view:"no-inline"`
 	TimesHit   int        `view:"-" json:"-"`
@@ -229,23 +225,9 @@ func (gr *Graph) Step() {
 
 // AddLine adds a new blank line
 func (gr *Graph) AddLine() {
-	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
 	// newLine.Defaults(rand.Intn(10))
 	gr.Lines = append(gr.Lines, newLine)
-}
-
-// AddObjective adds a new objective
-func (gr *Graph) AddObjective() {
-	rand.Seed(time.Now().UnixNano())
-	eq := fmt.Sprintf("%f", 18*(rand.Float64()-0.5))
-	randNum := rand.Float64()
-	xPosN := fmt.Sprintf("%f", (18*(randNum-0.5))-1)
-	xPosP := fmt.Sprintf("%f", (18*(randNum-0.5))+1)
-	clr, _ := gist.ColorFromName("orange")
-	newLine := &Line{Expr{eq, nil, nil}, Expr{xPosN, nil, nil}, Expr{xPosP, nil, nil}, Expr{"-10", nil, nil}, Expr{"ifb(h, -1, 1, 10, -10)", nil, nil}, Expr{"", nil, nil}, LineColors{clr, gist.NilColor}, 0, true}
-	newLine.Compile()
-	gr.Lines = append(gr.Lines, newLine)
-	gr.Graph()
 }
 
 // Reset resets the graph to its starting position (one default line and default params)
@@ -276,19 +258,10 @@ func (gr *Graph) CompileExprs() {
 		if ln.Bounce.Expr == "" {
 			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 		}
-		if ln.MinX.Expr == "" {
-			ln.MinX.Expr = TheSettings.LineDefaults.MinX
+		if ln.GraphIf.Expr == "" {
+			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
-		if ln.MaxX.Expr == "" {
-			ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
-		}
-		if ln.MinY.Expr == "" {
-			ln.MinY.Expr = TheSettings.LineDefaults.MinY
-		}
-		if ln.MaxY.Expr == "" {
-			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
-		}
-		if CheckIfChanges(ln.Expr.Expr) || CheckIfChanges(ln.MinX.Expr) || CheckIfChanges(ln.MaxX.Expr) || CheckIfChanges(ln.MinY.Expr) || CheckIfChanges(ln.MaxY.Expr) || CheckIfChanges(ln.Bounce.Expr) {
+		if CheckIfChanges(ln.Expr.Expr) || CheckIfChanges(ln.GraphIf.Expr) || CheckIfChanges(ln.Bounce.Expr) {
 			ln.Changes = true
 		}
 		ln.TimesHit = 0
@@ -303,7 +276,10 @@ func CheckIfChanges(expr string) bool {
 	for _, d := range functionsThatHaveHat {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
-	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
+	if strings.Contains(expr, "a") || strings.Contains(expr, "h") {
+		return true
+	}
+	if strings.Contains(expr, "t") && !strings.Contains(expr, "true") {
 		return true
 	}
 	if strings.Contains(expr, "d") {
@@ -379,10 +355,7 @@ func CheckIfChanges(expr string) bool {
 func (ln *Line) Compile() {
 	ln.Expr.Compile()
 	ln.Bounce.Compile()
-	ln.MinX.Compile()
-	ln.MaxX.Compile()
-	ln.MinY.Compile()
-	ln.MaxY.Compile()
+	ln.GraphIf.Compile()
 }
 
 // Defaults sets the line to the defaults specified in settings
@@ -395,10 +368,7 @@ func (ln *Line) Defaults(lidx int) {
 		ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
 	}
 	ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
-	ln.MinX.Expr = TheSettings.LineDefaults.MinX
-	ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
-	ln.MinY.Expr = TheSettings.LineDefaults.MinY
-	ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
+	ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 	ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 }
 
@@ -452,17 +422,8 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 		if ln.Bounce.Expr == "" {
 			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 		}
-		if ln.MinX.Expr == "" {
-			ln.MinX.Expr = TheSettings.LineDefaults.MinX
-		}
-		if ln.MaxX.Expr == "0" {
-			ln.MaxX.Expr = TheSettings.LineDefaults.MaxX
-		}
-		if ln.MinY.Expr == "0" {
-			ln.MinY.Expr = TheSettings.LineDefaults.MinY
-		}
-		if ln.MaxY.Expr == "0" {
-			ln.MaxY.Expr = TheSettings.LineDefaults.MaxY
+		if ln.GraphIf.Expr == "" {
+			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
 	}
 	path := svgLines.Child(lidx).(*svg.Path)
@@ -483,12 +444,9 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 			return
 		}
 		fx := float64(x)
-		MinX := ln.MinX.Eval(fx, Gr.Params.Time, ln.TimesHit)
-		MaxX := ln.MaxX.Eval(fx, Gr.Params.Time, ln.TimesHit)
-		MinY := ln.MinY.Eval(fx, Gr.Params.Time, ln.TimesHit)
-		MaxY := ln.MaxY.Eval(fx, Gr.Params.Time, ln.TimesHit)
 		y := ln.Expr.Eval(fx, Gr.Params.Time, ln.TimesHit)
-		if fx > MinX && fx < MaxX && y > MinY && y < MaxY {
+		GraphIf := ln.GraphIf.EvalBool(fx, y, Gr.Params.Time, ln.TimesHit)
+		if GraphIf && gmin.Y < float32(y) && gmax.Y > float32(y) {
 			if start || skipped {
 				ps += fmt.Sprintf("M %v %v ", x, y)
 				start, skipped = false, false

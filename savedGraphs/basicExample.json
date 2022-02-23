@@ -34,17 +34,8 @@
       "Expr": {
         "Expr": "sin(x)"
       },
-      "MinX": {
-        "Expr": "-10"
-      },
-      "MaxX": {
-        "Expr": "10"
-      },
-      "MinY": {
-        "Expr": "-10"
-      },
-      "MaxY": {
-        "Expr": "10"
+      "GraphIf": {
+        "Expr": "true"
       },
       "Bounce": {
         "Expr": "0.95"
@@ -68,17 +59,8 @@
       "Expr": {
         "Expr": "2*(x-6)"
       },
-      "MinX": {
-        "Expr": "-10"
-      },
-      "MaxX": {
-        "Expr": "10"
-      },
-      "MinY": {
-        "Expr": "-10"
-      },
-      "MaxY": {
-        "Expr": "10"
+      "GraphIf": {
+        "Expr": "true"
       },
       "Bounce": {
         "Expr": "0.95"
@@ -102,17 +84,8 @@
       "Expr": {
         "Expr": "-2*(x+6)"
       },
-      "MinX": {
-        "Expr": "-10"
-      },
-      "MaxX": {
-        "Expr": "10"
-      },
-      "MinY": {
-        "Expr": "-10"
-      },
-      "MaxY": {
-        "Expr": "10"
+      "GraphIf": {
+        "Expr": "true"
       },
       "Bounce": {
         "Expr": "0.95"

@@ -45,10 +45,7 @@ type MarbleSettings struct {
 // LineDefaults are the settings for the default line
 type LineDefaults struct {
 	Expr       string
-	MinX       string
-	MaxX       string
-	MinY       string
-	MaxY       string
+	GraphIf    string
 	Bounce     string
 	LineColors LineColors
 }
@@ -153,10 +150,7 @@ func (ln *LineDefaults) BasicDefaults() {
 	ln.Expr = "x"
 	ln.LineColors.Color = gist.White
 	ln.Bounce = "0.95"
-	ln.MinX = "-10"
-	ln.MaxX = "10"
-	ln.MinY = "-10"
-	ln.MaxY = "10"
+	ln.GraphIf = "true"
 	ln.LineColors.ColorSwitch = gist.White
 }
 
