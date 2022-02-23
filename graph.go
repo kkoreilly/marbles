@@ -477,6 +477,7 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 
 	ps := ""
 	start := true
+	skipped := false
 	for x := gmin.X; x < gmax.X; x += ginc.X {
 		if problemWithEval {
 			return
@@ -487,15 +488,15 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 		MinY := ln.MinY.Eval(fx, Gr.Params.Time, ln.TimesHit)
 		MaxY := ln.MaxY.Eval(fx, Gr.Params.Time, ln.TimesHit)
 		y := ln.Expr.Eval(fx, Gr.Params.Time, ln.TimesHit)
-
 		if fx > MinX && fx < MaxX && y > MinY && y < MaxY {
-
-			if start {
+			if start || skipped {
 				ps += fmt.Sprintf("M %v %v ", x, y)
-				start = false
+				start, skipped = false, false
 			} else {
 				ps += fmt.Sprintf("L %v %v ", x, y)
 			}
+		} else {
+			skipped = true
 		}
 	}
 	path.SetData(ps)
