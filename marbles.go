@@ -196,6 +196,86 @@ func UpdateMarbles() {
 	}
 }
 
+// UpdateMarblesNoGraph updates marbles without graphing them
+func UpdateMarblesNoGraph() {
+	for _, m := range Marbles {
+
+		m.Vel.Y -= float32(Gr.Params.Gravity) * ((gsz.Y * gsz.X) / 400)
+		updtrate := float32(Gr.Params.UpdtRate)
+		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
+		ppos := m.Pos
+
+		for _, ln := range Gr.Lines {
+			if ln.Expr.Val == nil {
+				continue
+			}
+
+			yp := ln.Expr.Eval(float64(m.Pos.X), Gr.Params.Time, ln.TimesHit)
+			yn := ln.Expr.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+
+			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
+			MinX := ln.MinX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			MaxX := ln.MaxX.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			MinY := ln.MinY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			MaxY := ln.MaxY.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && (float64(npos.X) < MaxX && float64(npos.X) > MinX) && (float64(npos.Y) < MaxY && float64(npos.Y) > MinY) {
+				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
+				ln.TimesHit++
+
+				dly := yn - yp // change in the lines y
+				dx := npos.X - m.Pos.X
+
+				var yi, xi float32
+
+				if dx == 0 {
+
+					xi = npos.X
+					yi = float32(yn)
+
+				} else {
+
+					ml := float32(dly) / dx
+					dmy := npos.Y - m.Pos.Y
+					mm := dmy / dx
+
+					xi = (npos.X*(ml-mm) + npos.Y - float32(yn)) / (ml - mm)
+					yi = float32(ln.Expr.Eval(float64(xi), Gr.Params.Time, ln.TimesHit))
+					//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
+				}
+
+				yl := ln.Expr.Eval(float64(xi)-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
+				yr := ln.Expr.Eval(float64(xi)+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
+
+				//slp := (yr - yl) / .02
+				angLn := math32.Atan2(float32(yr-yl), 0.02)
+				angN := angLn + math.Pi/2 // + 90 deg
+
+				angI := math32.Atan2(m.Vel.Y, m.Vel.X)
+				angII := angI + math.Pi
+
+				angNII := angN - angII
+				angR := math.Pi + 2*angNII
+
+				// fmt.Printf("angLn: %v  angN: %v  angI: %v  angII: %v  angNII: %v  angR: %v\n",
+				// 	RadToDeg(angLn), RadToDeg(angN), RadToDeg(angI), RadToDeg(angII), RadToDeg(angNII), RadToDeg(angR))
+
+				Bounce := ln.Bounce.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+
+				nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
+				nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
+
+				m.Vel = mat32.Vec2{X: nvx, Y: nvy}
+
+				m.Pos = mat32.Vec2{X: xi, Y: yi}
+
+			}
+		}
+
+		m.PrvPos = ppos
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(Gr.Params.UpdtRate)))
+	}
+}
+
 // RunMarbles runs the marbles for NSteps
 func RunMarbles() {
 	if runningMarbles {
@@ -231,6 +311,18 @@ func RunMarbles() {
 			return
 		}
 	}
+}
+
+// Jump jumps n frames forward
+func Jump(n int) {
+	updt := svgGraph.UpdateStart()
+	for i := 0; i < n; i++ {
+		UpdateMarblesNoGraph()
+		Gr.Params.Time += Gr.Params.TimeStep
+	}
+	Gr.Lines.Graph(true)
+	UpdateMarbles()
+	svgGraph.UpdateEnd(updt)
 }
 
 // RadToDeg turns radians to degrees
