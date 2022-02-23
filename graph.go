@@ -276,7 +276,7 @@ func (gr *Graph) CompileExprs() {
 			ln.Changes = true
 		}
 		ln.TimesHit = 0
-		ln.LoopEquationChangeSlice()
+
 		// ln.CheckForDerivatives()
 		ln.Compile()
 	}

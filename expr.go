@@ -296,6 +296,7 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 
 // Compile gets an expression ready for evaluation.
 func (ex *Expr) Compile() error {
+	ex.LoopEquationChangeSlice()
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)
 	if HandleError(err) {

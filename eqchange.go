@@ -60,9 +60,9 @@ func InitEquationChangeSlice() {
 }
 
 // LoopEquationChangeSlice loops over the Equation Change slice and makes the replacements
-func (ln *Line) LoopEquationChangeSlice() {
+func (ex *Expr) LoopEquationChangeSlice() {
 	for _, d := range EquationChangeSlice {
-		ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, d.Old, d.New)
+		ex.Expr = strings.ReplaceAll(ex.Expr, d.Old, d.New)
 	}
 }
 
