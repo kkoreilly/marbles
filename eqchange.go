@@ -11,6 +11,13 @@ type EquationChange struct {
 	New string
 }
 
+// UnreadableChangeSlice is all of the strings that should change before compiling, but the user shouldn't see
+var UnreadableChangeSlice = []EquationChange{
+	{"''", "dd"},
+	{`"`, "dd"},
+	{"'", "d"},
+}
+
 // EquationChangeSlice is all of the strings that should be changed
 var EquationChangeSlice = []EquationChange{
 	{"^", "**"},
@@ -74,6 +81,14 @@ func (ex *Expr) LoopEquationChangeSlice() {
 	for _, d := range EquationChangeSlice {
 		ex.Expr = strings.ReplaceAll(ex.Expr, d.Old, d.New)
 	}
+}
+
+// LoopUnreadableChangeSlice loops over the unreadable Change slice and makes the replacements
+func LoopUnreadableChangeSlice(expr string) string {
+	for _, d := range UnreadableChangeSlice {
+		expr = strings.ReplaceAll(expr, d.Old, d.New)
+	}
+	return expr
 }
 
 // func (ln *Line) CheckForDerivatives() {

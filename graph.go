@@ -6,18 +6,16 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"strconv"
 	"strings"
 
 	"math/rand"
 
-	"github.com/Knetic/govaluate"
 	"github.com/goki/gi/gist"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
 	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
+	"gonum.org/v1/gonum/diff/fd"
 )
 
 // Graph contains the lines and parameters of a graph
@@ -28,12 +26,13 @@ type Graph struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	Expr       Expr       `width:"60" label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
-	GraphIf    Expr       `width:"60" desc:"Graph this line if this condition is true. Ex: x>3"`
-	Bounce     Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
-	LineColors LineColors `desc:"Line color and colorswitch" view:"no-inline"`
-	TimesHit   int        `view:"-" json:"-"`
-	Changes    bool       `view:"-" json:"-"`
+	Expr         Expr       `width:"60" label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
+	GraphIf      Expr       `width:"60" desc:"Graph this line if this condition is true. Ex: x>3"`
+	Bounce       Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
+	LineColors   LineColors `desc:"Line color and colorswitch" view:"no-inline"`
+	FunctionName string     `desc:"Name of the function, use to refer to it in other equations" inactive:"+" json:"-"`
+	TimesHit     int        `view:"-" json:"-"`
+	Changes      bool       `view:"-" json:"-"`
 }
 
 // Params is the parameters of the graph
@@ -70,6 +69,9 @@ type Lines []*Line
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
 var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand", "ad", "true", "false"}
+
+// functionNames has all of the supported function names, in order
+var functionNames = []string{"f", "g", "b", "c", "d", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y", "z"}
 
 // currentFile is the last saved or opened file, used for the save button
 var currentFile string
@@ -225,7 +227,7 @@ func (gr *Graph) Step() {
 
 // AddLine adds a new blank line
 func (gr *Graph) AddLine() {
-	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, "", 0, false}
 	// newLine.Defaults(rand.Intn(10))
 	gr.Lines = append(gr.Lines, newLine)
 }
@@ -241,7 +243,7 @@ func (gr *Graph) Reset() {
 
 // CompileExprs gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
-	for _, ln := range gr.Lines {
+	for k, ln := range gr.Lines {
 		ln.Changes = false
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
@@ -261,6 +263,7 @@ func (gr *Graph) CompileExprs() {
 		if ln.GraphIf.Expr == "" {
 			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
+		ln.SetFunctionName(k)
 		if CheckIfChanges(ln.Expr.Expr) || CheckIfChanges(ln.GraphIf.Expr) || CheckIfChanges(ln.Bounce.Expr) {
 			ln.Changes = true
 		}
@@ -268,6 +271,67 @@ func (gr *Graph) CompileExprs() {
 
 		// ln.CheckForDerivatives()
 		ln.Compile()
+	}
+}
+
+//SetFunctionName sets the function name for a line and adds the function to the functions
+func (ln *Line) SetFunctionName(k int) {
+	if k >= len(functionNames) {
+		ln.FunctionName = "unassigned"
+		return
+	}
+	functionName := functionNames[k]
+	ln.FunctionName = functionName + "(x)"
+	functions[functionName] = func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), functionName)
+		if !ok {
+			return 0, err
+		}
+		val := float64(ln.Expr.Eval(args[0].(float64), Gr.Params.Time, ln.TimesHit))
+		return val, nil
+	}
+	functions[functionName+"d"] = func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), functionName+"d")
+		if !ok {
+			return 0, err
+		}
+		val := fd.Derivative(func(x float64) float64 {
+			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+		}, args[0].(float64), &fd.Settings{
+			Formula: fd.Central,
+		})
+		return val, nil
+	}
+	functions[functionName+"dd"] = func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), functionName+"dd")
+		if !ok {
+			return 0, err
+		}
+		val := fd.Derivative(func(x float64) float64 {
+			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+		}, args[0].(float64), &fd.Settings{
+			Formula: fd.Central2nd,
+		})
+		return val, nil
+	}
+	capitalName := strings.ToUpper(functionName)
+	functions[capitalName] = func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), capitalName)
+		if !ok {
+			return 0, err
+		}
+		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
+		return val, nil
+	}
+	functions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(2, len(args), functionName+"i")
+		if !ok {
+			return 0, err
+		}
+		min := args[0].(float64)
+		max := args[1].(float64)
+		val := ln.Expr.Integrate(min, max, ln.TimesHit)
+		return val, nil
 	}
 }
 
@@ -279,72 +343,72 @@ func CheckIfChanges(expr string) bool {
 	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
 		return true
 	}
-	if strings.Contains(expr, "d") {
+	// if strings.Contains(expr, "d") {
 
-		re := regexp.MustCompile(`d\((.*?)\)`)
-		strs := re.FindAllString(expr, -1)
-		for _, d := range strs {
-			d = strings.ReplaceAll(d, "d", "")
-			d = strings.ReplaceAll(d, "(", "")
-			d = strings.ReplaceAll(d, ")", "")
-			i, err := strconv.Atoi(d)
-			if HandleError(err) {
-				return false
-			}
-			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-		}
-	}
-	if strings.Contains(expr, "F") {
+	// 	re := regexp.MustCompile(`d\((.*?)\)`)
+	// 	strs := re.FindAllString(expr, -1)
+	// 	for _, d := range strs {
+	// 		d = strings.ReplaceAll(d, "d", "")
+	// 		d = strings.ReplaceAll(d, "(", "")
+	// 		d = strings.ReplaceAll(d, ")", "")
+	// 		i, err := strconv.Atoi(d)
+	// 		if HandleError(err) {
+	// 			return false
+	// 		}
+	// 		return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+	// 	}
+	// }
+	// if strings.Contains(expr, "F") {
 
-		re := regexp.MustCompile(`F\((.*?)\)`)
-		strs := re.FindAllString(expr, -1)
-		for _, d := range strs {
-			d = strings.ReplaceAll(d, "F", "")
-			d = strings.ReplaceAll(d, "(", "")
-			d = strings.ReplaceAll(d, ")", "")
-			i, err := strconv.Atoi(d)
-			if HandleError(err) {
-				return false
-			}
-			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-		}
-	}
-	if strings.Contains(expr, "f") {
+	// 	re := regexp.MustCompile(`F\((.*?)\)`)
+	// 	strs := re.FindAllString(expr, -1)
+	// 	for _, d := range strs {
+	// 		d = strings.ReplaceAll(d, "F", "")
+	// 		d = strings.ReplaceAll(d, "(", "")
+	// 		d = strings.ReplaceAll(d, ")", "")
+	// 		i, err := strconv.Atoi(d)
+	// 		if HandleError(err) {
+	// 			return false
+	// 		}
+	// 		return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+	// 	}
+	// }
+	// if strings.Contains(expr, "f") {
 
-		re := regexp.MustCompile(`f\((.*?)\)`)
-		strs := re.FindAllString(expr, -1)
-		for _, d := range strs {
-			d = strings.ReplaceAll(d, "f", "")
-			d = strings.ReplaceAll(d, "(", "")
-			d = strings.ReplaceAll(d, ")", "")
-			i, err := strconv.Atoi(d)
-			if HandleError(err) {
-				return false
-			}
-			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-		}
-	}
-	if strings.Contains(expr, "i") {
+	// 	re := regexp.MustCompile(`f\((.*?)\)`)
+	// 	strs := re.FindAllString(expr, -1)
+	// 	for _, d := range strs {
+	// 		d = strings.ReplaceAll(d, "f", "")
+	// 		d = strings.ReplaceAll(d, "(", "")
+	// 		d = strings.ReplaceAll(d, ")", "")
+	// 		i, err := strconv.Atoi(d)
+	// 		if HandleError(err) {
+	// 			return false
+	// 		}
+	// 		return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+	// 	}
+	// }
+	// if strings.Contains(expr, "i") {
 
-		re := regexp.MustCompile(`i\((.*?)\)`)
-		strs := re.FindAllString(expr, -1)
-		for _, d := range strs {
-			d = strings.ReplaceAll(d, "i", "")
-			d = strings.ReplaceAll(d, "(", "")
-			d = strings.ReplaceAll(d, ")", "")
-			args := strings.Split(d, ",")
-			for k, a := range args {
-				if k > 0 {
-					continue
-				}
-				i, err := strconv.Atoi(a)
-				if HandleError(err) {
-					continue
-				}
-				return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-			}
-		}
-	}
+	// 	re := regexp.MustCompile(`i\((.*?)\)`)
+	// 	strs := re.FindAllString(expr, -1)
+	// 	for _, d := range strs {
+	// 		d = strings.ReplaceAll(d, "i", "")
+	// 		d = strings.ReplaceAll(d, "(", "")
+	// 		d = strings.ReplaceAll(d, ")", "")
+	// 		args := strings.Split(d, ",")
+	// 		for k, a := range args {
+	// 			if k > 0 {
+	// 				continue
+	// 			}
+	// 			i, err := strconv.Atoi(a)
+	// 			if HandleError(err) {
+	// 				continue
+	// 			}
+	// 			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
+	// 		}
+	// 	}
+	// }
 	return false
 }
 
@@ -426,12 +490,12 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 	path := svgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
 	path.SetProp("stroke", ln.LineColors.Color)
-	var err error
-	ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
-	if HandleError(err) {
-		ln.Expr.Val = nil
-		return
-	}
+	// var err error
+	// ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
+	// if HandleError(err) {
+	// 	ln.Expr.Val = nil
+	// 	return
+	// }
 
 	ps := ""
 	start := true

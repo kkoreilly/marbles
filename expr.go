@@ -6,7 +6,6 @@ import (
 	"math/rand"
 
 	"github.com/Knetic/govaluate"
-	"gonum.org/v1/gonum/diff/fd"
 	"gonum.org/v1/gonum/integrate"
 )
 
@@ -199,61 +198,61 @@ var functions = map[string]govaluate.ExpressionFunction{
 	// 	val2 := float64(ln.Expr.Eval(currentX+inc, Gr.Params.Time, ln.TimesHit))
 	// 	return Deriv(val1, val2, inc), nil
 	// },
-	"f": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "f")
-		if !ok {
-			return 0, err
-		}
-		ln := Gr.Lines[int(args[0].(float64))]
-		val := float64(ln.Expr.Eval(args[1].(float64), Gr.Params.Time, ln.TimesHit))
-		return val, nil
-	},
-	"d": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "d")
-		if !ok {
-			return 0, err
-		}
-		ln := Gr.Lines[int(args[0].(float64))]
-		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
-		}, args[1].(float64), &fd.Settings{
-			Formula: fd.Central,
-		})
-		return val, nil
-	},
-	"sd": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "sd")
-		if !ok {
-			return 0, err
-		}
-		ln := Gr.Lines[int(args[0].(float64))]
-		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
-		}, args[1].(float64), &fd.Settings{
-			Formula: fd.Central2nd,
-		})
-		return val, nil
-	},
-	"i": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(3, len(args), "i")
-		if !ok {
-			return 0, err
-		}
-		min := args[1].(float64)
-		max := args[2].(float64)
-		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(min, max, ln.TimesHit)
-		return val, nil
-	},
-	"F": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "F")
-		if !ok {
-			return 0, err
-		}
-		ln := Gr.Lines[int(args[0].(float64))]
-		val := ln.Expr.Integrate(0, args[1].(float64), ln.TimesHit)
-		return val, nil
-	},
+	// "f": func(args ...interface{}) (interface{}, error) {
+	// 	ok, err := CheckArgs(2, len(args), "f")
+	// 	if !ok {
+	// 		return 0, err
+	// 	}
+	// 	ln := Gr.Lines[int(args[0].(float64))]
+	// 	val := float64(ln.Expr.Eval(args[1].(float64), Gr.Params.Time, ln.TimesHit))
+	// 	return val, nil
+	// },
+	// "d": func(args ...interface{}) (interface{}, error) {
+	// 	ok, err := CheckArgs(2, len(args), "d")
+	// 	if !ok {
+	// 		return 0, err
+	// 	}
+	// 	ln := Gr.Lines[int(args[0].(float64))]
+	// 	val := fd.Derivative(func(x float64) float64 {
+	// 		return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+	// 	}, args[1].(float64), &fd.Settings{
+	// 		Formula: fd.Central,
+	// 	})
+	// 	return val, nil
+	// },
+	// "dd": func(args ...interface{}) (interface{}, error) {
+	// 	ok, err := CheckArgs(2, len(args), "sd")
+	// 	if !ok {
+	// 		return 0, err
+	// 	}
+	// 	ln := Gr.Lines[int(args[0].(float64))]
+	// 	val := fd.Derivative(func(x float64) float64 {
+	// 		return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+	// 	}, args[1].(float64), &fd.Settings{
+	// 		Formula: fd.Central2nd,
+	// 	})
+	// 	return val, nil
+	// },
+	// "i": func(args ...interface{}) (interface{}, error) {
+	// 	ok, err := CheckArgs(3, len(args), "i")
+	// 	if !ok {
+	// 		return 0, err
+	// 	}
+	// 	min := args[1].(float64)
+	// 	max := args[2].(float64)
+	// 	ln := Gr.Lines[int(args[0].(float64))]
+	// 	val := ln.Expr.Integrate(min, max, ln.TimesHit)
+	// 	return val, nil
+	// },
+	// "F": func(args ...interface{}) (interface{}, error) {
+	// 	ok, err := CheckArgs(2, len(args), "F")
+	// 	if !ok {
+	// 		return 0, err
+	// 	}
+	// 	ln := Gr.Lines[int(args[0].(float64))]
+	// 	val := ln.Expr.Integrate(0, args[1].(float64), ln.TimesHit)
+	// 	return val, nil
+	// },
 }
 
 // Integrate returns the integral of an expression
@@ -297,8 +296,9 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 // Compile gets an expression ready for evaluation.
 func (ex *Expr) Compile() error {
 	ex.LoopEquationChangeSlice()
+	expr := LoopUnreadableChangeSlice(ex.Expr)
 	var err error
-	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ex.Expr, functions)
+	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
 	if HandleError(err) {
 		ex.Val = nil
 		return err

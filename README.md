@@ -66,11 +66,11 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * rand(v) - graphs a random number between 0 and 1 multiplied by the number specified for every value of x - creates quite a bit of lag and not recommended to use.
   * ife(v1,v2,v3,v4) - If v1 is equal to v2, returns v3. Otherwise returns v4. 
   * ifb(v1,v2,v3,v4,v5) - If v1 is between v2 and v3, returns v4. Otherwise returns v5.
-  * f(index, xval) - Value is the value of equation specified, with x replaced by xval. You can see the index of a line to the left of the equation.
-  * d(index, xval) - Takes the derivative of the equation at that index, using xval as the x value in the equation. For example, if line 0 is y = sin(x), d(0, x) is the same as cos(x). If line 4 is y = (e^x)-x^2, d(4, a) will be equal to (e^a)-2a. You can view the index of a line to the left of its equation. Please note that this function just gets an approximation of the derivative, not the actual derivative.
-  * sd(index, xval) - Same as d except takes the second derivative of the equation.
-  * i(index, a, b) - Takes the integral (area under the curve) of the equation specified by the index from a to b.
-  * F(index, xval) - Takes the antiderivative of the equation specified, using xval as the x value in the equation. Is the same as i(index, 0, xval).
+  * funcName(x) - Value is the value of equation specified, evaluated at x. You can see the function name of an equation to the right of the equation.
+  * funcName'(x) - Takes the derivative of the equation specified, evaluated at x. You can see the function name of an equation to the right of the equation. Please note that this function just gets an approximation of the derivative, not the actual derivative.
+  * funcName"(x) - Same as d except takes the second derivative of the equation.
+  * funcNamei(a, b) - Takes the integral (area under the curve) of the equation specified by the index from a to b.
+  * FUNCNAME(x) - Takes the antiderivative of the equation specified, evaluated at x. Is the same as funcNamei(0, x).
 
 ## Known Bugs
 
