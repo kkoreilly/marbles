@@ -68,14 +68,13 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * ifb(v1,v2,v3,v4,v5) - If v1 is between v2 and v3, returns v4. Otherwise returns v5.
   * funcName(x) - Value is the value of equation specified, evaluated at x. You can see the function name of an equation to the right of the equation.
   * funcName'(x) - Takes the derivative of the equation specified, evaluated at x. You can see the function name of an equation to the right of the equation. Please note that this function just gets an approximation of the derivative, not the actual derivative.
-  * funcName"(x) - Same as d except takes the second derivative of the equation.
-  * funcNamei(a, b) - Takes the integral (area under the curve) of the equation specified by the index from a to b.
+  * funcName"(x) - Same as funcName'(x) except takes the second derivative of the equation.
+  * funcNamei(a, b) - Takes the integral (area under the curve) of the equation specified from a to b.
   * FUNCNAME(x) - Takes the antiderivative of the equation specified, evaluated at x. Is the same as funcNamei(0, x).
 
 ## Known Bugs
 
 * Marbles will go sometimes through lines, especially if the lines are moving (using t or a)
-* On functions like tan(x), where x is undefined at a point, the app will draw a vertical line. 
 
 # Images
 
