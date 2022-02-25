@@ -57,15 +57,15 @@ func GetGraphs() GraphsDB {
 		var id int
 		err := rows.Scan(&id, &name, &data, &dstring)
 		if HandleError(err) {
-			break
+			continue
 		}
 		date, err := time.Parse(time.RFC3339, dstring)
 		if HandleError(err) {
-			break
+			continue
 		}
 		if time.Since(date).Hours() >= 168 { // if a week has passed since a graph was published remove it
 			RemoveGraph(id)
-			break
+			continue
 		}
 		theGraphsDB = append(theGraphsDB, &GraphDB{name, data, date})
 	}

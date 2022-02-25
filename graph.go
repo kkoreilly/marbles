@@ -68,7 +68,7 @@ type Lines []*Line
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
-var functionsThatHaveHat = []string{"asin", "acos", "atan", "sqrt", "abs", "tan", "cot", "fact", "rand", "ad", "true", "false"}
+var basicFunctionList = []string{}
 
 // functionNames has all of the supported function names, in order
 var functionNames = []string{"f", "g", "b", "c", "d", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y", "z"}
@@ -337,12 +337,45 @@ func (ln *Line) SetFunctionName(k int) {
 
 // CheckIfChanges checks if an equation changes over time
 func CheckIfChanges(expr string) bool {
-	for _, d := range functionsThatHaveHat {
+	for _, d := range basicFunctionList {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
 	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
 		return true
 	}
+	strs := before(expr, "'")
+	for _, d := range strs {
+		for k, fn := range functionNames {
+			if d == fn && k < len(Gr.Lines) {
+				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			}
+		}
+	}
+	strs = before(expr, `"`)
+	for _, d := range strs {
+		for k, fn := range functionNames {
+			if d == fn && k < len(Gr.Lines) {
+				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			}
+		}
+	}
+	strs = before(expr, "i")
+	for _, d := range strs {
+		for k, fn := range functionNames {
+			if d == fn && k < len(Gr.Lines) {
+				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			}
+		}
+	}
+	strs = before(expr, "(")
+	for _, d := range strs {
+		for k, fn := range functionNames {
+			if (d == fn || d == strings.ToUpper(fn)) && k < len(Gr.Lines) {
+				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			}
+		}
+	}
+
 	// if strings.Contains(expr, "d") {
 
 	// 	re := regexp.MustCompile(`d\((.*?)\)`)
@@ -410,6 +443,25 @@ func CheckIfChanges(expr string) bool {
 	// 	}
 	// }
 	return false
+}
+func before(str, substr string) []string {
+	result := []string{}
+	for {
+		pos := strings.Index(str, substr)
+		if pos == -1 {
+			return result
+		}
+		result = append(result, str[0:pos])
+		str = strings.Replace(str, substr, "", 1)
+	}
+
+}
+
+// InitBasicFunctionList adds all of the basic functions to a list
+func InitBasicFunctionList() {
+	for k := range functions {
+		basicFunctionList = append(basicFunctionList, k)
+	}
 }
 
 // Compile compiles all of the expressions in a line

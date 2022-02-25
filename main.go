@@ -44,6 +44,7 @@ func mainrun() {
 	TheSettings.Get()
 	Gr.Defaults()
 	InitEquationChangeSlice()
+	InitBasicFunctionList()
 	rec := ki.Node{} // receiver for events
 	rec.InitName(&rec, "rec")
 
