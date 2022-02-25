@@ -16,11 +16,12 @@ var UnreadableChangeSlice = []EquationChange{
 	{"''", "dd"},
 	{`"`, "dd"},
 	{"'", "d"},
+	{"^", "**"},
 }
 
 // EquationChangeSlice is all of the strings that should be changed
 var EquationChangeSlice = []EquationChange{
-	{"^", "**"},
+	{"**", "^"},
 	{"x(", "x*("},
 	{"t(", "t*("},
 	{"a(", "a*("},
