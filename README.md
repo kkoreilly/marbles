@@ -52,25 +52,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
   * +, -, \*, /
   * v1^v2 or v1\*\*v2 for exponents
   * v1%v2 for the modulo operation
-* The following functions are supported:
-  * sin(v), cos(v), tan(v) - sine, cosine, tangent
-  * csc(v), sec(v), cot(v) - cosecant, secant, cotangent
-  * asin(v), acos(v), atan(v) - inverse/arc sine, cosine, tangent
-  * pow(v1, v2) - same as v1^v2
-  * abs(v) - absolute value
-  * fact(v) - factorial of a number
-  * ceil(v), floor(v) - Round a number up/down
-  * mod(v1, v2) - same as v1%v2
-  * sqrt(v) - square root of a number
-  * ln(v) - natural logarithm of a number
-  * rand(v) - graphs a random number between 0 and 1 multiplied by the number specified for every value of x - creates quite a bit of lag and not recommended to use.
-  * ife(v1,v2,v3,v4) - If v1 is equal to v2, returns v3. Otherwise returns v4. 
-  * ifb(v1,v2,v3,v4,v5) - If v1 is between v2 and v3, returns v4. Otherwise returns v5.
-  * funcName(x) - Value is the value of equation specified, evaluated at x. You can see the function name of an equation to the right of the equation.
-  * funcName'(x) - Takes the derivative of the equation specified, evaluated at x. You can see the function name of an equation to the right of the equation. Please note that this function just gets an approximation of the derivative, not the actual derivative.
-  * funcName"(x) - Same as d except takes the second derivative of the equation.
-  * funcNamei(a, b) - Takes the integral (area under the curve) of the equation specified by the index from a to b.
-  * FUNCNAME(x) - Takes the antiderivative of the equation specified, evaluated at x. Is the same as funcNamei(0, x).
+* View the supported functions [here](https://github.com/kplat1/marbles/blob/master/FUNCTIONS.md)
 
 ## Known Bugs
 
