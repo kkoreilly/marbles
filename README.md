@@ -57,7 +57,6 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
 ## Known Bugs
 
 * Marbles will go sometimes through lines, especially if the lines are moving (using t or a)
-* On functions like tan(x), where x is undefined at a point, the app will draw a vertical line. 
 
 # Images
 
