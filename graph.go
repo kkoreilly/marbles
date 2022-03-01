@@ -375,73 +375,6 @@ func CheckIfChanges(expr string) bool {
 			}
 		}
 	}
-
-	// if strings.Contains(expr, "d") {
-
-	// 	re := regexp.MustCompile(`d\((.*?)\)`)
-	// 	strs := re.FindAllString(expr, -1)
-	// 	for _, d := range strs {
-	// 		d = strings.ReplaceAll(d, "d", "")
-	// 		d = strings.ReplaceAll(d, "(", "")
-	// 		d = strings.ReplaceAll(d, ")", "")
-	// 		i, err := strconv.Atoi(d)
-	// 		if HandleError(err) {
-	// 			return false
-	// 		}
-	// 		return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-	// 	}
-	// }
-	// if strings.Contains(expr, "F") {
-
-	// 	re := regexp.MustCompile(`F\((.*?)\)`)
-	// 	strs := re.FindAllString(expr, -1)
-	// 	for _, d := range strs {
-	// 		d = strings.ReplaceAll(d, "F", "")
-	// 		d = strings.ReplaceAll(d, "(", "")
-	// 		d = strings.ReplaceAll(d, ")", "")
-	// 		i, err := strconv.Atoi(d)
-	// 		if HandleError(err) {
-	// 			return false
-	// 		}
-	// 		return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-	// 	}
-	// }
-	// if strings.Contains(expr, "f") {
-
-	// 	re := regexp.MustCompile(`f\((.*?)\)`)
-	// 	strs := re.FindAllString(expr, -1)
-	// 	for _, d := range strs {
-	// 		d = strings.ReplaceAll(d, "f", "")
-	// 		d = strings.ReplaceAll(d, "(", "")
-	// 		d = strings.ReplaceAll(d, ")", "")
-	// 		i, err := strconv.Atoi(d)
-	// 		if HandleError(err) {
-	// 			return false
-	// 		}
-	// 		return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-	// 	}
-	// }
-	// if strings.Contains(expr, "i") {
-
-	// 	re := regexp.MustCompile(`i\((.*?)\)`)
-	// 	strs := re.FindAllString(expr, -1)
-	// 	for _, d := range strs {
-	// 		d = strings.ReplaceAll(d, "i", "")
-	// 		d = strings.ReplaceAll(d, "(", "")
-	// 		d = strings.ReplaceAll(d, ")", "")
-	// 		args := strings.Split(d, ",")
-	// 		for k, a := range args {
-	// 			if k > 0 {
-	// 				continue
-	// 			}
-	// 			i, err := strconv.Atoi(a)
-	// 			if HandleError(err) {
-	// 				continue
-	// 			}
-	// 			return CheckIfChanges(Gr.Lines[i].Expr.Expr)
-	// 		}
-	// 	}
-	// }
 	return false
 }
 func before(str, substr string) []string {
@@ -462,6 +395,7 @@ func InitBasicFunctionList() {
 	for k := range functions {
 		basicFunctionList = append(basicFunctionList, k)
 	}
+	basicFunctionList = append(basicFunctionList, "true", "false")
 }
 
 // Compile compiles all of the expressions in a line
