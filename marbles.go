@@ -228,6 +228,10 @@ func RunMarbles() {
 		nsteps = 1000000000000
 	}
 	for i := 0; i < nsteps; i++ {
+		for j := 0; j < TheSettings.NFramesPer-1; j++ {
+			UpdateMarblesData()
+			Gr.Params.Time += Gr.Params.TimeStep
+		}
 		UpdateMarbles()
 		if time.Since(start).Milliseconds() >= 1000 {
 			fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
