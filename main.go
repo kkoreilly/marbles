@@ -83,7 +83,8 @@ func mainrun() {
 	gmin = mat32.Vec2{X: -10, Y: -10}
 	gmax = mat32.Vec2{X: 10, Y: 10}
 	gsz = gmax.Sub(gmin)
-	ginc = gsz.DivScalar(float32(TheSettings.GraphSize))
+	var n float32 = 1.0 / float32(TheSettings.GraphInc)
+	ginc = mat32.Vec2{X: n, Y: n}
 
 	svgGraph.ViewBox.Min = gmin
 	svgGraph.ViewBox.Size = gsz
@@ -204,7 +205,8 @@ func mainrun() {
 				TheSettings.Save()
 				svgGraph.SetProp("min-width", TheSettings.GraphSize)
 				svgGraph.SetProp("min-height", TheSettings.GraphSize)
-				ginc = gsz.DivScalar(float32(TheSettings.GraphSize))
+				var n float32 = 1.0 / float32(TheSettings.GraphInc)
+				ginc = mat32.Vec2{X: n, Y: n}
 				Gr.Graph()
 				UpdateColors()
 				ResetMarbles()

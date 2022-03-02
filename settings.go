@@ -17,6 +17,7 @@ type Settings struct {
 	ColorSettings    ColorSettings    `view:"no-inline" label:"Color Settings"`
 	TrackingSettings TrackingSettings `view:"inline"`
 	GraphSize        int              `label:"Graph Size" min:"100" max:"1000"`
+	GraphInc         int              `label:"Line quality in n per x" min:"1" max:"100"`
 	NFramesPer       int              `label:"Number of times to update the marbles each render" min:"1" max:"100"`
 	ConfirmQuit      bool             `label:"Confirm App Close"`
 	PrettyJSON       bool             `label:"Save formatted JSON"`
@@ -137,6 +138,7 @@ func (se *Settings) Defaults() {
 	se.ColorSettings.Defaults()
 	se.TrackingSettings.Defaults()
 	se.GraphSize = 800
+	se.GraphInc = 40
 	se.NFramesPer = 1
 	se.ConfirmQuit = true
 	se.PrettyJSON = true
