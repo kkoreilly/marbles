@@ -17,9 +17,8 @@ import (
 )
 
 const ( // Width and height of the window, and size of the graph
-	width     = 1920
-	height    = 1080
-	graphSize = 800
+	width  = 1920
+	height = 1080
 )
 
 var (
@@ -71,8 +70,8 @@ func mainrun() {
 	frame := gi.AddNewFrame(mfr, "frame", gi.LayoutHoriz)
 
 	svgGraph = svg.AddNewSVG(frame, "graph")
-	svgGraph.SetProp("min-width", graphSize)
-	svgGraph.SetProp("min-height", graphSize)
+	svgGraph.SetProp("min-width", TheSettings.GraphSize)
+	svgGraph.SetProp("min-height", TheSettings.GraphSize)
 	svgGraph.SetStretchMaxWidth()
 	svgGraph.SetStretchMaxHeight()
 
@@ -84,7 +83,7 @@ func mainrun() {
 	gmin = mat32.Vec2{X: -10, Y: -10}
 	gmax = mat32.Vec2{X: 10, Y: 10}
 	gsz = gmax.Sub(gmin)
-	ginc = gsz.DivScalar(graphSize)
+	ginc = gsz.DivScalar(float32(TheSettings.GraphSize))
 
 	svgGraph.ViewBox.Min = gmin
 	svgGraph.ViewBox.Size = gsz
@@ -203,6 +202,9 @@ func mainrun() {
 		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, rec.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
+				svgGraph.SetProp("min-width", TheSettings.GraphSize)
+				svgGraph.SetProp("min-height", TheSettings.GraphSize)
+				ginc = gsz.DivScalar(float32(TheSettings.GraphSize))
 				Gr.Graph()
 				UpdateColors()
 				ResetMarbles()
