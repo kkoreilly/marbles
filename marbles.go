@@ -73,20 +73,14 @@ func UpdateMarbles() {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func UpdateMarblesGraph() {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println(err)
-		}
-	}()
+	if svgGraph.IsRendering() || svgGraph.IsUpdating() {
+		return
+	}
 	wupdt := svgGraph.TopUpdateStart()
 	defer svgGraph.TopUpdateEnd(wupdt)
 
 	updt := svgGraph.UpdateStart()
 	defer svgGraph.UpdateEnd(updt)
-
-	// this line of code is causing the error "panic: AddTo bad path"
-	// not very helpful given that its just rendering everything so probably something else is causing the problem.
-	// Currently the main crashing error, easily replicable by just running marbles a bunch of times - will end up crashing
 	svgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph(true)
