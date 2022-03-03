@@ -89,33 +89,38 @@ func UpdateMarblesGraph() {
 		circle := svgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
 		circle.SetProp("fill", m.Color)
-		tls := TheSettings.TrackingSettings
-		if Gr.Params.TrackingSettings.Override {
-			tls = Gr.Params.TrackingSettings.TrackingSettings
-		}
-		if tls.NTrackingFrames != 0 {
-			fslr := circle.Prop("fslr").(int)
-			if fslr <= 100/tls.Accuracy {
-				circle.SetProp("fslr", fslr+1)
-			} else {
-				lpos := circle.Prop("lpos").(mat32.Vec2)
-				circle.SetProp("fslr", 0)
-				circle.SetProp("lpos", m.Pos)
-				line := svg.AddNewLine(svgTrackingLines, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
-				clr := tls.LineColor
-				if clr == gist.White {
-					switch circle.Prop("fill").(type) {
-					case string:
-						clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
-					case gist.Color:
-						clr = circle.Prop("fill").(gist.Color)
-					}
+		m.UpdateTrackingLines(circle)
 
+	}
+}
+
+// UpdateTrackingLines adds a tracking line for a marble, if needed
+func (m *Marble) UpdateTrackingLines(circle *svg.Circle) {
+	tls := TheSettings.TrackingSettings
+	if Gr.Params.TrackingSettings.Override {
+		tls = Gr.Params.TrackingSettings.TrackingSettings
+	}
+	if tls.NTrackingFrames != 0 {
+		fslr := circle.Prop("fslr").(int)
+		if fslr <= 100/tls.Accuracy {
+			circle.SetProp("fslr", fslr+1)
+		} else {
+			lpos := circle.Prop("lpos").(mat32.Vec2)
+			circle.SetProp("fslr", 0)
+			circle.SetProp("lpos", m.Pos)
+			line := svg.AddNewLine(svgTrackingLines, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
+			clr := tls.LineColor
+			if clr == gist.White {
+				switch circle.Prop("fill").(type) {
+				case string:
+					clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
+				case gist.Color:
+					clr = circle.Prop("fill").(gist.Color)
 				}
-				line.SetProp("stroke", clr)
-			}
-		}
 
+			}
+			line.SetProp("stroke", clr)
+		}
 	}
 }
 
@@ -136,61 +141,11 @@ func UpdateMarblesData() {
 			yp := ln.Expr.Eval(float64(m.Pos.X), Gr.Params.Time, ln.TimesHit)
 			yn := ln.Expr.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
 
-			// fmt.Printf("y: %v npos: %v pos: %v\n", y, npos.Y, m.Pos.Y)
-			GraphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, Gr.Params.Time, ln.TimesHit)
-			MinX, MaxX, MinY, MaxY := gmin.X, gmax.X, gmin.Y, gmax.Y
-			if ((float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)) && GraphIf && npos.Y > MinY && npos.Y < MaxY && npos.X > MinX && npos.X < MaxX {
-				// fmt.Printf("Collided! Equation is: %v \n", ln.Eq)
+			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
-
 				setColor = ln.LineColors.ColorSwitch
-
-				dly := yn - yp // change in the lines y
-				dx := npos.X - m.Pos.X
-
-				var yi, xi float32
-
-				if dx == 0 {
-
-					xi = npos.X
-					yi = float32(yn)
-
-				} else {
-
-					ml := float32(dly) / dx
-					dmy := npos.Y - m.Pos.Y
-					mm := dmy / dx
-
-					xi = (npos.X*(ml-mm) + npos.Y - float32(yn)) / (ml - mm)
-					yi = float32(ln.Expr.Eval(float64(xi), Gr.Params.Time, ln.TimesHit))
-					//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
-				}
-
-				yl := ln.Expr.Eval(float64(xi)-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
-				yr := ln.Expr.Eval(float64(xi)+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
-
-				//slp := (yr - yl) / .02
-				angLn := math32.Atan2(float32(yr-yl), 0.02)
-				angN := angLn + math.Pi/2 // + 90 deg
-
-				angI := math32.Atan2(m.Vel.Y, m.Vel.X)
-				angII := angI + math.Pi
-
-				angNII := angN - angII
-				angR := math.Pi + 2*angNII
-
-				// fmt.Printf("angLn: %v  angN: %v  angI: %v  angII: %v  angNII: %v  angR: %v\n",
-				// 	RadToDeg(angLn), RadToDeg(angN), RadToDeg(angI), RadToDeg(angII), RadToDeg(angNII), RadToDeg(angR))
-
-				Bounce := ln.Bounce.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
-
-				nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
-				nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
-
-				m.Vel = mat32.Vec2{X: nvx, Y: nvy}
-
-				m.Pos = mat32.Vec2{X: xi, Y: yi}
-
+				m.Pos, m.Vel = m.CalcCollide(ln, npos, yp, yn)
+				break
 			}
 		}
 
@@ -201,6 +156,64 @@ func UpdateMarblesData() {
 		}
 
 	}
+}
+
+// Collided returns true if the marble has collided with the line, and false if the marble has not.
+func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
+	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, Gr.Params.Time, ln.TimesHit)
+	inBounds := npos.Y > gmin.Y && npos.Y < gmax.Y && npos.X > gmin.X && npos.X < gmax.X
+	collided := (float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)
+	if collided && graphIf && inBounds {
+		return true
+	}
+	return false
+}
+
+// CalcCollide calculates the new position and velocityof a marble after collision
+func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.Vec2, mat32.Vec2) {
+	dly := yn - yp // change in the lines y
+	dx := npos.X - m.Pos.X
+
+	var yi, xi float32
+
+	if dx == 0 {
+
+		xi = npos.X
+		yi = float32(yn)
+
+	} else {
+
+		ml := float32(dly) / dx
+		dmy := npos.Y - m.Pos.Y
+		mm := dmy / dx
+
+		xi = (npos.X*(ml-mm) + npos.Y - float32(yn)) / (ml - mm)
+		yi = float32(ln.Expr.Eval(float64(xi), Gr.Params.Time, ln.TimesHit))
+		//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
+	}
+
+	yl := ln.Expr.Eval(float64(xi)-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
+	yr := ln.Expr.Eval(float64(xi)+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
+
+	//slp := (yr - yl) / .02
+	angLn := math32.Atan2(float32(yr-yl), 0.02)
+	angN := angLn + math.Pi/2 // + 90 deg
+
+	angI := math32.Atan2(m.Vel.Y, m.Vel.X)
+	angII := angI + math.Pi
+
+	angNII := angN - angII
+	angR := math.Pi + 2*angNII
+
+	Bounce := ln.Bounce.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+
+	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
+	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
+
+	vel := mat32.Vec2{X: nvx, Y: nvy}
+	pos := mat32.Vec2{X: xi, Y: yi}
+
+	return pos, vel
 }
 
 // RunMarbles runs the marbles for NSteps
@@ -252,11 +265,6 @@ func Jump(n int) {
 		Gr.Params.Time += Gr.Params.TimeStep
 	}
 	Gr.Lines.Graph(true)
-	UpdateMarblesGraph()
+	UpdateMarbles()
 	svgGraph.UpdateEnd(updt)
-}
-
-// RadToDeg turns radians to degrees
-func RadToDeg(rad float32) float32 {
-	return rad * 180 / math.Pi
 }
