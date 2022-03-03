@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	"math/rand"
-
 	"github.com/goki/gi/gist"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
@@ -519,16 +517,6 @@ func InitCoords() {
 	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
 	svgGraph.UpdateEnd(updt)
-}
-
-// Init makes a marble
-func (mb *Marble) Init(diff float32) {
-	randNum := (rand.Float64() * 2) - 1
-	xPos := randNum * Gr.Params.Width
-	mb.Pos = mat32.Vec2{X: float32(xPos), Y: Gr.Params.MaxSize.Y - diff}
-	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
-	mb.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
-	mb.PrvPos = mb.Pos
 }
 
 // Defaults sets the graph parameters to the default settings

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"time"
 
 	"github.com/chewxy/math32"
@@ -17,6 +18,7 @@ type Marble struct {
 	Vel    mat32.Vec2
 	PrvPos mat32.Vec2
 	Color  gist.Color
+	Track  bool
 }
 
 // Marbles contains all of the marbles
@@ -46,6 +48,17 @@ func GraphMarblesInit() {
 		circle.SetProp("lpos", mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y})
 	}
 	svgGraph.UpdateEnd(updt)
+}
+
+// Init makes a marble
+func (m *Marble) Init(diff float32) {
+	randNum := (rand.Float64() * 2) - 1
+	xPos := randNum * Gr.Params.Width
+	m.Pos = mat32.Vec2{X: float32(xPos), Y: Gr.Params.MaxSize.Y - diff}
+	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
+	m.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
+	m.PrvPos = m.Pos
+	m.Track = TheSettings.TrackingSettings.TrackByDefault
 }
 
 // InitMarbles creates the marbles and puts them at their initial positions
@@ -100,7 +113,7 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle) {
 	if Gr.Params.TrackingSettings.Override {
 		tls = Gr.Params.TrackingSettings.TrackingSettings
 	}
-	if tls.NTrackingFrames != 0 {
+	if m.Track {
 		fslr := circle.Prop("fslr").(int)
 		if fslr <= 100/tls.Accuracy {
 			circle.SetProp("fslr", fslr+1)
@@ -245,7 +258,14 @@ func RunMarbles() {
 			start = time.Now()
 			startFrames = i
 		}
-		if (i-trackingStartFrames > tls.NTrackingFrames) && tls.NTrackingFrames != 0 {
+		usesTrackingLines := false
+		for _, m := range Marbles {
+			if m.Track {
+				usesTrackingLines = true
+				break
+			}
+		}
+		if usesTrackingLines && (i-trackingStartFrames > tls.NTrackingFrames) {
 			svgTrackingLines.DeleteChildren(true)
 			trackingStartFrames = i
 		}
