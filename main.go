@@ -207,9 +207,7 @@ func mainrun() {
 				svgGraph.SetProp("min-height", TheSettings.GraphSize)
 				var n float32 = 1.0 / float32(TheSettings.GraphInc)
 				ginc = mat32.Vec2{X: n, Y: n}
-				Gr.Graph()
 				UpdateColors()
-				ResetMarbles()
 			} else if sig == int64(gi.DialogCanceled) {
 				TheSettings = pSettings
 			}
