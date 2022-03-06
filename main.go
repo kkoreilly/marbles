@@ -74,7 +74,6 @@ func mainrun() {
 	svgGraph.SetProp("min-height", TheSettings.GraphSize)
 	svgGraph.SetStretchMaxWidth()
 	svgGraph.SetStretchMaxHeight()
-
 	svgLines = svg.AddNewGroup(svgGraph, "SvgLines")
 	svgMarbles = svg.AddNewGroup(svgGraph, "SvgMarbles")
 	svgCoords = svg.AddNewGroup(svgGraph, "SvgCoords")
