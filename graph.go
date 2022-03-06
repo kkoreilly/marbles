@@ -186,6 +186,7 @@ func (gr *Graph) Graph() {
 	if runningMarbles {
 		return
 	}
+	InitCoords()
 	gr.CompileExprs()
 	ResetMarbles()
 	gr.Params.Time = 0
@@ -428,7 +429,10 @@ func (ls *Lines) Defaults() {
 
 // Graph graphs the lines
 func (ls *Lines) Graph(fromMarbles bool) {
-	updt := svgGraph.UpdateStart()
+	var updt bool
+	if !fromMarbles {
+		updt = svgGraph.UpdateStart()
+	}
 	svgGraph.ViewBox.Min = Gr.Params.MinSize
 	svgGraph.ViewBox.Size = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
 	gmin = Gr.Params.MinSize
@@ -444,7 +448,9 @@ func (ls *Lines) Graph(fromMarbles bool) {
 		}
 		ln.Graph(i, fromMarbles)
 	}
-	svgGraph.UpdateEnd(updt)
+	if !fromMarbles {
+		svgGraph.UpdateEnd(updt)
+	}
 }
 
 // Graph graphs a single line

@@ -27,6 +27,9 @@ var Marbles []*Marble
 // Whether marbles are currently being ran, used to prevent crashing with double click run marbles
 var runningMarbles bool
 
+// Whether marbles are actively being updated in UpdateMarblesGraph
+var inMarblesUpdate bool
+
 // GraphMarblesInit initializes the graph drawing of the marbles
 func GraphMarblesInit() {
 	updt := svgGraph.UpdateStart()
@@ -86,9 +89,10 @@ func UpdateMarbles() {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func UpdateMarblesGraph() {
-	if svgGraph.IsRendering() || svgGraph.IsUpdating() {
+	if svgGraph.IsRendering() || svgGraph.IsUpdating() || inMarblesUpdate {
 		return
 	}
+	inMarblesUpdate = true
 	wupdt := svgGraph.TopUpdateStart()
 	defer svgGraph.TopUpdateEnd(wupdt)
 
@@ -105,6 +109,7 @@ func UpdateMarblesGraph() {
 		m.UpdateTrackingLines(circle)
 
 	}
+	inMarblesUpdate = false
 }
 
 // UpdateTrackingLines adds a tracking line for a marble, if needed
@@ -253,8 +258,8 @@ func RunMarbles() {
 			Gr.Params.Time += Gr.Params.TimeStep
 		}
 		UpdateMarbles()
-		if time.Since(start).Milliseconds() >= 1000 {
-			fpsText.SetText(fmt.Sprintf("FPS: %v", i-startFrames))
+		if time.Since(start).Milliseconds() >= 3000 {
+			fpsText.SetText(fmt.Sprintf("FPS: %v", (i-startFrames)/3))
 			start = time.Now()
 			startFrames = i
 		}
