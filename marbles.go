@@ -30,6 +30,9 @@ var runningMarbles bool
 // Whether marbles are actively being updated in UpdateMarblesGraph
 var inMarblesUpdate bool
 
+// The current selected marble, -1 = none
+var selectedMarble = -1
+
 // GraphMarblesInit initializes the graph drawing of the marbles
 func GraphMarblesInit() {
 	updt := svgGraph.UpdateStart()
@@ -40,6 +43,7 @@ func GraphMarblesInit() {
 		// fmt.Printf("size: %v \n", size)
 		circle := svg.AddNewCircle(svgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
 		circle.SetProp("stroke", "none")
+		circle.SetProp("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
 			circle.SetProp("fill", colors[i%len(colors)])
 			m.Color, _ = gist.ColorFromName(colors[i%len(colors)])
@@ -73,6 +77,7 @@ func InitMarbles() {
 		m.Init(diff)
 		Marbles = append(Marbles, &m)
 	}
+	selectedMarble = -1
 }
 
 // ResetMarbles just calls InitMarbles and GraphMarblesInit
@@ -292,4 +297,26 @@ func Jump(n int) {
 	Gr.Lines.Graph(true)
 	UpdateMarbles()
 	svgGraph.UpdateEnd(updt)
+}
+
+// ToggleTrack toogles tracking setting for a certain marble
+func (m *Marble) ToggleTrack() {
+	m.Track = !m.Track
+}
+
+// SelectNextMarble selects the next marble in the viewbox
+func SelectNextMarble() {
+	if selectedMarble != -1 {
+		svgMarbles.Child(selectedMarble).SetProp("stroke", "none")
+	}
+	selectedMarble++
+	if selectedMarble >= len(Marbles) {
+		selectedMarble = 0
+	}
+	newMarble := Marbles[selectedMarble]
+	if newMarble.Pos.X < Gr.Params.MinSize.X || newMarble.Pos.X > Gr.Params.MaxSize.X || newMarble.Pos.Y < Gr.Params.MinSize.Y || newMarble.Pos.Y > Gr.Params.MaxSize.Y {
+		SelectNextMarble()
+		return
+	}
+	svgMarbles.Child(selectedMarble).SetProp("stroke", "yellow")
 }

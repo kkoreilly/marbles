@@ -167,6 +167,18 @@ var GraphProps = ki.Props{
 		// 	"icon":  "file-download",
 		// }},
 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
+		{Name: "SelectNextMarble", Value: ki.Props{
+			"label": "Select Next Marble",
+			"desc":  "selects the next marlbe",
+			"icon":  "stop",
+		}},
+		{Name: "TrackSelectedMarble", Value: ki.Props{
+			"label":           "Track",
+			"desc":            "toggles track for the currently selected marble",
+			"icon":            "stop",
+			"no-update-after": true,
+		}},
+		{Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "AddLine", Value: ki.Props{
 			"label": "Add New Line",
 			"desc":  "Adds a new line",
@@ -222,6 +234,19 @@ func (gr *Graph) Step() {
 		return
 	}
 	UpdateMarbles()
+}
+
+// SelectNextMarble calls select next marble
+func (gr *Graph) SelectNextMarble() {
+	SelectNextMarble()
+}
+
+// TrackSelectedMarble toggles track for the currently selected marble
+func (gr *Graph) TrackSelectedMarble() {
+	if selectedMarble == -1 {
+		return
+	}
+	Marbles[selectedMarble].ToggleTrack()
 }
 
 // AddLine adds a new blank line
