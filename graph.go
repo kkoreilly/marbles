@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gist"
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
@@ -168,15 +169,24 @@ var GraphProps = ki.Props{
 		// }},
 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "SelectNextMarble", Value: ki.Props{
-			"label": "Select Next Marble",
-			"desc":  "selects the next marlbe",
-			"icon":  "stop",
+			"label":           "Next Marble",
+			"desc":            "selects the next marble",
+			"icon":            "forward",
+			"no-update-after": true,
+			"shortcut":        gi.KeyFunFocusNext,
+		}},
+		{Name: "StopSelecting", Value: ki.Props{
+			"label":           "Unselect",
+			"desc":            "stops selecting the marble",
+			"icon":            "stop",
+			"no-update-after": true,
 		}},
 		{Name: "TrackSelectedMarble", Value: ki.Props{
 			"label":           "Track",
 			"desc":            "toggles track for the currently selected marble",
-			"icon":            "stop",
+			"icon":            "edit",
 			"no-update-after": true,
+			"shortcut":        gi.KeyFunTranspose,
 		}},
 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "AddLine", Value: ki.Props{
@@ -238,7 +248,28 @@ func (gr *Graph) Step() {
 
 // SelectNextMarble calls select next marble
 func (gr *Graph) SelectNextMarble() {
+	if !runningMarbles {
+		svgGraph.SetNeedsFullRender()
+		updt := svgGraph.UpdateStart()
+		defer svgGraph.UpdateEnd(updt)
+	}
 	SelectNextMarble()
+}
+
+// StopSelecting stops selecting current marble
+func (gr *Graph) StopSelecting() {
+	var updt bool
+	if !runningMarbles {
+		updt = svgGraph.UpdateStart()
+	}
+	if selectedMarble != -1 {
+		svgMarbles.Child(selectedMarble).SetProp("stroke", "none")
+		selectedMarble = -1
+	}
+	if !runningMarbles {
+		svgGraph.UpdateEnd(updt)
+		svgGraph.SetNeedsFullRender()
+	}
 }
 
 // TrackSelectedMarble toggles track for the currently selected marble
