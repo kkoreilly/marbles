@@ -94,7 +94,7 @@ func UpdateMarbles() {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func UpdateMarblesGraph() {
-	if svgGraph.IsRendering() || svgGraph.IsUpdating() || inMarblesUpdate {
+	if svgGraph.IsRendering() || svgGraph.IsUpdating() || vp.IsUpdatingNode() || inMarblesUpdate {
 		return
 	}
 	inMarblesUpdate = true
@@ -103,6 +103,7 @@ func UpdateMarblesGraph() {
 
 	updt := svgGraph.UpdateStart()
 	defer svgGraph.UpdateEnd(updt)
+
 	svgGraph.SetNeedsFullRender()
 
 	Gr.Lines.Graph(true)
