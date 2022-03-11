@@ -51,8 +51,8 @@ type Params struct {
 
 // GraphTrackingSettings contains tracking line settings and a bool for whether the graph should override user settings.
 type GraphTrackingSettings struct {
-	Override         bool `label:"Override user tracking settings. If false, TrackingSettings has no effect"`
-	TrackingSettings TrackingSettings
+	Override         bool             `label:"Override user tracking settings. If false, TrackingSettings has no effect"`
+	TrackingSettings TrackingSettings `view:"inline"`
 }
 
 // LineColors contains the color and colorswitch for a line

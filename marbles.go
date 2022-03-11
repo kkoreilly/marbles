@@ -65,7 +65,11 @@ func (m *Marble) Init(diff float32) {
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	m.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
 	m.PrvPos = m.Pos
-	m.Track = TheSettings.TrackingSettings.TrackByDefault
+	tls := TheSettings.TrackingSettings
+	if Gr.Params.TrackingSettings.Override {
+		tls = Gr.Params.TrackingSettings.TrackingSettings
+	}
+	m.Track = tls.TrackByDefault
 }
 
 // InitMarbles creates the marbles and puts them at their initial positions
