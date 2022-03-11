@@ -88,14 +88,15 @@ func ResetMarbles() {
 
 // UpdateMarbles calls update marbles graph and update marbles data
 func UpdateMarbles() {
-	UpdateMarblesData()
-	UpdateMarblesGraph()
+	if !UpdateMarblesGraph() {
+		UpdateMarblesData()
+	}
 }
 
 // UpdateMarblesGraph updates the graph of the marbles
-func UpdateMarblesGraph() {
+func UpdateMarblesGraph() bool {
 	if svgGraph.IsRendering() || svgGraph.IsUpdating() || vp.IsUpdatingNode() || inMarblesUpdate {
-		return
+		return true
 	}
 	inMarblesUpdate = true
 	wupdt := svgGraph.TopUpdateStart()
@@ -116,6 +117,7 @@ func UpdateMarblesGraph() {
 
 	}
 	inMarblesUpdate = false
+	return false
 }
 
 // UpdateTrackingLines adds a tracking line for a marble, if needed
