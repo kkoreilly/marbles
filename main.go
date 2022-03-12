@@ -31,7 +31,7 @@ var (
 	gmin, gmax, gsz, ginc                             mat32.Vec2
 	mfr, statusBar                                    *gi.Frame
 	fpsText, errorText, versionText, currentFileText  *gi.Label
-	problemWithEval                                   bool
+	problemWithEval, problemWithCompile               bool
 )
 
 func main() {

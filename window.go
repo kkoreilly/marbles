@@ -16,23 +16,25 @@ func makeBasicElements() {
 	gstru.SetProp("height", "4.5em")
 	gstru.SetStruct(&Gr)
 	paramsEdit = gstru
-	lns = giv.AddNewTableView(mfr, "lns")
+
+	split := gi.AddNewSplitView(mfr, "split")
+	split.SetProp("min-height", TheSettings.GraphSize)
+
+	lns = giv.AddNewTableView(split, "lns")
 	lns.Viewport = vp
 	lns.SetSlice(&Gr.Lines)
 	eqTable = lns
 
-	frame := gi.AddNewFrame(mfr, "frame", gi.LayoutHoriz)
+	frame := gi.AddNewFrame(split, "frame", gi.LayoutHoriz)
 
 	svgGraph = svg.AddNewSVG(frame, "graph")
 	svgGraph.SetProp("min-width", TheSettings.GraphSize)
 	svgGraph.SetProp("min-height", TheSettings.GraphSize)
-	svgGraph.SetStretchMaxWidth()
-	svgGraph.SetStretchMaxHeight()
 	svgLines = svg.AddNewGroup(svgGraph, "SvgLines")
 	svgMarbles = svg.AddNewGroup(svgGraph, "SvgMarbles")
 	svgCoords = svg.AddNewGroup(svgGraph, "SvgCoords")
 	svgTrackingLines = svg.AddNewGroup(svgGraph, "SvgTrackingLines")
-
+	split.SetSplits(float32(width-TheSettings.GraphSize), float32(TheSettings.GraphSize)*7/8)
 	gmin = mat32.Vec2{X: -10, Y: -10}
 	gmax = mat32.Vec2{X: 10, Y: 10}
 	gsz = gmax.Sub(gmin)

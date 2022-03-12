@@ -300,6 +300,7 @@ func (ex *Expr) Compile() error {
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
 	if HandleError(err) {
+		problemWithCompile = true
 		ex.Val = nil
 		return err
 	}
