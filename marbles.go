@@ -106,8 +106,18 @@ func UpdateMarblesGraph() bool {
 	wupdt := svgGraph.TopUpdateStart()
 	defer svgGraph.TopUpdateEnd(wupdt)
 
+	if vp.IsUpdatingNode() {
+		inMarblesUpdate = false
+		return true
+	}
+
 	updt := svgGraph.UpdateStart()
 	defer svgGraph.UpdateEnd(updt)
+
+	if vp.IsUpdatingNode() {
+		inMarblesUpdate = false
+		return true
+	}
 
 	svgGraph.SetNeedsFullRender()
 
@@ -307,8 +317,11 @@ func Jump(n int) {
 }
 
 // ToggleTrack toogles tracking setting for a certain marble
-func (m *Marble) ToggleTrack() {
+func (m *Marble) ToggleTrack(idx int) {
 	m.Track = !m.Track
+	circle := svgMarbles.Child(idx)
+	circle.SetProp("fslr", 0)
+	circle.SetProp("lpos", mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y})
 }
 
 // SelectNextMarble selects the next marble in the viewbox

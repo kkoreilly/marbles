@@ -13,17 +13,24 @@ func makeBasicElements() {
 	// the StructView will also show the Graph Toolbar which is main actions..
 	gstru = giv.AddNewStructView(mfr, "gstru")
 	gstru.Viewport = vp // needs vp early for toolbar
-	gstru.SetProp("height", "4.5em")
+	gstru.SetProp("height", "1em")
 	gstru.SetStruct(&Gr)
-	paramsEdit = gstru
 
 	split := gi.AddNewSplitView(mfr, "split")
 	split.SetProp("min-height", TheSettings.GraphSize)
-
-	lns = giv.AddNewTableView(split, "lns")
+	sidesplit := gi.AddNewSplitView(split, "sidesplit")
+	sidesplit.Dim = mat32.Y
+	lns = giv.AddNewTableView(sidesplit, "lns")
 	lns.Viewport = vp
 	lns.SetSlice(&Gr.Lines)
 	eqTable = lns
+
+	params := giv.AddNewStructView(sidesplit, "params")
+	params.SetStruct(&Gr.Params)
+	paramsEdit = params
+	params.ChildByName("toolbar", -1).Delete(true)
+
+	sidesplit.SetSplits(6, 4)
 
 	frame := gi.AddNewFrame(split, "frame", gi.LayoutHoriz)
 

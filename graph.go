@@ -19,7 +19,7 @@ import (
 
 // Graph contains the lines and parameters of a graph
 type Graph struct {
-	Params Params `view:"inline" desc:"the parameters for updating the marbles"`
+	Params Params `view:"-" desc:"the parameters for updating the marbles"`
 	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
 }
 
@@ -281,7 +281,7 @@ func (gr *Graph) TrackSelectedMarble() {
 	if selectedMarble == -1 {
 		return
 	}
-	Marbles[selectedMarble].ToggleTrack()
+	Marbles[selectedMarble].ToggleTrack(selectedMarble)
 }
 
 // AddLine adds a new blank line
