@@ -67,7 +67,7 @@ func GraphMarblesInit() {
 func (m *Marble) Init(diff float32) {
 	randNum := (rand.Float64() * 2) - 1
 	xPos := randNum * Gr.Params.Width
-	m.Pos = mat32.Vec2{X: float32(xPos), Y: Gr.Params.MaxSize.Y - diff}
+	m.Pos = mat32.Vec2{X: float32(xPos) + Gr.Params.MarbleStartPos.X, Y: Gr.Params.MarbleStartPos.Y - diff}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	m.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
 	m.PrvPos = m.Pos

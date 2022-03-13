@@ -1,8 +1,12 @@
 {
   "Params": {
     "NMarbles": 10,
-    "NSteps": -1,
     "Width": 0,
+    "MarbleStartPos": {
+      "X": 0,
+      "Y": 10
+    },
+    "NSteps": -1,
     "StartSpeed": 0,
     "UpdtRate": {
       "Expr": {
