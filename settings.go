@@ -148,7 +148,7 @@ func (se *Settings) Defaults() {
 // Defaults sets the default settings for the tracking lines.
 func (ts *TrackingSettings) Defaults() {
 	ts.TrackByDefault = false
-	ts.NTrackingFrames = 1000
+	ts.NTrackingFrames = 300	
 	ts.Accuracy = 20
 	ts.LineColor = gist.White
 }

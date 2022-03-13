@@ -227,7 +227,6 @@ func (gr *Graph) Graph() {
 	errorText.SetText("")
 	gr.Lines.Graph(false)
 	gr.AutoSave()
-	svgTrackingLines.DeleteChildren(true)
 }
 
 // Run runs the marbles for NSteps

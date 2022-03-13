@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/chewxy/math32"
@@ -33,12 +34,16 @@ var inMarblesUpdate bool
 // The current selected marble, -1 = none
 var selectedMarble = -1
 
+var curStep = 0
+
 // GraphMarblesInit initializes the graph drawing of the marbles
 func GraphMarblesInit() {
 	updt := svgGraph.UpdateStart()
 
 	svgMarbles.DeleteChildren(true)
+	svgTrackingLines.DeleteChildren(true)
 	for i, m := range Marbles {
+		svg.AddNewGroup(svgTrackingLines, "tlm"+strconv.Itoa(i))
 		size := float32(TheSettings.MarbleSettings.MarbleSize) * gsz.Y / 20
 		// fmt.Printf("size: %v \n", size)
 		circle := svg.AddNewCircle(svgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
@@ -53,6 +58,7 @@ func GraphMarblesInit() {
 		}
 		circle.SetProp("fslr", 0)
 		circle.SetProp("lpos", mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y})
+		circle.SetProp("ss", 0)
 	}
 	svgGraph.UpdateEnd(updt)
 }
@@ -130,7 +136,7 @@ func UpdateMarblesGraph() bool {
 		circle := svgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
 		circle.SetProp("fill", m.Color)
-		m.UpdateTrackingLines(circle)
+		m.UpdateTrackingLines(circle, i)
 
 	}
 	inMarblesUpdate = false
@@ -138,7 +144,7 @@ func UpdateMarblesGraph() bool {
 }
 
 // UpdateTrackingLines adds a tracking line for a marble, if needed
-func (m *Marble) UpdateTrackingLines(circle *svg.Circle) {
+func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 	tls := TheSettings.TrackingSettings
 	if Gr.Params.TrackingSettings.Override {
 		tls = Gr.Params.TrackingSettings.TrackingSettings
@@ -148,10 +154,14 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle) {
 		if fslr <= 100/tls.Accuracy {
 			circle.SetProp("fslr", fslr+1)
 		} else {
+			svgGroup := svgTrackingLines.Child(idx)
 			lpos := circle.Prop("lpos").(mat32.Vec2)
 			circle.SetProp("fslr", 0)
 			circle.SetProp("lpos", m.Pos)
-			line := svg.AddNewLine(svgTrackingLines, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
+			if curStep-circle.Prop("ss").(int) >= tls.NTrackingFrames {
+				svgTrackingLines.Child(idx).DeleteChildAtIndex(0, true)
+			}
+			line := svg.AddNewLine(svgGroup, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
 			clr := tls.LineColor
 			if clr == gist.White {
 				switch circle.Prop("fill").(type) {
@@ -267,13 +277,13 @@ func RunMarbles() {
 	runningMarbles = true
 	stop = false
 	startFrames := 0
-	trackingStartFrames := 0
+	// trackingStartFrames := 0
 	start := time.Now()
 	nsteps := Gr.Params.NSteps
-	tls := TheSettings.TrackingSettings
-	if Gr.Params.TrackingSettings.Override {
-		tls = Gr.Params.TrackingSettings.TrackingSettings
-	}
+	// tls := TheSettings.TrackingSettings
+	// if Gr.Params.TrackingSettings.Override {
+	// 	tls = Gr.Params.TrackingSettings.TrackingSettings
+	// }
 	if nsteps == -1 {
 		nsteps = 1000000000000
 	}
@@ -291,22 +301,18 @@ func RunMarbles() {
 			start = time.Now()
 			startFrames = i
 		}
-		usesTrackingLines := false
-		for _, m := range Marbles {
-			if m.Track {
-				usesTrackingLines = true
-				break
-			}
-		}
-		if usesTrackingLines && (i-trackingStartFrames > tls.NTrackingFrames) {
-			svgTrackingLines.DeleteChildren(true)
-			trackingStartFrames = i
-		}
+		// for idx, m := range Marbles {
+		// 	if m.Track && (i-trackingStartFrames > tls.NTrackingFrames) {
+		// 		svgTrackingLines.Child(idx).DeleteChildren(true)
+		// 		trackingStartFrames = i
+		// 	}
+		// }
 
 		Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
 		if stop {
 			return
 		}
+		curStep = i
 	}
 }
 
@@ -325,9 +331,11 @@ func Jump(n int) {
 // ToggleTrack toogles tracking setting for a certain marble
 func (m *Marble) ToggleTrack(idx int) {
 	m.Track = !m.Track
+	svgTrackingLines.Child(idx).DeleteChildren(true)
 	circle := svgMarbles.Child(idx)
 	circle.SetProp("fslr", 0)
 	circle.SetProp("lpos", mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y})
+	circle.SetProp("ss", curStep)
 }
 
 // SelectNextMarble selects the next marble in the viewbox
