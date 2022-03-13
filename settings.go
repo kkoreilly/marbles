@@ -11,8 +11,8 @@ import (
 
 // Settings are the settings the app has
 type Settings struct {
-	LineDefaults     LineDefaults     `view:"inline" label:"Line Defaults"`
-	GraphDefaults    Params           `view:"inline" label:"Graph Param Defaults"`
+	LineDefaults     LineDefaults     `view:"no-inline" label:"Line Defaults"`
+	GraphDefaults    Params           `view:"no-inline" label:"Graph Param Defaults"`
 	MarbleSettings   MarbleSettings   `view:"inline" label:"Marble Settings"`
 	ColorSettings    ColorSettings    `view:"no-inline" label:"Color Settings"`
 	TrackingSettings TrackingSettings `view:"inline"`

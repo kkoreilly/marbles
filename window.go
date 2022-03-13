@@ -28,7 +28,6 @@ func makeBasicElements() {
 	params := giv.AddNewStructView(sidesplit, "params")
 	params.SetStruct(&Gr.Params)
 	paramsEdit = params
-	params.ChildByName("toolbar", -1).Delete(true)
 
 	sidesplit.SetSplits(6, 4)
 
@@ -75,7 +74,9 @@ func makeBasicElements() {
 	versionText.SetStretchMaxWidth()
 	versionText.SetText("Running version " + GetVersion())
 	lns.ChildByName("toolbar", -1).Delete(true)
+	params.ChildByName("toolbar", -1).Delete(true)
 	gstru.ChildByName("toolbar", -1).ChildByName("UpdtView", -1).Delete(true)
+	gstru.SetProp("overflow", "hidden")
 
 }
 
