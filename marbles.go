@@ -91,10 +91,13 @@ func ResetMarbles() {
 }
 
 // UpdateMarbles calls update marbles graph and update marbles data
-func UpdateMarbles() {
+func UpdateMarbles() bool {
 	if !UpdateMarblesGraph() {
 		UpdateMarblesData()
+	} else {
+		return true
 	}
+	return false
 }
 
 // UpdateMarblesGraph updates the graph of the marbles
@@ -168,8 +171,8 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle) {
 func UpdateMarblesData() {
 	for _, m := range Marbles {
 
-		m.Vel.Y -= float32(Gr.Params.Gravity) * ((gsz.Y * gsz.X) / 400)
-		updtrate := float32(Gr.Params.UpdtRate)
+		m.Vel.Y -= float32(Gr.Params.Gravity.Eval(float64(m.Pos.X))) * ((gsz.Y * gsz.X) / 400)
+		updtrate := float32(Gr.Params.UpdtRate.Eval(float64(m.Pos.X)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
 		setColor := gist.White
@@ -190,7 +193,7 @@ func UpdateMarblesData() {
 		}
 
 		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(Gr.Params.UpdtRate)))
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(Gr.Params.UpdtRate.Eval(float64(m.Pos.X)))))
 		if setColor != gist.White {
 			m.Color = setColor
 		}
@@ -277,9 +280,12 @@ func RunMarbles() {
 	for i := 0; i < nsteps; i++ {
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
 			UpdateMarblesData()
-			Gr.Params.Time += Gr.Params.TimeStep
+			Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
 		}
-		UpdateMarbles()
+		if UpdateMarbles() {
+			i--
+			continue
+		}
 		if time.Since(start).Milliseconds() >= 3000 {
 			fpsText.SetText(fmt.Sprintf("FPS: %v", (i-startFrames)/3))
 			start = time.Now()
@@ -297,7 +303,7 @@ func RunMarbles() {
 			trackingStartFrames = i
 		}
 
-		Gr.Params.Time += Gr.Params.TimeStep
+		Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
 		if stop {
 			return
 		}
@@ -309,7 +315,7 @@ func Jump(n int) {
 	updt := svgGraph.UpdateStart()
 	for i := 0; i < n; i++ {
 		UpdateMarblesData()
-		Gr.Params.Time += Gr.Params.TimeStep
+		Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
 	}
 	Gr.Lines.Graph(true)
 	UpdateMarbles()

@@ -29,7 +29,6 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	}
 	currentFile = string(filename)
 	UpdateCurrentFileText()
-	gr.Graph()
 	return err
 }
 
@@ -43,7 +42,6 @@ func (gr *Graph) OpenAutoSave() error {
 	if HandleError(err) {
 		return err
 	}
-	gr.Graph()
 	return err
 }
 
@@ -127,5 +125,4 @@ func (gr *Graph) OpenGraphFromString(data string) {
 	if HandleError(err) {
 		return
 	}
-	gr.Graph()
 }

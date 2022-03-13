@@ -25,7 +25,7 @@ type Graph struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	Expr         Expr       `width:"50" label:"y=" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
+	Expr         Expr       `width:"50" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
 	GraphIf      Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
 	Bounce       Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
 	LineColors   LineColors `desc:"Line color and colorswitch" view:"no-inline"`
@@ -38,15 +38,22 @@ type Line struct {
 type Params struct {
 	NMarbles         int     `min:"1" max:"10000" step:"10" desc:"number of marbles"`
 	NSteps           int     `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
-	StartSpeed       float64 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
-	UpdtRate         float64 `min:"0.001" max:"1" step:".01" desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	Gravity          float64 `min:"0" max:"2" step:".01" desc:"how fast it accelerates down"`
 	Width            float64 `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	TimeStep         float64 `min:"0.001" max:"100" step:".01" desc:"how fast time increases"`
+	StartSpeed       float64 `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
+	UpdtRate         Param   `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
+	Gravity          Param   `desc:"how fast it accelerates down"`
+	TimeStep         Param   `desc:"how fast time increases"`
 	Time             float64 `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
 	MinSize          mat32.Vec2
 	MaxSize          mat32.Vec2
 	TrackingSettings GraphTrackingSettings `view:"no-inline"`
+}
+
+// Param is the type of certain parameters that can change over time and x
+type Param struct {
+	Expr    Expr    `width:"50" label:""`
+	Changes bool    `view:"-"`
+	BaseVal float64 `view:"-"`
 }
 
 // GraphTrackingSettings contains tracking line settings and a bool for whether the graph should override user settings.
@@ -331,6 +338,9 @@ func (gr *Graph) CompileExprs() {
 		// ln.CheckForDerivatives()
 		ln.Compile()
 	}
+	gr.Params.UpdtRate.Compile()
+	gr.Params.Gravity.Compile()
+	gr.Params.TimeStep.Compile()
 }
 
 //SetFunctionName sets the function name for a line and adds the function to the functions
@@ -604,12 +614,30 @@ func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
 	pr.NSteps = -1
 	pr.StartSpeed = 0
-	pr.UpdtRate = .02
-	pr.Gravity = 0.1
-	pr.TimeStep = 0.01
+	pr.UpdtRate.Expr.Expr = ".02"
+	pr.Gravity.Expr.Expr = "0.1"
+	pr.TimeStep.Expr.Expr = "0.01"
 	pr.MinSize = mat32.Vec2{X: -10, Y: -10}
 	pr.MaxSize = mat32.Vec2{X: 10, Y: 10}
 	pr.Width = 0
 	pr.TrackingSettings.Override = false
 	pr.TrackingSettings.TrackingSettings.Defaults()
+}
+
+// Eval evaluates a parameter
+func (pr *Param) Eval(x float64) float64 {
+	if !pr.Changes {
+		return pr.BaseVal
+	}
+	return pr.Expr.Eval(x, Gr.Params.Time, 0)
+}
+
+// Compile compiles evalexpr and sets changes
+func (pr *Param) Compile() {
+	pr.Expr.Compile()
+	if CheckIfChanges(pr.Expr.Expr) || strings.Contains(pr.Expr.Expr, "x") {
+		pr.Changes = true
+	} else {
+		pr.BaseVal = pr.Expr.Eval(0, 0, 0)
+	}
 }

@@ -146,6 +146,7 @@ func UpdateColors() {
 
 // UpdateCurrentFileText updates the current file text
 func UpdateCurrentFileText() {
+	updt := statusBar.UpdateStart()
 	if currentFile == "" {
 		currentFileText.SetText("untitled.json")
 	}
@@ -158,5 +159,6 @@ func UpdateCurrentFileText() {
 		d = strings.ReplaceAll(d, `/`, "")
 		currentFileText.SetText(d)
 	}
+	statusBar.UpdateEnd(updt)
 
 }

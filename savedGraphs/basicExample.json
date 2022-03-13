@@ -2,11 +2,29 @@
   "Params": {
     "NMarbles": 10,
     "NSteps": -1,
-    "StartSpeed": 0,
-    "UpdtRate": 0.02,
-    "Gravity": 0.1,
     "Width": 0,
-    "TimeStep": 0.01,
+    "StartSpeed": 0,
+    "UpdtRate": {
+      "Expr": {
+        "Expr": "0.02"
+      },
+      "Changes": true,
+      "BaseVal": 0.02
+    },
+    "Gravity": {
+      "Expr": {
+        "Expr": "0.1"
+      },
+      "Changes": true,
+      "BaseVal": 0.1
+    },
+    "TimeStep": {
+      "Expr": {
+        "Expr": "0.01"
+      },
+      "Changes": true,
+      "BaseVal": 0.01
+    },
     "MinSize": {
       "X": -10,
       "Y": -10
