@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/Knetic/govaluate"
 	"gonum.org/v1/gonum/integrate"
@@ -18,6 +17,8 @@ type Expr struct {
 
 // factorial variables
 const lim = 100
+
+var randNum float64
 
 var facts [lim]float64
 
@@ -100,7 +101,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 		if !ok {
 			return 0, err
 		}
-		y := float64(rand.Float32()) * args[0].(float64)
+		y := randNum * args[0].(float64)
 		return y, nil
 	},
 	"sqrt": func(args ...interface{}) (interface{}, error) {

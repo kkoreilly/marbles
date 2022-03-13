@@ -209,7 +209,7 @@ Value is the natural logarithm of v.
 
 
 **Definition:**
-Value is a random number between 0 and 1 multiplied by v. rand(v) is calculated at every value of x, so it causes the program to lag heavily. It is not recommended you use rand(v).
+Value is a random number between 0 and 1 multiplied by v. The random number is determined on graph, so the value will be different each time the marbles are ran. The value of rand does not change while the marbles are being ran.
 
 **Examples:**
 * rand(1) will give a random value between 0 and 1.

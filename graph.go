@@ -6,7 +6,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gist"
@@ -225,6 +227,8 @@ func (gr *Graph) Graph() {
 	}
 	gr.Params.Time = 0
 	problemWithEval = false
+	rand.Seed(time.Now().UnixNano())
+	randNum = rand.Float64()
 	errorText.SetText("")
 	gr.Lines.Graph(false)
 	gr.AutoSave()
