@@ -217,28 +217,17 @@ Value is a random number between 0 and 1 multiplied by v. The random number is d
 </details>
 
 <details>
-<summary>ife(v1, v2, v3, v4)</summary>
+<summary>if(condition, v1, v2)</summary>
 
 
 **Definition:**
-If v1 is equal to v2, then the value of ife is v3. If v1 is not equal to v2, then the value of ife is v4.
+If condition is true, value is v1. Otherwise value is v2
 
 **Examples:**
 * ife(0, 1, 1, 2) will be equal to 2
 * ife(sin(pi), 0, 1, 2) will be equal to 1
 </details>
 
-<details>
-<summary>ifb(v1, v2, v3, v4, v5)</summary>
-
-
-**Definition:**
-If v1 is between v2 and v3, then the value of ifb is v4. Otherwise, the value of ifb is v5.
-
-**Examples:**
-* ifb(1, 0, 2, 1, 2) will be equal to 1
-* ifb(pi, 0, 1, 1, 2) will be equal to 2
-</details>
 
 <details>
 <summary>funcName(v)</summary>

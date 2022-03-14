@@ -168,25 +168,15 @@ var functions = map[string]govaluate.ExpressionFunction{
 		y := math.Atan(args[0].(float64))
 		return y, nil
 	},
-	"ifb": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(5, len(args), "ifb")
+	"if": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(3, len(args), "if")
 		if !ok {
 			return 0, err
 		}
-		if (args[0].(float64) > args[1].(float64)) && (args[0].(float64) < args[2].(float64)) {
-			return args[3].(float64), nil
+		if args[0].(bool) {
+			return args[1].(float64), nil
 		}
-		return args[4].(float64), nil
-	},
-	"ife": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(4, len(args), "ife")
-		if !ok {
-			return 0, err
-		}
-		if args[0].(float64) == args[1].(float64) {
-			return args[2].(float64), nil
-		}
-		return args[3].(float64), nil
+		return args[2].(float64), nil
 	},
 	// "d": func(args ...interface{}) (interface{}, error) {
 	// 	ok, err := CheckArgs(1, len(args), "d")
