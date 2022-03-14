@@ -18,6 +18,7 @@ var UnreadableChangeSlice = []EquationChange{
 	{"'", "d"},
 	{"^", "**"},
 	{"√", "sqrt"},
+	{"π", "pi"},
 }
 
 // EquationChangeSlice is all of the strings that should be changed
@@ -63,6 +64,7 @@ var EquationChangeSlice = []EquationChange{
 	{"a*tan(", "atan("},
 	{"fact*(", "fact("},
 	{"sqrt", "√"},
+	{"pi", "π"},
 }
 
 // InitEquationChangeSlice adds things that involve numbers to the EquationChangeSlice
