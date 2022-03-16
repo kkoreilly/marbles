@@ -5,6 +5,8 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -14,6 +16,7 @@ import (
 	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
 	"github.com/goki/mat32"
+	"github.com/inconshreveable/go-update"
 )
 
 const ( // Width and height of the window, and size of the graph
@@ -35,9 +38,29 @@ var (
 )
 
 func main() {
+	err := updateApp()
+	if err != nil {
+		panic(err)
+	}
 	gimain.Main(func() {
 		mainrun()
 	})
+}
+
+func updateApp() error {
+	fmt.Println("Loading executable file... ")
+	resp, err := http.Get("https://github.com/kplat1/marblesInfo/releases/download/v0.0-beta/marblesLinux")
+	if err != nil {
+		return err
+	}
+	fmt.Println("Applying update... ")
+	defer resp.Body.Close()
+	err = update.Apply(resp.Body, update.Options{})
+	if err != nil {
+		return err
+	}
+	fmt.Println("Finished!")
+	return err
 }
 
 func mainrun() {
