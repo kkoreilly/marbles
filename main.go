@@ -6,8 +6,10 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/goki/gi/gi"
@@ -38,29 +40,57 @@ var (
 )
 
 func main() {
-	err := updateApp()
-	if err != nil {
-		panic(err)
-	}
+	checkForUpdates()
 	gimain.Main(func() {
 		mainrun()
 	})
 }
 
-func updateApp() error {
-	fmt.Println("Loading executable file... ")
-	resp, err := http.Get("https://github.com/kplat1/marblesInfo/releases/download/v0.0-beta/marblesLinux")
-	if err != nil {
-		return err
+func checkForUpdates() {
+	version := GetVersion()
+	if strings.Contains(version, "dev") || strings.Contains(version, "err") {
+		return
 	}
-	fmt.Println("Applying update... ")
+	resp, err := http.Get("https://raw.githubusercontent.com/kplat1/marblesInfo/master/version.txt") // Check the latest version
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	defer resp.Body.Close()
+	onlineCurrentVersion, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if string(onlineCurrentVersion) == version {
+		return
+	}
+	fmt.Println("Loading executable file... ")
+	var execURL string
+	switch runtime.GOOS {
+	case "windows":
+		execURL = "https://github.com/kplat1/marblesInfo/releases/download/latest/windows.exe"
+	case "linux":
+		execURL = "https://github.com/kplat1/marblesInfo/releases/download/latest/linux"
+	case "darwin":
+		execURL = "https://github.com/kplat1/marblesInfo/releases/download/latest/mac"
+	default:
+		fmt.Println("not on supported os")
+		return
+	}
+	resp, err = http.Get(execURL)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
+	fmt.Println("Applying update... ")
 	err = update.Apply(resp.Body, update.Options{})
 	if err != nil {
-		return err
+		fmt.Println(err)
+		return
 	}
-	fmt.Println("Finished!")
-	return err
+	fmt.Println("Finished updating")
 }
 
 func mainrun() {
@@ -124,7 +154,7 @@ func HandleError(err error) bool {
 // GetVersion finds the locally installed version and returns it
 func GetVersion() string {
 	b, err := os.ReadFile("localData/version.txt")
-	if HandleError(err) {
+	if err != nil {
 		return "Error getting version"
 	}
 	return string(b)
