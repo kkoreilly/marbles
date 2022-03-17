@@ -340,6 +340,10 @@ func (m *Marble) ToggleTrack(idx int) {
 
 // SelectNextMarble selects the next marble in the viewbox
 func SelectNextMarble() {
+	if !runningMarbles {
+		updt := svgGraph.UpdateStart()
+		defer svgGraph.UpdateEnd(updt)
+	}
 	if selectedMarble != -1 {
 		svgMarbles.Child(selectedMarble).SetProp("stroke", "none")
 	}
@@ -353,4 +357,5 @@ func SelectNextMarble() {
 		return
 	}
 	svgMarbles.Child(selectedMarble).SetProp("stroke", "yellow")
+	svgGraph.SetNeedsFullRender()
 }
