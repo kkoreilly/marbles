@@ -27,7 +27,7 @@ type Graph struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	FunctionName string     `desc:"Name of the function, use to refer to it in other equations. Can't be changed" json:"-"`
+	FunctionName string     `desc:"Name of the function, use to refer to it in other equations" inactive:"+" json:"-"`
 	Expr         Expr       `width:"50" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
 	GraphIf      Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
 	Bounce       Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
@@ -263,6 +263,11 @@ func (gr *Graph) Step() {
 
 // SelectNextMarble calls select next marble
 func (gr *Graph) SelectNextMarble() {
+	if !runningMarbles {
+		svgGraph.SetNeedsFullRender()
+		updt := svgGraph.UpdateStart()
+		defer svgGraph.UpdateEnd(updt)
+	}
 	SelectNextMarble()
 }
 
