@@ -298,7 +298,7 @@ func (ex *Expr) Compile() error {
 	if ex.Params == nil {
 		ex.Params = make(map[string]interface{}, 2)
 	}
-	ex.Params["pi"] = math.Pi
+	ex.Params["π"] = math.Pi
 	ex.Params["e"] = math.E
 	return err
 }
