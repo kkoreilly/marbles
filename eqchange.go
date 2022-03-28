@@ -80,6 +80,12 @@ func InitEquationChangeSlice() {
 	}
 }
 
+// PrepareExpr prepares an expression by looping both equation change slices
+func (ex *Expr) PrepareExpr() string {
+	ex.LoopEquationChangeSlice()
+	return LoopUnreadableChangeSlice(ex.Expr)
+}
+
 // LoopEquationChangeSlice loops over the Equation Change slice and makes the replacements
 func (ex *Expr) LoopEquationChangeSlice() {
 	for _, d := range EquationChangeSlice {

@@ -262,10 +262,10 @@ func (ex *Expr) Integrate(min, max float64, h int) float64 {
 	accuracy := 16
 	dx := diff / float64(accuracy)
 	for x := min; x <= max; x += dx {
-		vals = append(vals, ex.Eval(x, Gr.Params.Time, h))
+		vals = append(vals, ex.Eval(x, TheGraph.Params.Time, h))
 	}
 	if len(vals) != accuracy+1 {
-		vals = append(vals, ex.Eval(max, Gr.Params.Time, h))
+		vals = append(vals, ex.Eval(max, TheGraph.Params.Time, h))
 	}
 	val := integrate.Romberg(vals, dx)
 	return sign * val
@@ -286,8 +286,7 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 
 // Compile gets an expression ready for evaluation.
 func (ex *Expr) Compile() error {
-	ex.LoopEquationChangeSlice()
-	expr := LoopUnreadableChangeSlice(ex.Expr)
+	expr := ex.PrepareExpr()
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
 	if HandleError(err) {

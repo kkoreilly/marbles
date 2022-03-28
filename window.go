@@ -14,7 +14,7 @@ func makeBasicElements() {
 	gstru = giv.AddNewStructView(mfr, "gstru")
 	gstru.Viewport = vp // needs vp early for toolbar
 	gstru.SetProp("height", "1em")
-	gstru.SetStruct(&Gr)
+	gstru.SetStruct(&TheGraph)
 
 	split := gi.AddNewSplitView(mfr, "split")
 	split.SetProp("min-height", TheSettings.GraphSize)
@@ -22,11 +22,11 @@ func makeBasicElements() {
 	sidesplit.Dim = mat32.Y
 	lns = giv.AddNewTableView(sidesplit, "lns")
 	lns.Viewport = vp
-	lns.SetSlice(&Gr.Lines)
+	lns.SetSlice(&TheGraph.Lines)
 	eqTable = lns
 
 	params := giv.AddNewStructView(sidesplit, "params")
-	params.SetStruct(&Gr.Params)
+	params.SetStruct(&TheGraph.Params)
 	paramsEdit = params
 
 	sidesplit.SetSplits(6, 4)
@@ -88,29 +88,29 @@ func makeMainMenu() {
 	fmen := win.MainMenu.ChildByName("File", 0).(*gi.Action)
 	fmen.Menu = make(gi.Menu, 0, 10)
 	fmen.Menu.AddAction(gi.ActOpts{Label: "New", ShortcutKey: gi.KeyFunMenuNew}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		Gr.Reset()
+		TheGraph.Reset()
 	})
 	fmen.Menu.AddSeparator("sep0")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Open", ShortcutKey: gi.KeyFunMenuOpen}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
-				Gr.OpenJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
+				TheGraph.OpenJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
 			}
 		})
 	})
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Open Autosave", ShortcutKey: gi.KeyFunMenuOpenAlt1}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		Gr.OpenAutoSave()
+		TheGraph.OpenAutoSave()
 	})
 	fmen.Menu.AddSeparator("sep1")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Save", ShortcutKey: gi.KeyFunMenuSave}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		if currentFile != "" {
-			Gr.SaveLast()
+			TheGraph.SaveLast()
 		} else {
 			giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 				if sig == int64(gi.DialogAccepted) {
 					dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
-					Gr.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
+					TheGraph.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
 				}
 			})
 		}
@@ -119,7 +119,7 @@ func makeMainMenu() {
 		giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
-				Gr.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
+				TheGraph.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
 			}
 		})
 	})
@@ -128,12 +128,12 @@ func makeMainMenu() {
 		gi.StringPromptDialog(vp, "", "", gi.DlgOpts{Title: "Upload Graph", Prompt: "Upload your graph for anyone else to see. Enter a name for your graph:"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
-				Gr.Upload(gi.StringPromptDialogValue(dlg))
+				TheGraph.Upload(gi.StringPromptDialogValue(dlg))
 			}
 		})
 	})
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Download Graph", Shortcut: "Control+D"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		Gr.Download()
+		TheGraph.Download()
 	})
 	fmen.Menu.AddSeparator("sep3")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Settings", ShortcutKey: gi.KeyFunMenuSaveAlt}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {

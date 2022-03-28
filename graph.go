@@ -91,8 +91,8 @@ var stop = false
 // last evaluated x value
 var currentX float64
 
-// Gr is current graph
-var Gr Graph
+// TheGraph is current graph
+var TheGraph Graph
 
 // KiTGraph is there to have the toolbar
 var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
@@ -355,7 +355,7 @@ func (ln *Line) SetFunctionName(k int) {
 		if !ok {
 			return 0, err
 		}
-		val := float64(ln.Expr.Eval(args[0].(float64), Gr.Params.Time, ln.TimesHit))
+		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.Params.Time, ln.TimesHit))
 		return val, nil
 	}
 	functions[functionName+"d"] = func(args ...interface{}) (interface{}, error) {
@@ -364,7 +364,7 @@ func (ln *Line) SetFunctionName(k int) {
 			return 0, err
 		}
 		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+			return ln.Expr.Eval(x, TheGraph.Params.Time, ln.TimesHit)
 		}, args[0].(float64), &fd.Settings{
 			Formula: fd.Central,
 		})
@@ -376,7 +376,7 @@ func (ln *Line) SetFunctionName(k int) {
 			return 0, err
 		}
 		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
+			return ln.Expr.Eval(x, TheGraph.Params.Time, ln.TimesHit)
 		}, args[0].(float64), &fd.Settings{
 			Formula: fd.Central2nd,
 		})
@@ -414,32 +414,32 @@ func CheckIfChanges(expr string) bool {
 	strs := before(expr, "'")
 	for _, d := range strs {
 		for k, fn := range functionNames {
-			if d == fn && k < len(Gr.Lines) {
-				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			if d == fn && k < len(TheGraph.Lines) {
+				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
 			}
 		}
 	}
 	strs = before(expr, `"`)
 	for _, d := range strs {
 		for k, fn := range functionNames {
-			if d == fn && k < len(Gr.Lines) {
-				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			if d == fn && k < len(TheGraph.Lines) {
+				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
 			}
 		}
 	}
 	strs = before(expr, "i")
 	for _, d := range strs {
 		for k, fn := range functionNames {
-			if d == fn && k < len(Gr.Lines) {
-				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			if d == fn && k < len(TheGraph.Lines) {
+				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
 			}
 		}
 	}
 	strs = before(expr, "(")
 	for _, d := range strs {
 		for k, fn := range functionNames {
-			if (d == fn || d == strings.ToUpper(fn)) && k < len(Gr.Lines) {
-				return CheckIfChanges(Gr.Lines[k].Expr.Expr)
+			if (d == fn || d == strings.ToUpper(fn)) && k < len(TheGraph.Lines) {
+				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
 			}
 		}
 	}
@@ -502,11 +502,11 @@ func (ls *Lines) Graph(fromMarbles bool) {
 	if !fromMarbles {
 		updt = svgGraph.UpdateStart()
 	}
-	svgGraph.ViewBox.Min = Gr.Params.MinSize
-	svgGraph.ViewBox.Size = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
-	gmin = Gr.Params.MinSize
-	gmax = Gr.Params.MaxSize
-	gsz = Gr.Params.MaxSize.Sub(Gr.Params.MinSize)
+	svgGraph.ViewBox.Min = TheGraph.Params.MinSize
+	svgGraph.ViewBox.Size = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
+	gmin = TheGraph.Params.MinSize
+	gmax = TheGraph.Params.MaxSize
+	gsz = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
 	nln := len(*ls)
 	if svgLines.NumChildren() != nln {
 		svgLines.SetNChildren(nln, svg.KiT_Path, "line")
@@ -564,8 +564,8 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 			return
 		}
 		fx := float64(x)
-		y := ln.Expr.Eval(fx, Gr.Params.Time, ln.TimesHit)
-		GraphIf := ln.GraphIf.EvalBool(fx, y, Gr.Params.Time, ln.TimesHit)
+		y := ln.Expr.Eval(fx, TheGraph.Params.Time, ln.TimesHit)
+		GraphIf := ln.GraphIf.EvalBool(fx, y, TheGraph.Params.Time, ln.TimesHit)
 		if GraphIf && gmin.Y < float32(y) && gmax.Y > float32(y) {
 			if start || skipped {
 				ps += fmt.Sprintf("M %v %v ", x, y)
@@ -585,10 +585,10 @@ func InitCoords() {
 	updt := svgGraph.UpdateStart()
 	svgCoords.DeleteChildren(true)
 
-	xAxis = svg.AddNewLine(svgCoords, "xAxis", Gr.Params.MinSize.X, 0, Gr.Params.MaxSize.X, 0)
+	xAxis = svg.AddNewLine(svgCoords, "xAxis", TheGraph.Params.MinSize.X, 0, TheGraph.Params.MaxSize.X, 0)
 	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	yAxis = svg.AddNewLine(svgCoords, "yAxis", 0, Gr.Params.MinSize.Y, 0, Gr.Params.MaxSize.Y)
+	yAxis = svg.AddNewLine(svgCoords, "yAxis", 0, TheGraph.Params.MinSize.Y, 0, TheGraph.Params.MaxSize.Y)
 	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
 	svgGraph.UpdateEnd(updt)
@@ -630,7 +630,7 @@ func (pr *Param) Eval(x float64) float64 {
 	if !pr.Changes {
 		return pr.BaseVal
 	}
-	return pr.Expr.Eval(x, Gr.Params.Time, 0)
+	return pr.Expr.Eval(x, TheGraph.Params.Time, 0)
 }
 
 // Compile compiles evalexpr and sets changes

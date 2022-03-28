@@ -13,7 +13,7 @@ func (gr *Graph) SaveLast() {
 	if currentFile == "" {
 		errorText.SetText("no file has been opened or saved")
 	} else {
-		Gr.SaveJSON(gi.FileName(currentFile))
+		TheGraph.SaveJSON(gi.FileName(currentFile))
 	}
 }
 

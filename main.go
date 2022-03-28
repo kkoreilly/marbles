@@ -42,7 +42,7 @@ func main() {
 
 func mainrun() {
 	TheSettings.Get()
-	Gr.Defaults()
+	TheGraph.Defaults()
 	InitEquationChangeSlice()
 	InitBasicFunctionList()
 	rec := ki.Node{} // receiver for events
@@ -60,8 +60,8 @@ func mainrun() {
 	makeBasicElements()
 	InitCoords()
 	ResetMarbles()
-	Gr.CompileExprs()
-	Gr.Lines.Graph(false)
+	TheGraph.CompileExprs()
+	TheGraph.Lines.Graph(false)
 	UpdateColors()
 
 	InitDB()
@@ -71,7 +71,7 @@ func mainrun() {
 		if inClosePrompt {
 			return
 		}
-		Gr.Stop()
+		TheGraph.Stop()
 		if !TheSettings.ConfirmQuit {
 			gi.Quit()
 		}

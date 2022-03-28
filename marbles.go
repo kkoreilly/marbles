@@ -66,14 +66,14 @@ func GraphMarblesInit() {
 // Init makes a marble
 func (m *Marble) Init(diff float32) {
 	randN := (rand.Float64() * 2) - 1
-	xPos := randN * Gr.Params.Width
-	m.Pos = mat32.Vec2{X: float32(xPos) + Gr.Params.MarbleStartPos.X, Y: Gr.Params.MarbleStartPos.Y - diff}
+	xPos := randN * TheGraph.Params.Width
+	m.Pos = mat32.Vec2{X: float32(xPos) + TheGraph.Params.MarbleStartPos.X, Y: TheGraph.Params.MarbleStartPos.Y - diff}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
-	m.Vel = mat32.Vec2{X: 0, Y: float32(-Gr.Params.StartSpeed)}
+	m.Vel = mat32.Vec2{X: 0, Y: float32(-TheGraph.Params.StartSpeed)}
 	m.PrvPos = m.Pos
 	tls := TheSettings.TrackingSettings
-	if Gr.Params.TrackingSettings.Override {
-		tls = Gr.Params.TrackingSettings.TrackingSettings
+	if TheGraph.Params.TrackingSettings.Override {
+		tls = TheGraph.Params.TrackingSettings.TrackingSettings
 	}
 	m.Track = tls.TrackByDefault
 }
@@ -81,8 +81,8 @@ func (m *Marble) Init(diff float32) {
 // InitMarbles creates the marbles and puts them at their initial positions
 func InitMarbles() {
 	Marbles = make([]*Marble, 0)
-	for n := 0; n < Gr.Params.NMarbles; n++ {
-		diff := (gsz.Y / 20) * 2 * float32(n) / float32(Gr.Params.NMarbles)
+	for n := 0; n < TheGraph.Params.NMarbles; n++ {
+		diff := (gsz.Y / 20) * 2 * float32(n) / float32(TheGraph.Params.NMarbles)
 		m := Marble{}
 		m.Init(diff)
 		Marbles = append(Marbles, &m)
@@ -130,7 +130,7 @@ func UpdateMarblesGraph() bool {
 
 	svgGraph.SetNeedsFullRender()
 
-	Gr.Lines.Graph(true)
+	TheGraph.Lines.Graph(true)
 	for i, m := range Marbles {
 
 		circle := svgMarbles.Child(i).(*svg.Circle)
@@ -146,8 +146,8 @@ func UpdateMarblesGraph() bool {
 // UpdateTrackingLines adds a tracking line for a marble, if needed
 func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 	tls := TheSettings.TrackingSettings
-	if Gr.Params.TrackingSettings.Override {
-		tls = Gr.Params.TrackingSettings.TrackingSettings
+	if TheGraph.Params.TrackingSettings.Override {
+		tls = TheGraph.Params.TrackingSettings.TrackingSettings
 	}
 	if m.Track {
 		fslr := circle.Prop("fslr").(int)
@@ -181,18 +181,18 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 func UpdateMarblesData() {
 	for _, m := range Marbles {
 
-		m.Vel.Y -= float32(Gr.Params.Gravity.Eval(float64(m.Pos.X))) * ((gsz.Y * gsz.X) / 400)
-		updtrate := float32(Gr.Params.UpdtRate.Eval(float64(m.Pos.X)))
+		m.Vel.Y -= float32(TheGraph.Params.Gravity.Eval(float64(m.Pos.X))) * ((gsz.Y * gsz.X) / 400)
+		updtrate := float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
 		setColor := gist.White
-		for _, ln := range Gr.Lines {
+		for _, ln := range TheGraph.Lines {
 			if ln.Expr.Val == nil {
 				continue
 			}
 
-			yp := ln.Expr.Eval(float64(m.Pos.X), Gr.Params.Time, ln.TimesHit)
-			yn := ln.Expr.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+			yp := ln.Expr.Eval(float64(m.Pos.X), TheGraph.Params.Time, ln.TimesHit)
+			yn := ln.Expr.Eval(float64(npos.X), TheGraph.Params.Time, ln.TimesHit)
 
 			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
@@ -203,7 +203,7 @@ func UpdateMarblesData() {
 		}
 
 		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(Gr.Params.UpdtRate.Eval(float64(m.Pos.X)))))
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X)))))
 		if setColor != gist.White {
 			m.Color = setColor
 		}
@@ -213,7 +213,7 @@ func UpdateMarblesData() {
 
 // Collided returns true if the marble has collided with the line, and false if the marble has not.
 func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
-	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, Gr.Params.Time, ln.TimesHit)
+	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, TheGraph.Params.Time, ln.TimesHit)
 	inBounds := npos.Y > gmin.Y && npos.Y < gmax.Y && npos.X > gmin.X && npos.X < gmax.X
 	collided := (float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)
 	if collided && graphIf && inBounds {
@@ -241,12 +241,12 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 		mm := dmy / dx
 
 		xi = (npos.X*(ml-mm) + npos.Y - float32(yn)) / (ml - mm)
-		yi = float32(ln.Expr.Eval(float64(xi), Gr.Params.Time, ln.TimesHit))
+		yi = float32(ln.Expr.Eval(float64(xi), TheGraph.Params.Time, ln.TimesHit))
 		//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
 	}
 
-	yl := ln.Expr.Eval(float64(xi)-.01, Gr.Params.Time, ln.TimesHit) // point to the left of x
-	yr := ln.Expr.Eval(float64(xi)+.01, Gr.Params.Time, ln.TimesHit) // point to the right of x
+	yl := ln.Expr.Eval(float64(xi)-.01, TheGraph.Params.Time, ln.TimesHit) // point to the left of x
+	yr := ln.Expr.Eval(float64(xi)+.01, TheGraph.Params.Time, ln.TimesHit) // point to the right of x
 
 	//slp := (yr - yl) / .02
 	angLn := math32.Atan2(float32(yr-yl), 0.02)
@@ -258,7 +258,7 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 	angNII := angN - angII
 	angR := math.Pi + 2*angNII
 
-	Bounce := ln.Bounce.Eval(float64(npos.X), Gr.Params.Time, ln.TimesHit)
+	Bounce := ln.Bounce.Eval(float64(npos.X), TheGraph.Params.Time, ln.TimesHit)
 
 	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
 	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
@@ -279,7 +279,7 @@ func RunMarbles() {
 	startFrames := 0
 	// trackingStartFrames := 0
 	start := time.Now()
-	nsteps := Gr.Params.NSteps
+	nsteps := TheGraph.Params.NSteps
 	// tls := TheSettings.TrackingSettings
 	// if Gr.Params.TrackingSettings.Override {
 	// 	tls = Gr.Params.TrackingSettings.TrackingSettings
@@ -290,7 +290,7 @@ func RunMarbles() {
 	for i := 0; i < nsteps; i++ {
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
 			UpdateMarblesData()
-			Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
+			TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
 		}
 		if UpdateMarbles() {
 			i--
@@ -308,7 +308,7 @@ func RunMarbles() {
 		// 	}
 		// }
 
-		Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
+		TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
 		if stop {
 			return
 		}
@@ -321,9 +321,9 @@ func Jump(n int) {
 	updt := svgGraph.UpdateStart()
 	for i := 0; i < n; i++ {
 		UpdateMarblesData()
-		Gr.Params.Time += Gr.Params.TimeStep.Eval(0)
+		TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
 	}
-	Gr.Lines.Graph(true)
+	TheGraph.Lines.Graph(true)
 	UpdateMarbles()
 	svgGraph.UpdateEnd(updt)
 }
@@ -352,7 +352,7 @@ func SelectNextMarble() {
 		selectedMarble = 0
 	}
 	newMarble := Marbles[selectedMarble]
-	if newMarble.Pos.X < Gr.Params.MinSize.X || newMarble.Pos.X > Gr.Params.MaxSize.X || newMarble.Pos.Y < Gr.Params.MinSize.Y || newMarble.Pos.Y > Gr.Params.MaxSize.Y {
+	if newMarble.Pos.X < TheGraph.Params.MinSize.X || newMarble.Pos.X > TheGraph.Params.MaxSize.X || newMarble.Pos.Y < TheGraph.Params.MinSize.Y || newMarble.Pos.Y > TheGraph.Params.MaxSize.Y {
 		SelectNextMarble()
 		return
 	}
