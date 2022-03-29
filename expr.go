@@ -251,8 +251,14 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 		problemWithEval = true
 		return 0
 	}
-	y := yi.(float64)
-	return y
+	switch yi.(type) {
+	case float64:
+		return yi.(float64)
+	default:
+		TheGraph.Stop()
+		errorText.SetText(fmt.Sprintf("Expression %v is invalid, it is a %T value, should be a float64 value", ex.Expr, yi))
+		return 0
+	}
 }
 
 // EvalBool checks if a statement is true based on the x, y, t and h values
@@ -271,8 +277,14 @@ func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 		problemWithEval = true
 		return true
 	}
-	r := ri.(bool)
-	return r
+	switch ri.(type) {
+	case bool:
+		return ri.(bool)
+	default:
+		TheGraph.Stop()
+		errorText.SetText(fmt.Sprintf("Expression %v is invalid, it is a %T value, should be a bool value", ex.Expr, ri))
+		return false
+	}
 }
 
 // FactorialMemoization is used to take the factorial for the fact() function
