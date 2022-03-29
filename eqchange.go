@@ -28,6 +28,12 @@ var EquationChangeSlice = []EquationChange{
 	{"**", "^"},
 	{"sqrt", "√"},
 	{"pi", "π"},
+	{"+.", "+0."},
+	{"-.", "-0."},
+	{"*.", "*0."},
+	{"/.", "/0."},
+	{"^.", "^0."},
+	{"(.", "(0."},
 	{"arcsin", "sin^-1"},
 	{"arccos", "cos^-1"},
 	{"arctan", "tan^-1"},
@@ -80,7 +86,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	for _, name := range functionsToDelete {
 		delete(functions, name)
 	}
-	for n := 0; n < 10; n++ { // if the expression contains a number and then a parameter or a function right after, then change it to multiply the number and the parameter/function
+	for n := 0; n < 10; n++ { // if the expression contains a number and then a parameter or a function right after, then change it to multiply the number and the parameter/function. Also ()number changes to ()*number
 		ns := strconv.Itoa(n)
 		for _, pname := range params {
 			expr = strings.ReplaceAll(expr, ns+pname, ns+"*"+pname)
@@ -90,8 +96,9 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 			expr = strings.ReplaceAll(expr, ns+fname, ns+"*"+fname)
 			expr = strings.ReplaceAll(expr, ns+"("+fname, ns+"*("+fname)
 		}
+		expr = strings.ReplaceAll(expr, ")"+ns, ")*"+ns)
 	}
-	for _, pname := range params { // if the expression contains a parameter before another parameter or a function, make it multiply
+	for _, pname := range params { // if the expression contains a parameter before another parameter or a function, make it multiply. Also ()parameter changes to ()*parameter
 		for _, pname1 := range params {
 			for strings.Contains(expr, pname+pname1) || strings.Contains(expr, pname+"("+pname1) {
 				expr = strings.ReplaceAll(expr, pname+pname1, pname+"*"+pname1)
@@ -102,6 +109,10 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 			expr = strings.ReplaceAll(expr, pname+fname, pname+"*"+fname)
 			expr = strings.ReplaceAll(expr, pname+"("+fname, pname+"*("+fname)
 		}
+		expr = strings.ReplaceAll(expr, ")"+pname, ")*"+pname)
+	}
+	for fname := range functions { // replace ()fname() with ()*fname()
+		expr = strings.ReplaceAll(expr, ")"+fname, ")*"+fname)
 	}
 
 	return expr, functions

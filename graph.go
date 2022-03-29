@@ -150,14 +150,14 @@ var GraphProps = ki.Props{
 			"icon":            "stop",
 			"no-update-after": true,
 		}},
-		{Name: "Jump", Value: ki.Props{
-			"label": "Jump",
-			"desc":  "Jump n frames forward",
-			"icon":  "run",
-			"Args": ki.PropSlice{
-				{Name: "n", Value: ki.Props{}},
-			},
-		}},
+		// {Name: "Jump", Value: ki.Props{
+		// 	"label": "Jump",
+		// 	"desc":  "Jump n frames forward",
+		// 	"icon":  "run",
+		// 	"Args": ki.PropSlice{
+		// 		{Name: "n", Value: ki.Props{}},
+		// 	},
+		// }},
 		{Name: "Step", Value: ki.Props{
 			"desc":            "steps the marbles for one step",
 			"icon":            "step-fwd",
@@ -245,13 +245,13 @@ func (gr *Graph) Stop() {
 	runningMarbles = false
 }
 
-// Jump jumps n frames forward
-func (gr *Graph) Jump(n int) {
-	if runningMarbles {
-		return
-	}
-	Jump(n)
-}
+// // Jump jumps n frames forward
+// func (gr *Graph) Jump(n int) {
+// 	if runningMarbles {
+// 		return
+// 	}
+// 	Jump(n)
+// }
 
 // Step does one step update of marbles
 func (gr *Graph) Step() {
@@ -259,6 +259,7 @@ func (gr *Graph) Step() {
 		return
 	}
 	UpdateMarbles()
+	TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
 }
 
 // SelectNextMarble calls select next marble
