@@ -43,7 +43,6 @@ func main() {
 func mainrun() {
 	TheSettings.Get()
 	TheGraph.Defaults()
-	InitEquationChangeSlice()
 	InitBasicFunctionList()
 	rec := ki.Node{} // receiver for events
 	rec.InitName(&rec, "rec")

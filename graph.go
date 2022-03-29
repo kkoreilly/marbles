@@ -80,7 +80,7 @@ var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orang
 var basicFunctionList = []string{}
 
 // functionNames has all of the supported function names, in order
-var functionNames = []string{"f", "g", "b", "c", "d", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y", "z"}
+var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y", "z"}
 
 // currentFile is the last saved or opened file, used for the save button
 var currentFile string
@@ -350,7 +350,7 @@ func (ln *Line) SetFunctionName(k int) {
 	}
 	functionName := functionNames[k]
 	ln.FunctionName = functionName + "(x) = "
-	functions[functionName] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[functionName] = func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), functionName)
 		if !ok {
 			return 0, err
@@ -358,7 +358,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.Params.Time, ln.TimesHit))
 		return val, nil
 	}
-	functions[functionName+"d"] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[functionName+"d"] = func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), functionName+"d")
 		if !ok {
 			return 0, err
@@ -370,7 +370,7 @@ func (ln *Line) SetFunctionName(k int) {
 		})
 		return val, nil
 	}
-	functions[functionName+"dd"] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[functionName+"dd"] = func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), functionName+"dd")
 		if !ok {
 			return 0, err
@@ -383,7 +383,7 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	capitalName := strings.ToUpper(functionName)
-	functions[capitalName] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[capitalName] = func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), capitalName)
 		if !ok {
 			return 0, err
@@ -391,7 +391,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
 		return val, nil
 	}
-	functions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(2, len(args), functionName+"i")
 		if !ok {
 			return 0, err
@@ -460,7 +460,7 @@ func before(str, substr string) []string {
 
 // InitBasicFunctionList adds all of the basic functions to a list
 func InitBasicFunctionList() {
-	for k := range functions {
+	for k := range DefaultFunctions {
 		basicFunctionList = append(basicFunctionList, k)
 	}
 	basicFunctionList = append(basicFunctionList, "true", "false")

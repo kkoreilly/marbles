@@ -22,8 +22,8 @@ var randNum float64
 
 var facts [lim]float64
 
-// Functions that can be used in expressions
-var functions = map[string]govaluate.ExpressionFunction{
+// DefaultFunctions that can be used in expressions
+var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 	"cos": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "cos")
 		if !ok {
@@ -144,7 +144,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 		y := 1 / math.Tan(args[0].(float64))
 		return y, nil
 	},
-	"asin": func(args ...interface{}) (interface{}, error) {
+	"arcsin": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "asin")
 		if !ok {
 			return 0, err
@@ -152,7 +152,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 		y := math.Asin(args[0].(float64))
 		return y, nil
 	},
-	"acos": func(args ...interface{}) (interface{}, error) {
+	"arccos": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "acos")
 		if !ok {
 			return 0, err
@@ -160,7 +160,7 @@ var functions = map[string]govaluate.ExpressionFunction{
 		y := math.Acos(args[0].(float64))
 		return y, nil
 	},
-	"atan": func(args ...interface{}) (interface{}, error) {
+	"arctan": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(1, len(args), "atan")
 		if !ok {
 			return 0, err
@@ -286,7 +286,7 @@ func CheckArgs(needed, have int, name string) (bool, error) {
 
 // Compile gets an expression ready for evaluation.
 func (ex *Expr) Compile() error {
-	expr := ex.PrepareExpr()
+	expr, functions := ex.PrepareExpr(DefaultFunctions)
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
 	if HandleError(err) {

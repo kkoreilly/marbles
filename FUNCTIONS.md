@@ -73,7 +73,7 @@ Value is the cotangent of v.
 </details>
 
 <details>
-<summary>asin(v)</summary>
+<summary>arcsin(v)</summary>
 
 
 **Definition:**
@@ -85,7 +85,7 @@ Value is the inverse/arc sine of v.
 </details>
 
 <details>
-<summary>acos(v)</summary>
+<summary>arccos(v)</summary>
 
 
 **Definition:**
@@ -97,7 +97,7 @@ Value is the inverse/arc cosine of v.
 </details>
 
 <details>
-<summary>atan(v)</summary>
+<summary>arctan(v)</summary>
 
 
 **Definition:**
