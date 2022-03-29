@@ -144,30 +144,6 @@ var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 		y := 1 / math.Tan(args[0].(float64))
 		return y, nil
 	},
-	"arcsin": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "asin")
-		if !ok {
-			return 0, err
-		}
-		y := math.Asin(args[0].(float64))
-		return y, nil
-	},
-	"arccos": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "acos")
-		if !ok {
-			return 0, err
-		}
-		y := math.Acos(args[0].(float64))
-		return y, nil
-	},
-	"arctan": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "atan")
-		if !ok {
-			return 0, err
-		}
-		y := math.Atan(args[0].(float64))
-		return y, nil
-	},
 	"if": func(args ...interface{}) (interface{}, error) {
 		ok, err := CheckArgs(3, len(args), "if")
 		if !ok {
@@ -178,72 +154,30 @@ var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 		}
 		return args[2].(float64), nil
 	},
-	// "d": func(args ...interface{}) (interface{}, error) {
-	// 	ok, err := CheckArgs(1, len(args), "d")
-	// 	if !ok {
-	// 		return 0, err
-	// 	}
-	// 	inc := 0.001
-	// 	ln := Gr.Lines[int(args[0].(float64))]
-	// 	val1 := float64(ln.Expr.Eval(currentX, Gr.Params.Time, ln.TimesHit))
-	// 	val2 := float64(ln.Expr.Eval(currentX+inc, Gr.Params.Time, ln.TimesHit))
-	// 	return Deriv(val1, val2, inc), nil
-	// },
-	// "f": func(args ...interface{}) (interface{}, error) {
-	// 	ok, err := CheckArgs(2, len(args), "f")
-	// 	if !ok {
-	// 		return 0, err
-	// 	}
-	// 	ln := Gr.Lines[int(args[0].(float64))]
-	// 	val := float64(ln.Expr.Eval(args[1].(float64), Gr.Params.Time, ln.TimesHit))
-	// 	return val, nil
-	// },
-	// "d": func(args ...interface{}) (interface{}, error) {
-	// 	ok, err := CheckArgs(2, len(args), "d")
-	// 	if !ok {
-	// 		return 0, err
-	// 	}
-	// 	ln := Gr.Lines[int(args[0].(float64))]
-	// 	val := fd.Derivative(func(x float64) float64 {
-	// 		return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
-	// 	}, args[1].(float64), &fd.Settings{
-	// 		Formula: fd.Central,
-	// 	})
-	// 	return val, nil
-	// },
-	// "dd": func(args ...interface{}) (interface{}, error) {
-	// 	ok, err := CheckArgs(2, len(args), "sd")
-	// 	if !ok {
-	// 		return 0, err
-	// 	}
-	// 	ln := Gr.Lines[int(args[0].(float64))]
-	// 	val := fd.Derivative(func(x float64) float64 {
-	// 		return ln.Expr.Eval(x, Gr.Params.Time, ln.TimesHit)
-	// 	}, args[1].(float64), &fd.Settings{
-	// 		Formula: fd.Central2nd,
-	// 	})
-	// 	return val, nil
-	// },
-	// "i": func(args ...interface{}) (interface{}, error) {
-	// 	ok, err := CheckArgs(3, len(args), "i")
-	// 	if !ok {
-	// 		return 0, err
-	// 	}
-	// 	min := args[1].(float64)
-	// 	max := args[2].(float64)
-	// 	ln := Gr.Lines[int(args[0].(float64))]
-	// 	val := ln.Expr.Integrate(min, max, ln.TimesHit)
-	// 	return val, nil
-	// },
-	// "F": func(args ...interface{}) (interface{}, error) {
-	// 	ok, err := CheckArgs(2, len(args), "F")
-	// 	if !ok {
-	// 		return 0, err
-	// 	}
-	// 	ln := Gr.Lines[int(args[0].(float64))]
-	// 	val := ln.Expr.Integrate(0, args[1].(float64), ln.TimesHit)
-	// 	return val, nil
-	// },
+	"sin**-1": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "sin**-1")
+		if !ok {
+			return 0, err
+		}
+		y := math.Asin(args[0].(float64))
+		return y, nil
+	},
+	"cos**-1": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "cos**-1")
+		if !ok {
+			return 0, err
+		}
+		y := math.Acos(args[0].(float64))
+		return y, nil
+	},
+	"tan**-1": func(args ...interface{}) (interface{}, error) {
+		ok, err := CheckArgs(1, len(args), "tan**-1")
+		if !ok {
+			return 0, err
+		}
+		y := math.Atan(args[0].(float64))
+		return y, nil
+	},
 }
 
 // Integrate returns the integral of an expression

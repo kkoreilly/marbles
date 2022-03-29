@@ -28,6 +28,9 @@ var EquationChangeSlice = []EquationChange{
 	{"**", "^"},
 	{"sqrt", "√"},
 	{"pi", "π"},
+	{"arcsin", "sin^-1"},
+	{"arccos", "cos^-1"},
+	{"arctan", "tan^-1"},
 }
 
 // PrepareExpr prepares an expression by looping both equation change slices
@@ -90,7 +93,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	}
 	for _, pname := range params { // if the expression contains a parameter before another parameter or a function, make it multiply
 		for _, pname1 := range params {
-			for strings.Contains(expr, pname+pname1) {
+			for strings.Contains(expr, pname+pname1) || strings.Contains(expr, pname+"("+pname1) {
 				expr = strings.ReplaceAll(expr, pname+pname1, pname+"*"+pname1)
 				expr = strings.ReplaceAll(expr, pname+"("+pname1, pname+"*("+pname1)
 			}

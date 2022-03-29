@@ -313,6 +313,17 @@ func (gr *Graph) CompileExprs() {
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
+		if ln.LineColors.Color == gist.NilColor {
+			if TheSettings.LineDefaults.LineColors.Color == gist.White {
+				color, _ := gist.ColorFromName(colors[k%len(colors)])
+				ln.LineColors.Color = color
+			} else {
+				ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
+			}
+		}
+		if ln.LineColors.ColorSwitch == gist.NilColor {
+			ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
+		}
 		// if ln.LineColors.Color == gist.NilColor {
 		// 	white, _ := gist.ColorFromName("white")
 		// 	if TheSettings.LineDefaults.LineColors.Color == white {
@@ -524,38 +535,9 @@ func (ls *Lines) Graph(fromMarbles bool) {
 
 // Graph graphs a single line
 func (ln *Line) Graph(lidx int, fromMarbles bool) {
-	if !fromMarbles { // We only need to make sure the line is graphable once
-		if ln.Expr.Expr == "" {
-			ln.Defaults(lidx)
-		}
-		if ln.LineColors.Color == gist.NilColor {
-			if TheSettings.LineDefaults.LineColors.Color == gist.White {
-				color, _ := gist.ColorFromName(colors[lidx%len(colors)])
-				ln.LineColors.Color = color
-			} else {
-				ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
-			}
-		}
-		if ln.LineColors.ColorSwitch == gist.NilColor {
-			ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
-		}
-		if ln.Bounce.Expr == "" {
-			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
-		}
-		if ln.GraphIf.Expr == "" {
-			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
-		}
-	}
 	path := svgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
 	path.SetProp("stroke", ln.LineColors.Color)
-	// var err error
-	// ln.Expr.Val, err = govaluate.NewEvaluableExpressionWithFunctions(ln.Expr.Expr, functions)
-	// if HandleError(err) {
-	// 	ln.Expr.Val = nil
-	// 	return
-	// }
-
 	ps := ""
 	start := true
 	skipped := false
