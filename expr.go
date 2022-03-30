@@ -154,24 +154,24 @@ var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 		}
 		return args[2].(float64), nil
 	},
-	"sin**-1": func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs("sin**-1", args, "float64")
+	"arcsin": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arcsin", args, "float64")
 		if err != nil {
 			return 0, err
 		}
 		y := math.Asin(args[0].(float64))
 		return y, nil
 	},
-	"cos**-1": func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs("cos**-1", args, "float64")
+	"arccos": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arccos", args, "float64")
 		if err != nil {
 			return 0, err
 		}
 		y := math.Acos(args[0].(float64))
 		return y, nil
 	},
-	"tan**-1": func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs("tan**-1", args, "float64")
+	"arctan": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arctan", args, "float64")
 		if err != nil {
 			return 0, err
 		}

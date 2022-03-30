@@ -17,9 +17,6 @@ type EquationChange struct {
 
 // UnreadableChangeSlice is all of the strings that should change before compiling, but the user shouldn't see
 var UnreadableChangeSlice = []EquationChange{
-	{"''", "dd"},
-	{`"`, "dd"},
-	{"'", "d"},
 	{"^", "**"},
 	{"√", "sqrt"},
 	{")(", ")*("},
@@ -27,6 +24,7 @@ var UnreadableChangeSlice = []EquationChange{
 
 // EquationChangeSlice is all of the strings that should be changed
 var EquationChangeSlice = []EquationChange{
+	{"''", `"`},
 	{"**", "^"},
 	{"sqrt", "√"},
 	{"pi", "π"},
@@ -41,9 +39,6 @@ var EquationChangeSlice = []EquationChange{
 	{"/.", "/0."},
 	{"^.", "^0."},
 	{"(.", "(0."},
-	{"arcsin", "sin^-1"},
-	{"arccos", "cos^-1"},
-	{"arctan", "tan^-1"},
 }
 
 // PrepareExpr prepares an expression by looping both equation change slices

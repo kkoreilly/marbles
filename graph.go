@@ -370,7 +370,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.Params.Time, ln.TimesHit))
 		return val, nil
 	}
-	DefaultFunctions[functionName+"d"] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName+"d", args, "float64")
 		if err != nil {
 			return 0, err
@@ -382,7 +382,7 @@ func (ln *Line) SetFunctionName(k int) {
 		})
 		return val, nil
 	}
-	DefaultFunctions[functionName+"dd"] = func(args ...interface{}) (interface{}, error) {
+	DefaultFunctions[functionName+`"`] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName+"dd", args, "float64")
 		if err != nil {
 			return 0, err
@@ -404,7 +404,7 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	DefaultFunctions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"i", args, "float64")
+		err := CheckArgs(functionName+"i", args, "float64", "float64")
 		if err != nil {
 			return 0, err
 		}
