@@ -25,128 +25,128 @@ var facts [lim]float64
 // DefaultFunctions that can be used in expressions
 var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 	"cos": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "cos")
-		if !ok {
+		err := CheckArgs("cos", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Cos(args[0].(float64))
 		return y, nil
 	},
 	"sin": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "sin")
-		if !ok {
+		err := CheckArgs("sin", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Sin(args[0].(float64))
 		return y, nil
 	},
 	"tan": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "tan")
-		if !ok {
+		err := CheckArgs("tan", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Tan(args[0].(float64))
 		return y, nil
 	},
 	"pow": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "pow")
-		if !ok {
+		err := CheckArgs("pow", args, "float64", "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Pow(args[0].(float64), args[1].(float64))
 		return y, nil
 	},
 	"abs": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "abs")
-		if !ok {
+		err := CheckArgs("abs", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Abs(args[0].(float64))
 		return y, nil
 	},
 	"fact": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "fact")
-		if !ok {
+		err := CheckArgs("fact", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := FactorialMemoization(int(args[0].(float64)))
 		return y, nil
 	},
 	"ceil": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "ceil")
-		if !ok {
+		err := CheckArgs("ceil", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Ceil(args[0].(float64))
 		return y, nil
 	},
 	"floor": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "floor")
-		if !ok {
+		err := CheckArgs("floor", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Floor(args[0].(float64))
 		return y, nil
 	},
 	"mod": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), "mod")
-		if !ok {
+		err := CheckArgs("mod", args, "float64", "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Mod(args[0].(float64), args[1].(float64))
 		return y, nil
 	},
 	"rand": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "rand")
-		if !ok {
+		err := CheckArgs("rand", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := randNum * args[0].(float64)
 		return y, nil
 	},
 	"sqrt": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "sqrt")
-		if !ok {
+		err := CheckArgs("sqrt", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Sqrt(args[0].(float64))
 		return y, nil
 	},
 	"ln": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "ln")
-		if !ok {
+		err := CheckArgs("ln", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Log(args[0].(float64))
 		return y, nil
 	},
 	"csc": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "csc")
-		if !ok {
+		err := CheckArgs("csc", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := 1 / math.Sin(args[0].(float64))
 		return y, nil
 	},
 	"sec": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "sec")
-		if !ok {
+		err := CheckArgs("sec", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := 1 / math.Cos(args[0].(float64))
 		return y, nil
 	},
 	"cot": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "cot")
-		if !ok {
+		err := CheckArgs("cot", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := 1 / math.Tan(args[0].(float64))
 		return y, nil
 	},
 	"if": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(3, len(args), "if")
-		if !ok {
+		err := CheckArgs("if", args, "bool", "float64", "float64")
+		if err != nil {
 			return 0, err
 		}
 		if args[0].(bool) {
@@ -155,24 +155,24 @@ var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 		return args[2].(float64), nil
 	},
 	"sin**-1": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "sin**-1")
-		if !ok {
+		err := CheckArgs("sin**-1", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Asin(args[0].(float64))
 		return y, nil
 	},
 	"cos**-1": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "cos**-1")
-		if !ok {
+		err := CheckArgs("cos**-1", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Acos(args[0].(float64))
 		return y, nil
 	},
 	"tan**-1": func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), "tan**-1")
-		if !ok {
+		err := CheckArgs("tan**-1", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		y := math.Atan(args[0].(float64))
@@ -210,12 +210,17 @@ func (ex *Expr) Integrate(min, max float64, h int) float64 {
 // 	return (val2 - val1) / inc
 // }
 
-// CheckArgs checks if a function is passed the right number of arguments.
-func CheckArgs(needed, have int, name string) (bool, error) {
-	if needed != have {
-		return false, fmt.Errorf("function %v needs %v arguments, not %v arguments", name, needed, have)
+// CheckArgs checks if a function is passed the right number of arguments, and the right type of arguments.
+func CheckArgs(name string, have []interface{}, want ...string) error {
+	if len(have) != len(want) {
+		return fmt.Errorf("function %v needs %v arguments, not %v arguments", name, len(want), len(have))
 	}
-	return true, nil
+	for i, d := range want {
+		if d != fmt.Sprintf("%T", have[i]) {
+			return fmt.Errorf("function %v needs %v. %v does not work", name, want, have)
+		}
+	}
+	return nil
 }
 
 // Compile gets an expression ready for evaluation.

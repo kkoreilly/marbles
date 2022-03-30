@@ -363,16 +363,16 @@ func (ln *Line) SetFunctionName(k int) {
 	functionName := functionNames[k]
 	ln.FunctionName = functionName + "(x) = "
 	DefaultFunctions[functionName] = func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), functionName)
-		if !ok {
+		err := CheckArgs(functionName, args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.Params.Time, ln.TimesHit))
 		return val, nil
 	}
 	DefaultFunctions[functionName+"d"] = func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), functionName+"d")
-		if !ok {
+		err := CheckArgs(functionName+"d", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		val := fd.Derivative(func(x float64) float64 {
@@ -383,8 +383,8 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	DefaultFunctions[functionName+"dd"] = func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), functionName+"dd")
-		if !ok {
+		err := CheckArgs(functionName+"dd", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		val := fd.Derivative(func(x float64) float64 {
@@ -396,16 +396,16 @@ func (ln *Line) SetFunctionName(k int) {
 	}
 	capitalName := strings.ToUpper(functionName)
 	DefaultFunctions[capitalName] = func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(1, len(args), capitalName)
-		if !ok {
+		err := CheckArgs(capitalName, args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
 		return val, nil
 	}
 	DefaultFunctions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
-		ok, err := CheckArgs(2, len(args), functionName+"i")
-		if !ok {
+		err := CheckArgs(functionName+"i", args, "float64")
+		if err != nil {
 			return 0, err
 		}
 		min := args[0].(float64)

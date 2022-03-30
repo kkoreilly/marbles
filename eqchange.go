@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -79,7 +80,16 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	i := 0
 	functionsToDelete := []string{}
 	functionsToAdd := make(map[string]govaluate.ExpressionFunction)
-	for name, function := range functions { // to prevent issues with the equation, all functions are turned into zfunctionindexz. z is just a letter that isn't used in anything else.
+	// sort functions by length so that functions that contain other functions dont cause problems
+	functionKeys := []string{}
+	for k := range functions {
+		functionKeys = append(functionKeys, k)
+	}
+	sort.Slice(functionKeys, func(i, j int) bool {
+		return len(functionKeys[i]) > len(functionKeys[j])
+	})
+	for _, name := range functionKeys { // to prevent issues with the equation, all functions are turned into zfunctionindexz. z is just a letter that isn't used in anything else.
+		function := functions[name]
 		newName := fmt.Sprintf("z%vz", i)
 		expr = strings.ReplaceAll(expr, name+"(", newName+"(")
 		functionsToAdd[newName] = function
