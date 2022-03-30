@@ -21,6 +21,7 @@ var UnreadableChangeSlice = []EquationChange{
 	{"'", "d"},
 	{"^", "**"},
 	{"√", "sqrt"},
+	{")(", ")*("},
 }
 
 // EquationChangeSlice is all of the strings that should be changed
