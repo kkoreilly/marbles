@@ -51,8 +51,8 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	params := []string{"π", "e", "x", "a", "t", "h"}
 
 	expr := LoopUnreadableChangeSlice(ex.Expr)
-	expr = strings.ReplaceAll(ex.Expr, "true", "(0==0)") // prevent true and false from being interpreted as functions
-	expr = strings.ReplaceAll(ex.Expr, "false", "(1==0)")
+	expr = strings.ReplaceAll(expr, "true", "(0==0)") // prevent true and false from being interpreted as functions
+	expr = strings.ReplaceAll(expr, "false", "(1==0)")
 	i := 0
 	functionsToDelete := []string{}
 	functionsToAdd := make(map[string]govaluate.ExpressionFunction)
