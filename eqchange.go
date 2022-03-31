@@ -49,29 +49,10 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	}
 	ex.LoopEquationChangeSlice()
 	params := []string{"π", "e", "x", "a", "t", "h"}
-	ex.Expr = strings.ReplaceAll(ex.Expr, "true", "(0==0)") // prevent true and false from being interpreted as functions
-	ex.Expr = strings.ReplaceAll(ex.Expr, "false", "(1==0)")
-	for fname := range functions { // if there is a function name and no parentheses after, put parentheses around the next character
-		for _, pname := range params {
-			ex.Expr = strings.ReplaceAll(ex.Expr, fname+pname, fname+"("+pname+")")
-		}
-		for n := 0; n < 10; n++ {
-			ns := strconv.Itoa(n)
-			ex.Expr = strings.ReplaceAll(ex.Expr, fname+ns, fname+"("+ns+")")
-		}
-	}
+
 	expr := LoopUnreadableChangeSlice(ex.Expr)
-	ex.Expr = strings.ReplaceAll(ex.Expr, "(0==0)", "true")
-	ex.Expr = strings.ReplaceAll(ex.Expr, "(1==0)", "false")
-	for fname := range functions { // do again so things like sqrt and f'(x) work
-		for _, pname := range params {
-			expr = strings.ReplaceAll(expr, fname+pname, fname+"("+pname+")")
-		}
-		for n := 0; n < 10; n++ {
-			ns := strconv.Itoa(n)
-			expr = strings.ReplaceAll(expr, fname+ns, fname+"("+ns+")")
-		}
-	}
+	expr = strings.ReplaceAll(ex.Expr, "true", "(0==0)") // prevent true and false from being interpreted as functions
+	expr = strings.ReplaceAll(ex.Expr, "false", "(1==0)")
 	i := 0
 	functionsToDelete := []string{}
 	functionsToAdd := make(map[string]govaluate.ExpressionFunction)
@@ -86,7 +67,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	for _, name := range functionKeys { // to prevent issues with the equation, all functions are turned into zfunctionindexz. z is just a letter that isn't used in anything else.
 		function := functions[name]
 		newName := fmt.Sprintf("z%vz", i)
-		expr = strings.ReplaceAll(expr, name+"(", newName+"(")
+		expr = strings.ReplaceAll(expr, name, newName)
 		functionsToAdd[newName] = function
 		functionsToDelete = append(functionsToDelete, name)
 		i++
@@ -96,6 +77,15 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	}
 	for _, name := range functionsToDelete {
 		delete(functions, name)
+	}
+	for fname := range functions { // if there is a function name and no parentheses after, put parentheses around the next character
+		for _, pname := range params {
+			expr = strings.ReplaceAll(expr, fname+pname, fname+"("+pname+")")
+		}
+		for n := 0; n < 10; n++ {
+			ns := strconv.Itoa(n)
+			expr = strings.ReplaceAll(expr, fname+ns, fname+"("+ns+")")
+		}
 	}
 	for n := 0; n < 10; n++ { // if the expression contains a number and then a parameter or a function right after, then change it to multiply the number and the parameter/function. Also ()number changes to ()*number
 		ns := strconv.Itoa(n)
