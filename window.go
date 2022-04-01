@@ -23,11 +23,27 @@ func makeBasicElements() {
 	lns = giv.AddNewTableView(sidesplit, "lns")
 	lns.Viewport = vp
 	lns.SetSlice(&TheGraph.Lines)
-	eqTable = lns
+	// lns.NoAdd = true
+	// lns.ShowIndex = false
+	lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
+		if col == 0 {
+			newLabel := ""
+			if row < len(functionNames) {
+				newLabel = "<i><b>" + functionNames[row] + "(x)=</b></i>"
+			}
+			lbl := widg.(*giv.StructViewInline).Parts.Child(0).(*gi.Label)
+			lbl.SetText(newLabel)
+			lbl.SetProp("background-color", "yellow")
+		}
+		if col == 3 {
+			clr := TheGraph.Lines[row].LineColors.Color
+			widg.SetProp("background-color", clr)
+			widg.SetProp("color", clr)
+		}
+	}
 
 	params := giv.AddNewStructView(sidesplit, "params")
 	params.SetStruct(&TheGraph.Params)
-	paramsEdit = params
 
 	sidesplit.SetSplits(6, 4)
 

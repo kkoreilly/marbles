@@ -27,13 +27,13 @@ type Graph struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	FunctionName string     `desc:"Name of the function, use to refer to it in other equations. Can't be changed" json:"-"`
-	Expr         Expr       `width:"50" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
-	GraphIf      Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
-	Bounce       Expr       `min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
-	LineColors   LineColors `desc:"Line color and colorswitch" view:"no-inline"`
-	TimesHit     int        `view:"-" json:"-"`
-	Changes      bool       `view:"-" json:"-"`
+	// FuncName   string     `height:"1.5" desc:"Name of the function, use to refer to it in other equations. Can't be changed" json:"-"`
+	Expr       Expr       `width:"50" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
+	GraphIf    Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
+	Bounce     Expr       `width:"30" min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
+	LineColors LineColors `desc:"Line color and colorswitch" view:"no-inline"`
+	TimesHit   int        `view:"-" json:"-"`
+	Changes    bool       `view:"-" json:"-"`
 }
 
 // Params is the parameters of the graph
@@ -80,7 +80,7 @@ var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orang
 var basicFunctionList = []string{}
 
 // functionNames has all of the supported function names, in order
-var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y", "z"}
+var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y"}
 
 // currentFile is the last saved or opened file, used for the save button
 var currentFile string
@@ -103,39 +103,6 @@ var xAxis, yAxis *svg.Line
 // GraphProps define the ToolBar for overall app
 var GraphProps = ki.Props{
 	"ToolBar": ki.PropSlice{
-		// {Name: "OpenJSON", Value: ki.Props{
-		// 	"label": "Open",
-		// 	"desc":  "Opens line equations and params from a .json file.",
-		// 	"icon":  "file-open",
-		// 	"Args": ki.PropSlice{
-		// 		{Name: "File Name", Value: ki.Props{
-		// 			"ext":     ".json",
-		// 			"default": "savedGraphs/",
-		// 		}},
-		// 	},
-		// }},
-		// {Name: "SaveLast", Value: ki.Props{
-		// 	"label": "Save",
-		// 	"desc":  "Save line equations and params to the last opened / saved file.",
-		// 	"icon":  "file-save",
-		// }},
-		// {Name: "SaveJSON", Value: ki.Props{
-		// 	"label": "Save As...",
-		// 	"desc":  "Saves line equations and params to a .json file.",
-		// 	"icon":  "file-save",
-		// 	"Args": ki.PropSlice{
-		// 		{Name: "File Name", Value: ki.Props{
-		// 			"ext":     ".json",
-		// 			"default": "savedGraphs/",
-		// 		}},
-		// 	},
-		// }},
-		// {Name: "OpenAutoSave", Value: ki.Props{
-		// 	"label": "Open Autosaved",
-		// 	"desc":  "Opens the most recently graphed set of equations and parameters.",
-		// 	"icon":  "file-open",
-		// }},
-		// {Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "Graph", Value: ki.Props{
 			"desc": "updates graph for current equations",
 			"icon": "file-image",
@@ -150,33 +117,11 @@ var GraphProps = ki.Props{
 			"icon":            "stop",
 			"no-update-after": true,
 		}},
-		// {Name: "Jump", Value: ki.Props{
-		// 	"label": "Jump",
-		// 	"desc":  "Jump n frames forward",
-		// 	"icon":  "run",
-		// 	"Args": ki.PropSlice{
-		// 		{Name: "n", Value: ki.Props{}},
-		// 	},
-		// }},
 		{Name: "Step", Value: ki.Props{
 			"desc":            "steps the marbles for one step",
 			"icon":            "step-fwd",
 			"no-update-after": true,
 		}},
-		// {Name: "sep-ctrl", Value: ki.BlankProp{}},
-		// {Name: "Upload", Value: ki.Props{
-		// 	"label": "Upload Graph",
-		// 	"desc":  "Allows other people to download your graph. Enter a name for your graph",
-		// 	"icon":  "file-upload",
-		// 	"Args": ki.PropSlice{
-		// 		{Name: "Name", Value: ki.Props{}},
-		// 	},
-		// }},
-		// {Name: "Download", Value: ki.Props{
-		// 	"label": "Download Graph",
-		// 	"desc":  "Download a graph from the global database",
-		// 	"icon":  "file-download",
-		// }},
 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "SelectNextMarble", Value: ki.Props{
 			"label":           "Next Marble",
@@ -293,7 +238,7 @@ func (gr *Graph) TrackSelectedMarble() {
 
 // AddLine adds a new blank line
 func (gr *Graph) AddLine() {
-	newLine := &Line{"", Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
 	// newLine.Defaults(rand.Intn(10))
 	gr.Lines = append(gr.Lines, newLine)
 }
@@ -325,15 +270,6 @@ func (gr *Graph) CompileExprs() {
 		if ln.LineColors.ColorSwitch == gist.NilColor {
 			ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 		}
-		// if ln.LineColors.Color == gist.NilColor {
-		// 	white, _ := gist.ColorFromName("white")
-		// 	if TheSettings.LineDefaults.LineColors.Color == white {
-		// 		black, _ := gist.ColorFromName("black")
-		// 		ln.LineColors.Color = black
-		// 	} else {
-		// 		ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
-		// 	}
-		// }
 		if ln.Bounce.Expr == "" {
 			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 		}
@@ -345,8 +281,6 @@ func (gr *Graph) CompileExprs() {
 			ln.Changes = true
 		}
 		ln.TimesHit = 0
-
-		// ln.CheckForDerivatives()
 		ln.Compile()
 	}
 	gr.Params.UpdtRate.Compile()
@@ -357,11 +291,11 @@ func (gr *Graph) CompileExprs() {
 //SetFunctionName sets the function name for a line and adds the function to the functions
 func (ln *Line) SetFunctionName(k int) {
 	if k >= len(functionNames) {
-		ln.FunctionName = "unassigned"
+		// ln.FuncName = "unassigned"
 		return
 	}
 	functionName := functionNames[k]
-	ln.FunctionName = functionName + "(x) = "
+	// ln.FuncName = functionName + "(x)="
 	DefaultFunctions[functionName] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName, args, "float64")
 		if err != nil {

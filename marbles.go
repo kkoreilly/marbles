@@ -316,18 +316,6 @@ func RunMarbles() {
 	}
 }
 
-// // Jump jumps n frames forward
-// func Jump(n int) {
-// 	updt := svgGraph.UpdateStart()
-// 	for i := 0; i < n; i++ {
-// 		UpdateMarblesData()
-// 		TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
-// 	}
-// 	TheGraph.Lines.Graph(true)
-// 	UpdateMarbles()
-// 	svgGraph.UpdateEnd(updt)
-// }
-
 // ToggleTrack toogles tracking setting for a certain marble
 func (m *Marble) ToggleTrack(idx int) {
 	m.Track = !m.Track

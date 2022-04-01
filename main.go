@@ -24,8 +24,8 @@ const ( // Width and height of the window, and size of the graph
 var (
 	vp                                                *gi.Viewport2D
 	win                                               *gi.Window
-	eqTable, lns                                      *giv.TableView
-	paramsEdit, gstru                                 *giv.StructView
+	lns                                               *giv.TableView
+	gstru                                             *giv.StructView
 	svgGraph                                          *svg.SVG
 	svgLines, svgMarbles, svgCoords, svgTrackingLines *svg.Group
 	gmin, gmax, gsz, ginc                             mat32.Vec2
