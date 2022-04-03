@@ -63,6 +63,7 @@ func mainrun() {
 	TheGraph.Lines.Graph(false)
 	UpdateColors()
 
+	InitClipboard()
 	InitDB()
 
 	inClosePrompt := false

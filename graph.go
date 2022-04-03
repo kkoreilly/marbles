@@ -23,6 +23,13 @@ import (
 type Graph struct {
 	Params Params `view:"-" desc:"the parameters for updating the marbles"`
 	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
+	State  State  `view:"-" json:"-"`
+}
+
+// State has the state of the graph
+type State struct {
+	Running bool
+	Time    float64
 }
 
 // Line represents one line with an equation etc
@@ -46,7 +53,6 @@ type Params struct {
 	UpdtRate         Param      `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
 	Gravity          Param      `desc:"how fast it accelerates down"`
 	TimeStep         Param      `desc:"how fast time increases"`
-	Time             float64    `view:"-" json:"-" inactive:"+" desc:"time in msecs since starting"`
 	MinSize          mat32.Vec2
 	MaxSize          mat32.Vec2
 	TrackingSettings GraphTrackingSettings `view:"no-inline"`
@@ -84,9 +90,6 @@ var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "
 
 // currentFile is the last saved or opened file, used for the save button
 var currentFile string
-
-// stop is used to tell RunMarbles to stop
-var stop = false
 
 // last evaluated x value
 var currentX float64
@@ -160,7 +163,7 @@ func (gr *Graph) Defaults() {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() {
-	if runningMarbles {
+	if gr.State.Running {
 		return
 	}
 	InitCoords()
@@ -170,7 +173,7 @@ func (gr *Graph) Graph() {
 		problemWithCompile = false
 		return
 	}
-	gr.Params.Time = 0
+	gr.State.Time = 0
 	problemWithEval = false
 	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
@@ -186,25 +189,16 @@ func (gr *Graph) Run() {
 
 // Stop stops the marbles
 func (gr *Graph) Stop() {
-	stop = true
-	runningMarbles = false
+	gr.State.Running = false
 }
-
-// // Jump jumps n frames forward
-// func (gr *Graph) Jump(n int) {
-// 	if runningMarbles {
-// 		return
-// 	}
-// 	Jump(n)
-// }
 
 // Step does one step update of marbles
 func (gr *Graph) Step() {
-	if runningMarbles {
+	if gr.State.Running {
 		return
 	}
 	UpdateMarbles()
-	TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
+	TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0)
 }
 
 // SelectNextMarble calls select next marble
@@ -215,14 +209,14 @@ func (gr *Graph) SelectNextMarble() {
 // StopSelecting stops selecting current marble
 func (gr *Graph) StopSelecting() {
 	var updt bool
-	if !runningMarbles {
+	if !gr.State.Running {
 		updt = svgGraph.UpdateStart()
 	}
 	if selectedMarble != -1 {
 		svgMarbles.Child(selectedMarble).SetProp("stroke", "none")
 		selectedMarble = -1
 	}
-	if !runningMarbles {
+	if !gr.State.Running {
 		svgGraph.UpdateEnd(updt)
 		svgGraph.SetNeedsFullRender()
 	}
@@ -301,7 +295,7 @@ func (ln *Line) SetFunctionName(k int) {
 		if err != nil {
 			return 0, err
 		}
-		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.Params.Time, ln.TimesHit))
+		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.State.Time, ln.TimesHit))
 		return val, nil
 	}
 	DefaultFunctions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
@@ -310,7 +304,7 @@ func (ln *Line) SetFunctionName(k int) {
 			return 0, err
 		}
 		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, TheGraph.Params.Time, ln.TimesHit)
+			return ln.Expr.Eval(x, TheGraph.State.Time, ln.TimesHit)
 		}, args[0].(float64), &fd.Settings{
 			Formula: fd.Central,
 		})
@@ -322,7 +316,7 @@ func (ln *Line) SetFunctionName(k int) {
 			return 0, err
 		}
 		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, TheGraph.Params.Time, ln.TimesHit)
+			return ln.Expr.Eval(x, TheGraph.State.Time, ln.TimesHit)
 		}, args[0].(float64), &fd.Settings{
 			Formula: fd.Central2nd,
 		})
@@ -481,8 +475,8 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 			return
 		}
 		fx := float64(x)
-		y := ln.Expr.Eval(fx, TheGraph.Params.Time, ln.TimesHit)
-		GraphIf := ln.GraphIf.EvalBool(fx, y, TheGraph.Params.Time, ln.TimesHit)
+		y := ln.Expr.Eval(fx, TheGraph.State.Time, ln.TimesHit)
+		GraphIf := ln.GraphIf.EvalBool(fx, y, TheGraph.State.Time, ln.TimesHit)
 		if GraphIf && gmin.Y < float32(y) && gmax.Y > float32(y) {
 			if start || skipped {
 				ps += fmt.Sprintf("M %v %v ", x, y)
@@ -547,7 +541,7 @@ func (pr *Param) Eval(x float64) float64 {
 	if !pr.Changes {
 		return pr.BaseVal
 	}
-	return pr.Expr.Eval(x, TheGraph.Params.Time, 0)
+	return pr.Expr.Eval(x, TheGraph.State.Time, 0)
 }
 
 // Compile compiles evalexpr and sets changes

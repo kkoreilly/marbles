@@ -196,10 +196,10 @@ func (ex *Expr) Integrate(min, max float64, h int) float64 {
 	accuracy := 16
 	dx := diff / float64(accuracy)
 	for x := min; x <= max; x += dx {
-		vals = append(vals, ex.Eval(x, TheGraph.Params.Time, h))
+		vals = append(vals, ex.Eval(x, TheGraph.State.Time, h))
 	}
 	if len(vals) != accuracy+1 {
-		vals = append(vals, ex.Eval(max, TheGraph.Params.Time, h))
+		vals = append(vals, ex.Eval(max, TheGraph.State.Time, h))
 	}
 	val := integrate.Romberg(vals, dx)
 	return sign * val

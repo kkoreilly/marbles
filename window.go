@@ -140,6 +140,20 @@ func makeMainMenu() {
 		})
 	})
 	fmen.Menu.AddSeparator("sep2")
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as PNG", Shortcut: "Control+Alt+C"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		img := TheGraph.Capture()
+		giv.FileViewDialog(vp, "", ".png", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			if sig == int64(gi.DialogAccepted) {
+				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
+				SaveImageToFile(img, giv.FileViewDialogValue(dlg))
+			}
+		})
+	})
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Copy PNG", Shortcut: "Shift+Control+C"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.CopyGraphImage()
+	})
+
+	fmen.Menu.AddSeparator("sep3")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Upload Graph", Shortcut: "Control+U"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		gi.StringPromptDialog(vp, "", "", gi.DlgOpts{Title: "Upload Graph", Prompt: "Upload your graph for anyone else to see. Enter a name for your graph:"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
@@ -151,7 +165,7 @@ func makeMainMenu() {
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Download Graph", Shortcut: "Control+D"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		TheGraph.Download()
 	})
-	fmen.Menu.AddSeparator("sep3")
+	fmen.Menu.AddSeparator("sep4")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Settings", ShortcutKey: gi.KeyFunMenuSaveAlt}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		pSettings := TheSettings
 		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {

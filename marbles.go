@@ -25,12 +25,6 @@ type Marble struct {
 // Marbles contains all of the marbles
 var Marbles []*Marble
 
-// Whether marbles are currently being ran, used to prevent crashing with double click run marbles
-var runningMarbles bool
-
-// Whether marbles are actively being updated in UpdateMarblesGraph
-var inMarblesUpdate bool
-
 // The current selected marble, -1 = none
 var selectedMarble = -1
 
@@ -108,15 +102,13 @@ func UpdateMarbles() bool {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func UpdateMarblesGraph() bool {
-	if svgGraph.IsRendering() || svgGraph.IsUpdating() || vp.IsUpdatingNode() || inMarblesUpdate {
+	if svgGraph.IsRendering() || svgGraph.IsUpdating() || vp.IsUpdatingNode() {
 		return true
 	}
-	inMarblesUpdate = true
 	wupdt := svgGraph.TopUpdateStart()
 	defer svgGraph.TopUpdateEnd(wupdt)
 
 	if vp.IsUpdatingNode() {
-		inMarblesUpdate = false
 		return true
 	}
 
@@ -124,7 +116,6 @@ func UpdateMarblesGraph() bool {
 	defer svgGraph.UpdateEnd(updt)
 
 	if vp.IsUpdatingNode() {
-		inMarblesUpdate = false
 		return true
 	}
 
@@ -139,7 +130,6 @@ func UpdateMarblesGraph() bool {
 		m.UpdateTrackingLines(circle, i)
 
 	}
-	inMarblesUpdate = false
 	return false
 }
 
@@ -191,8 +181,8 @@ func UpdateMarblesData() {
 				continue
 			}
 
-			yp := ln.Expr.Eval(float64(m.Pos.X), TheGraph.Params.Time, ln.TimesHit)
-			yn := ln.Expr.Eval(float64(npos.X), TheGraph.Params.Time, ln.TimesHit)
+			yp := ln.Expr.Eval(float64(m.Pos.X), TheGraph.State.Time, ln.TimesHit)
+			yn := ln.Expr.Eval(float64(npos.X), TheGraph.State.Time, ln.TimesHit)
 
 			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
@@ -213,7 +203,7 @@ func UpdateMarblesData() {
 
 // Collided returns true if the marble has collided with the line, and false if the marble has not.
 func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
-	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, TheGraph.Params.Time, ln.TimesHit)
+	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, TheGraph.State.Time, ln.TimesHit)
 	inBounds := npos.Y > gmin.Y && npos.Y < gmax.Y && npos.X > gmin.X && npos.X < gmax.X
 	collided := (float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)
 	if collided && graphIf && inBounds {
@@ -241,12 +231,12 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 		mm := dmy / dx
 
 		xi = (npos.X*(ml-mm) + npos.Y - float32(yn)) / (ml - mm)
-		yi = float32(ln.Expr.Eval(float64(xi), TheGraph.Params.Time, ln.TimesHit))
+		yi = float32(ln.Expr.Eval(float64(xi), TheGraph.State.Time, ln.TimesHit))
 		//		fmt.Printf("xi: %v, yi: %v \n", xi, yi)
 	}
 
-	yl := ln.Expr.Eval(float64(xi)-.01, TheGraph.Params.Time, ln.TimesHit) // point to the left of x
-	yr := ln.Expr.Eval(float64(xi)+.01, TheGraph.Params.Time, ln.TimesHit) // point to the right of x
+	yl := ln.Expr.Eval(float64(xi)-.01, TheGraph.State.Time, ln.TimesHit) // point to the left of x
+	yr := ln.Expr.Eval(float64(xi)+.01, TheGraph.State.Time, ln.TimesHit) // point to the right of x
 
 	//slp := (yr - yl) / .02
 	angLn := math32.Atan2(float32(yr-yl), 0.02)
@@ -258,7 +248,7 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 	angNII := angN - angII
 	angR := math.Pi + 2*angNII
 
-	Bounce := ln.Bounce.Eval(float64(npos.X), TheGraph.Params.Time, ln.TimesHit)
+	Bounce := ln.Bounce.Eval(float64(npos.X), TheGraph.State.Time, ln.TimesHit)
 
 	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
 	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
@@ -271,26 +261,20 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 
 // RunMarbles runs the marbles for NSteps
 func RunMarbles() {
-	if runningMarbles {
+	if TheGraph.State.Running {
 		return
 	}
-	runningMarbles = true
-	stop = false
+	TheGraph.State.Running = true
 	startFrames := 0
-	// trackingStartFrames := 0
 	start := time.Now()
 	nsteps := TheGraph.Params.NSteps
-	// tls := TheSettings.TrackingSettings
-	// if Gr.Params.TrackingSettings.Override {
-	// 	tls = Gr.Params.TrackingSettings.TrackingSettings
-	// }
 	if nsteps == -1 {
 		nsteps = 1000000000000
 	}
 	for i := 0; i < nsteps; i++ {
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
 			UpdateMarblesData()
-			TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
+			TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0)
 		}
 		if UpdateMarbles() {
 			i--
@@ -301,15 +285,9 @@ func RunMarbles() {
 			start = time.Now()
 			startFrames = i
 		}
-		// for idx, m := range Marbles {
-		// 	if m.Track && (i-trackingStartFrames > tls.NTrackingFrames) {
-		// 		svgTrackingLines.Child(idx).DeleteChildren(true)
-		// 		trackingStartFrames = i
-		// 	}
-		// }
 
-		TheGraph.Params.Time += TheGraph.Params.TimeStep.Eval(0)
-		if stop {
+		TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0)
+		if !TheGraph.State.Running {
 			return
 		}
 		curStep = i
@@ -328,7 +306,7 @@ func (m *Marble) ToggleTrack(idx int) {
 
 // SelectNextMarble selects the next marble in the viewbox
 func SelectNextMarble() {
-	if !runningMarbles {
+	if !TheGraph.State.Running {
 		updt := svgGraph.UpdateStart()
 		defer svgGraph.UpdateEnd(updt)
 	}

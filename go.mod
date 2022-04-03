@@ -8,7 +8,9 @@ require (
 	github.com/goki/gi v1.2.15
 	github.com/goki/ki v1.1.4
 	github.com/goki/mat32 v1.0.9
+	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/lib/pq v1.10.4
+	golang.design/x/clipboard v0.6.1
 	gonum.org/v1/gonum v0.9.3
 )
 
@@ -27,6 +29,7 @@ require (
 	github.com/fatih/camelcase v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
+	github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5 // indirect
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211213063430-748e38ca8aec // indirect
 	github.com/go-gl/mathgl v1.0.0 // indirect
@@ -38,11 +41,15 @@ require (
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/ianbruene/go-difflib v1.2.0 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
+	github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240 // indirect
 	github.com/jinzhu/copier v0.3.4 // indirect
+	github.com/lxn/win v0.0.0-20210218163916-a377121e959e // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780 // indirect
 	github.com/srwiley/scanx v0.0.0-20190309010443-e94503791388 // indirect
+	golang.org/x/exp v0.0.0-20191002040644-a1355ae1e2c3 // indirect
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
+	golang.org/x/mobile v0.0.0-20210716004757-34ab1303b554 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
