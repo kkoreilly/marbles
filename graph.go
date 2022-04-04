@@ -270,6 +270,11 @@ func (gr *Graph) CompileExprs() {
 		if ln.GraphIf.Expr == "" {
 			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
+		if ln.CheckCircular(k) {
+			problemWithCompile = true
+			errorText.SetText("Error: lines can't reference themselves")
+			return
+		}
 		ln.SetFunctionName(k)
 		if CheckIfChanges(ln.Expr.Expr) || CheckIfChanges(ln.GraphIf.Expr) || CheckIfChanges(ln.Bounce.Expr) {
 			ln.Changes = true
@@ -282,7 +287,32 @@ func (gr *Graph) CompileExprs() {
 	gr.Params.TimeStep.Compile()
 }
 
-//SetFunctionName sets the function name for a line and adds the function to the functions
+// CheckCircular checks if a line references itself
+func (ln *Line) CheckCircular(k int) bool {
+	e, g, b := CheckCircular(ln.Expr.Expr, k), CheckCircular(ln.GraphIf.Expr, k), CheckCircular(ln.Bounce.Expr, k)
+	if e || g || b {
+		return true
+	}
+	return false
+
+}
+
+// CheckCircular checks if an expr references itself
+func CheckCircular(expr string, k int) bool {
+	for _, d := range basicFunctionList {
+		expr = strings.ReplaceAll(expr, d, "")
+	}
+	if k >= len(functionNames) {
+		return false
+	}
+	funcName := functionNames[k]
+	if strings.Contains(expr, funcName) {
+		return true
+	}
+	return false
+}
+
+// SetFunctionName sets the function name for a line and adds the function to the functions
 func (ln *Line) SetFunctionName(k int) {
 	if k >= len(functionNames) {
 		// ln.FuncName = "unassigned"
