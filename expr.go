@@ -229,7 +229,6 @@ func (ex *Expr) Compile() error {
 	var err error
 	ex.Val, err = govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
 	if HandleError(err) {
-		problemWithCompile = true
 		ex.Val = nil
 		return err
 	}
@@ -253,7 +252,6 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 	ex.Params["h"] = h
 	yi, err := ex.Val.Evaluate(ex.Params)
 	if HandleError(err) {
-		problemWithEval = true
 		return 0
 	}
 	switch yi.(type) {
@@ -279,7 +277,6 @@ func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 	ex.Params["y"] = y
 	ri, err := ex.Val.Evaluate(ex.Params)
 	if HandleError(err) {
-		problemWithEval = true
 		return true
 	}
 	switch ri.(type) {

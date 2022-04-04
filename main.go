@@ -31,7 +31,6 @@ var (
 	gmin, gmax, gsz, ginc                             mat32.Vec2
 	mfr, statusBar                                    *gi.Frame
 	fpsText, errorText, versionText, currentFileText  *gi.Label
-	problemWithEval, problemWithCompile               bool
 )
 
 func main() {
@@ -92,7 +91,10 @@ func mainrun() {
 // HandleError checks if there is an error. If there is, it sets the error text to the error, and returns true. Otherwise returns false.
 func HandleError(err error) bool {
 	if err != nil {
-		errorText.SetText("Error: " + err.Error())
+		TheGraph.State.Error = err
+		updt := statusBar.UpdateStart()
+		errorText.SetText("Error: " + TheGraph.State.Error.Error())
+		statusBar.UpdateEnd(updt)
 		return true
 	}
 	return false

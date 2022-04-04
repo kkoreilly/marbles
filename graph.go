@@ -5,6 +5,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -30,6 +31,7 @@ type Graph struct {
 type State struct {
 	Running bool
 	Time    float64
+	Error   error
 }
 
 // Line represents one line with an equation etc
@@ -166,20 +168,21 @@ func (gr *Graph) Graph() {
 	if gr.State.Running {
 		return
 	}
+	gr.State.Error = nil
 	InitCoords()
 	gr.CompileExprs()
 	ResetMarbles()
-	if problemWithCompile {
-		problemWithCompile = false
+	if gr.State.Error != nil {
 		return
 	}
 	gr.State.Time = 0
-	problemWithEval = false
 	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
-	errorText.SetText("")
 	gr.Lines.Graph(false)
 	gr.AutoSave()
+	if gr.State.Error == nil {
+		errorText.SetText("Graphed successfully")
+	}
 }
 
 // Run runs the marbles for NSteps
@@ -232,8 +235,14 @@ func (gr *Graph) TrackSelectedMarble() {
 
 // AddLine adds a new blank line
 func (gr *Graph) AddLine() {
-	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{gist.NilColor, gist.NilColor}, 0, false}
-	// newLine.Defaults(rand.Intn(10))
+	k := len(gr.Lines)
+	var color gist.Color
+	if TheSettings.LineDefaults.LineColors.Color == gist.White {
+		color, _ = gist.ColorFromName(colors[k%len(colors)])
+	} else {
+		color = TheSettings.LineDefaults.LineColors.Color
+	}
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{color, gist.White}, 0, false}
 	gr.Lines = append(gr.Lines, newLine)
 }
 
@@ -271,8 +280,7 @@ func (gr *Graph) CompileExprs() {
 			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
 		if ln.CheckCircular(k) {
-			problemWithCompile = true
-			errorText.SetText("Error: lines can't reference themselves")
+			HandleError(errors.New("lines can't reference themselves"))
 			return
 		}
 		ln.SetFunctionName(k)
@@ -501,7 +509,7 @@ func (ln *Line) Graph(lidx int, fromMarbles bool) {
 	start := true
 	skipped := false
 	for x := gmin.X; x < gmax.X; x += ginc.X {
-		if problemWithEval {
+		if TheGraph.State.Error != nil {
 			return
 		}
 		fx := float64(x)

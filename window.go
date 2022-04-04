@@ -27,7 +27,7 @@ func makeBasicElements() {
 	// lns.ShowIndex = false
 	lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
 		if col == 0 {
-			newLabel := ""
+			newLabel := "<i><b>y=</b></i>"
 			if row < len(functionNames) {
 				newLabel = "<i><b>" + functionNames[row] + "(x)=</b></i>"
 			}
