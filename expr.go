@@ -259,7 +259,7 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 		return yi.(float64)
 	default:
 		TheGraph.Stop()
-		errorText.SetText(fmt.Sprintf("Expression %v is invalid, it is a %T value, should be a float64 value", ex.Expr, yi))
+		HandleError(fmt.Errorf("expression %v is invalid, it is a %T value, should be a float64 value", ex.Expr, yi))
 		return 0
 	}
 }
@@ -284,7 +284,7 @@ func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 		return ri.(bool)
 	default:
 		TheGraph.Stop()
-		errorText.SetText(fmt.Sprintf("Expression %v is invalid, it is a %T value, should be a bool value", ex.Expr, ri))
+		HandleError(fmt.Errorf("expression %v is invalid, it is a %T value, should be a bool value", ex.Expr, ri))
 		return false
 	}
 }
