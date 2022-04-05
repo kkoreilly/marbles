@@ -185,6 +185,14 @@ func (gr *Graph) Graph() {
 	}
 }
 
+// AutoGraph is used to graph the function when something is changed
+func (gr *Graph) AutoGraph() {
+	updt := svgGraph.UpdateStart()
+	TheGraph.Graph()
+	svgGraph.SetNeedsFullRender()
+	svgGraph.UpdateEnd(updt)
+}
+
 // Run runs the marbles for NSteps
 func (gr *Graph) Run() {
 	go RunMarbles()

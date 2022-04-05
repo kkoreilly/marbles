@@ -40,6 +40,21 @@ func makeBasicElements() {
 			widg.SetProp("background-color", clr)
 			widg.SetProp("color", clr)
 		}
+		if col < 3 {
+			edit := widg.(*giv.StructViewInline).Parts.Child(1).(*gi.TextField)
+			edit.TextFieldSig.Connect(edit.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+				if col == 0 {
+					TheGraph.Lines[row].Expr.Expr = string(edit.EditTxt)
+				}
+				if col == 1 {
+					TheGraph.Lines[row].GraphIf.Expr = string(edit.EditTxt)
+				}
+				if col == 2 {
+					TheGraph.Lines[row].Bounce.Expr = string(edit.EditTxt)
+				}
+				TheGraph.AutoGraph()
+			})
+		}
 	}
 
 	params := giv.AddNewStructView(sidesplit, "params")
@@ -81,6 +96,7 @@ func makeBasicElements() {
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()
 	errorText.Redrawable = true
+	errorText.SetText("Graphed successfully")
 	currentFileText = gi.AddNewLabel(statusBar, "currentFileText", "untitled.json")
 	currentFileText.SetProp("font-weight", "bold")
 	currentFileText.SetStretchMaxWidth()
