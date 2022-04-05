@@ -36,13 +36,12 @@ type State struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	// FuncName   string     `height:"1.5" desc:"Name of the function, use to refer to it in other equations. Can't be changed" json:"-"`
-	Expr       Expr       `width:"50" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
-	GraphIf    Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
-	Bounce     Expr       `width:"30" min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
-	LineColors LineColors `desc:"Line color and colorswitch" view:"no-inline"`
-	TimesHit   int        `view:"-" json:"-"`
-	Changes    bool       `view:"-" json:"-"`
+	Expr     Expr       `width:"70" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
+	GraphIf  Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
+	Bounce   Expr       `width:"30" min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
+	Colors   LineColors `desc:"Line color and colorswitch" view:"no-inline"`
+	TimesHit int        `view:"-" json:"-"`
+	Changes  bool       `view:"-" json:"-"`
 }
 
 // Params is the parameters of the graph
@@ -150,9 +149,10 @@ var GraphProps = ki.Props{
 		}},
 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
 		{Name: "AddLine", Value: ki.Props{
-			"label": "Add New Line",
-			"desc":  "Adds a new line",
-			"icon":  "plus",
+			"label":    "Add New Line",
+			"desc":     "Adds a new line",
+			"icon":     "plus",
+			"shortcut": "Control+M",
 		}},
 	},
 }
@@ -269,16 +269,16 @@ func (gr *Graph) CompileExprs() {
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
-		if ln.LineColors.Color == gist.NilColor {
+		if ln.Colors.Color == gist.NilColor {
 			if TheSettings.LineDefaults.LineColors.Color == gist.White {
 				color, _ := gist.ColorFromName(colors[k%len(colors)])
-				ln.LineColors.Color = color
+				ln.Colors.Color = color
 			} else {
-				ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
+				ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 			}
 		}
-		if ln.LineColors.ColorSwitch == gist.NilColor {
-			ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
+		if ln.Colors.ColorSwitch == gist.NilColor {
+			ln.Colors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 		}
 		if ln.Bounce.Expr == "" {
 			ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
@@ -453,13 +453,13 @@ func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
 	if TheSettings.LineDefaults.LineColors.Color == gist.White {
 		color, _ := gist.ColorFromName(colors[lidx%len(colors)])
-		ln.LineColors.Color = color
+		ln.Colors.Color = color
 	} else {
-		ln.LineColors.Color = TheSettings.LineDefaults.LineColors.Color
+		ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 	}
 	ln.Bounce.Expr = TheSettings.LineDefaults.Bounce
 	ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
-	ln.LineColors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
+	ln.Colors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 }
 
 // Defaults makes the lines and then defaults them
@@ -501,7 +501,7 @@ func (ls *Lines) Graph(fromMarbles bool) {
 func (ln *Line) Graph(lidx int, fromMarbles bool) {
 	path := svgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
-	path.SetProp("stroke", ln.LineColors.Color)
+	path.SetProp("stroke", ln.Colors.Color)
 	ps := ""
 	start := true
 	skipped := false

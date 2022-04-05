@@ -22,9 +22,9 @@ func makeBasicElements() {
 	sidesplit.Dim = mat32.Y
 	lns = giv.AddNewTableView(sidesplit, "lns")
 	lns.Viewport = vp
+	lns.SetProp("index", false)
+	lns.NoAdd = true
 	lns.SetSlice(&TheGraph.Lines)
-	// lns.NoAdd = true
-	// lns.ShowIndex = false
 	lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
 		if col == 0 {
 			newLabel := "<i><b>y=</b></i>"
@@ -36,9 +36,10 @@ func makeBasicElements() {
 			lbl.SetProp("background-color", "yellow")
 		}
 		if col == 3 {
-			clr := TheGraph.Lines[row].LineColors.Color
+			clr := TheGraph.Lines[row].Colors.Color
 			widg.SetProp("background-color", clr)
 			widg.SetProp("color", clr)
+			widg.(*gi.Action).Text = "LColors"
 		}
 		if col < 3 {
 			edit := widg.(*giv.StructViewInline).Parts.Child(1).(*gi.TextField)
@@ -54,6 +55,7 @@ func makeBasicElements() {
 				}
 				TheGraph.AutoGraph()
 			})
+			widg.SetProp("font-size", TheSettings.LineFontSize)
 		}
 	}
 

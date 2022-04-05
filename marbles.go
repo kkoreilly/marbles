@@ -186,7 +186,7 @@ func UpdateMarblesData() {
 
 			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
-				setColor = ln.LineColors.ColorSwitch
+				setColor = ln.Colors.ColorSwitch
 				m.Pos, m.Vel = m.CalcCollide(ln, npos, yp, yn)
 				break
 			}

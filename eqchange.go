@@ -40,6 +40,13 @@ var EquationChangeSlice = []EquationChange{
 	{"/.", "/0."},
 	{"^.", "^0."},
 	{"(.", "(0."},
+	{"<-", "< -"},
+	{">-", "> -"},
+	{"=-", "= -"},
+	{"*-", "* -"},
+	{"/-", "/ -"},
+	{"+-", "+ -"},
+	{"^-", "^ -"},
 }
 
 // PrepareExpr prepares an expression by looping both equation change slices
