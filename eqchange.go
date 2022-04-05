@@ -33,6 +33,7 @@ var EquationChangeSlice = []EquationChange{
 	{"A", "a"},
 	{"T", "t"},
 	{"H", "h"},
+	{`\`, ""},
 	{"+.", "+0."},
 	{"-.", "-0."},
 	{"*.", "*0."},
