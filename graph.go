@@ -287,7 +287,7 @@ func (gr *Graph) CompileExprs() {
 			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
 		if CheckCircular(ln.Expr.Expr, k) {
-			HandleError(errors.New("lines can't reference themselves"))
+			HandleError(errors.New("circular logic detected"))
 			return
 		}
 		ln.SetFunctionName(k)
@@ -304,10 +304,23 @@ func (gr *Graph) CompileExprs() {
 
 // CheckCircular checks if an expr references itself
 func CheckCircular(expr string, k int) bool {
+	if CheckIfReferences(expr, k) {
+		return true
+	}
+	for i := range functionNames {
+		if CheckIfReferences(expr, i) {
+			return CheckCircular(TheGraph.Lines[i].Expr.Expr, k)
+		}
+	}
+	return false
+}
+
+// CheckIfReferences checks if an expr references a given function
+func CheckIfReferences(expr string, k int) bool {
 	for _, d := range basicFunctionList {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
-	if k >= len(functionNames) {
+	if k >= len(functionNames) || k >= len(TheGraph.Lines) {
 		return false
 	}
 	funcName := functionNames[k]
@@ -386,51 +399,12 @@ func CheckIfChanges(expr string) bool {
 	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
 		return true
 	}
-	strs := before(expr, "'")
-	for _, d := range strs {
-		for k, fn := range functionNames {
-			if d == fn && k < len(TheGraph.Lines) {
-				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
-			}
-		}
-	}
-	strs = before(expr, `"`)
-	for _, d := range strs {
-		for k, fn := range functionNames {
-			if d == fn && k < len(TheGraph.Lines) {
-				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
-			}
-		}
-	}
-	strs = before(expr, "i")
-	for _, d := range strs {
-		for k, fn := range functionNames {
-			if d == fn && k < len(TheGraph.Lines) {
-				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
-			}
-		}
-	}
-	strs = before(expr, "(")
-	for _, d := range strs {
-		for k, fn := range functionNames {
-			if (d == fn || d == strings.ToUpper(fn)) && k < len(TheGraph.Lines) {
-				return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
-			}
+	for k := range functionNames {
+		if CheckIfReferences(expr, k) {
+			return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
 		}
 	}
 	return false
-}
-func before(str, substr string) []string {
-	result := []string{}
-	for {
-		pos := strings.Index(str, substr)
-		if pos == -1 {
-			return result
-		}
-		result = append(result, str[0:pos])
-		str = strings.Replace(str, substr, "", 1)
-	}
-
 }
 
 // InitBasicFunctionList adds all of the basic functions to a list
