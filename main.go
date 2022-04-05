@@ -82,6 +82,9 @@ func mainrun() {
 			}
 		})
 	})
+	gi.SetQuitCleanFunc(func() {
+		TheGraph.AutoSave()
+	})
 	makeMainMenu()
 	win.MainMenuUpdated()
 	vp.UpdateEndNoSig(updt)

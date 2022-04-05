@@ -179,7 +179,6 @@ func (gr *Graph) Graph() {
 	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
 	gr.Lines.Graph(false)
-	gr.AutoSave()
 	if gr.State.Error == nil {
 		errorText.SetText("Graphed successfully")
 	}
