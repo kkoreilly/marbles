@@ -286,7 +286,7 @@ func (gr *Graph) CompileExprs() {
 		if ln.GraphIf.Expr == "" {
 			ln.GraphIf.Expr = TheSettings.LineDefaults.GraphIf
 		}
-		if ln.CheckCircular(k) {
+		if CheckCircular(ln.Expr.Expr, k) {
 			HandleError(errors.New("lines can't reference themselves"))
 			return
 		}
@@ -300,16 +300,6 @@ func (gr *Graph) CompileExprs() {
 	gr.Params.UpdtRate.Compile()
 	gr.Params.Gravity.Compile()
 	gr.Params.TimeStep.Compile()
-}
-
-// CheckCircular checks if a line references itself
-func (ln *Line) CheckCircular(k int) bool {
-	e, g, b := CheckCircular(ln.Expr.Expr, k), CheckCircular(ln.GraphIf.Expr, k), CheckCircular(ln.Bounce.Expr, k)
-	if e || g || b {
-		return true
-	}
-	return false
-
 }
 
 // CheckCircular checks if an expr references itself
