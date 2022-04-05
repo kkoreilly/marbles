@@ -5,9 +5,9 @@ go 1.17
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/chewxy/math32 v1.10.1
-	github.com/goki/gi v1.2.15
-	github.com/goki/ki v1.1.4
-	github.com/goki/mat32 v1.0.9
+	github.com/goki/gi v1.2.17
+	github.com/goki/ki v1.1.5
+	github.com/goki/mat32 v1.0.10
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/lib/pq v1.10.4
 	golang.design/x/clipboard v0.6.1
@@ -34,7 +34,7 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211213063430-748e38ca8aec // indirect
 	github.com/go-gl/mathgl v1.0.0 // indirect
 	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
-	github.com/goki/pi v1.0.16 // indirect
+	github.com/goki/pi v1.0.17 // indirect
 	github.com/goki/prof v0.0.0-20180502205428-54bc71b5d09b // indirect
 	github.com/goki/vci v1.0.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
