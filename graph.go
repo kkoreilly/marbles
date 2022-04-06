@@ -48,7 +48,7 @@ type Line struct {
 // Params is the parameters of the graph
 type Params struct {
 	NMarbles         int        `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	Width            float64    `min:"0" max:"10" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
+	Width            float64    `min:"0" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
 	MarbleStartPos   mat32.Vec2 `desc:"Marble starting position"`
 	NSteps           int        `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
 	StartSpeed       float64    `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`

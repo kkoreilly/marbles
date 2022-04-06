@@ -59,7 +59,8 @@ func GraphMarblesInit() {
 
 // Init makes a marble
 func (m *Marble) Init(diff float32) {
-	randN := (rand.Float64() * 2) - 1
+	rand.Seed(time.Now().UnixNano())
+	randN := rand.Float64() - 0.5
 	xPos := randN * TheGraph.Params.Width
 	m.Pos = mat32.Vec2{X: float32(xPos) + TheGraph.Params.MarbleStartPos.X, Y: TheGraph.Params.MarbleStartPos.Y - diff}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
@@ -269,7 +270,7 @@ func RunMarbles() {
 	start := time.Now()
 	nsteps := TheGraph.Params.NSteps
 	if nsteps == -1 {
-		nsteps = 1000000000000
+		nsteps = math.MaxInt
 	}
 	for i := 0; i < nsteps; i++ {
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {

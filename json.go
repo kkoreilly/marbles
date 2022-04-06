@@ -122,7 +122,5 @@ func (gr *Graph) Download() {
 // OpenGraphFromString opens a graph given its json string
 func (gr *Graph) OpenGraphFromString(data string) {
 	err := json.Unmarshal([]byte(data), gr)
-	if HandleError(err) {
-		return
-	}
+	HandleError(err)
 }

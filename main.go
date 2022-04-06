@@ -63,7 +63,7 @@ func mainrun() {
 	UpdateColors()
 
 	InitClipboard()
-	InitDB()
+	go InitDB()
 
 	inClosePrompt := false
 	win.SetCloseReqFunc(func(w *gi.Window) {
