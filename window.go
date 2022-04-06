@@ -138,7 +138,7 @@ func makeMainMenu() {
 	})
 	fmen.Menu.AddSeparator("sep1")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Save", ShortcutKey: gi.KeyFunMenuSave}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		if currentFile != "" {
+		if TheGraph.State.File != "" {
 			TheGraph.SaveLast()
 		} else {
 			giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {

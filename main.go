@@ -152,10 +152,10 @@ func UpdateColors() {
 // UpdateCurrentFileText updates the current file text
 func UpdateCurrentFileText() {
 	updt := statusBar.UpdateStart()
-	if currentFile == "" {
+	if TheGraph.State.File == "" {
 		currentFileText.SetText("untitled.json")
 	}
-	strs := strings.Split(currentFile, "savedGraphs")
+	strs := strings.Split(TheGraph.State.File, "savedGraphs")
 	for k, d := range strs {
 		if k != 1 {
 			continue

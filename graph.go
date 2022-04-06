@@ -32,6 +32,7 @@ type State struct {
 	Running bool
 	Time    float64
 	Error   error
+	File    string
 }
 
 // Line represents one line with an equation etc
@@ -88,9 +89,6 @@ var basicFunctionList = []string{}
 
 // functionNames has all of the supported function names, in order
 var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y"}
-
-// currentFile is the last saved or opened file, used for the save button
-var currentFile string
 
 // last evaluated x value
 var currentX float64
@@ -255,7 +253,7 @@ func (gr *Graph) AddLine() {
 
 // Reset resets the graph to its starting position (one default line and default params)
 func (gr *Graph) Reset() {
-	currentFile = ""
+	gr.State.File = ""
 	UpdateCurrentFileText()
 	gr.Lines = nil
 	gr.Lines.Defaults()
@@ -324,7 +322,7 @@ func CheckIfReferences(expr string, k int) bool {
 		return false
 	}
 	funcName := functionNames[k]
-	if strings.Contains(expr, funcName) {
+	if strings.Contains(expr, funcName) || strings.Contains(expr, strings.ToUpper(funcName)) {
 		return true
 	}
 	return false

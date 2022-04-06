@@ -63,10 +63,10 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "LineColors": {
+      "Colors": {
         "Color": {
           "R": 0,
-          "G": 128,
+          "G": 0,
           "B": 0,
           "A": 255
         },
@@ -88,11 +88,11 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "LineColors": {
+      "Colors": {
         "Color": {
-          "R": 0,
-          "G": 255,
-          "B": 255,
+          "R": 255,
+          "G": 0,
+          "B": 0,
           "A": 255
         },
         "ColorSwitch": {
@@ -113,7 +113,7 @@
       "Bounce": {
         "Expr": "0.95"
       },
-      "LineColors": {
+      "Colors": {
         "Color": {
           "R": 0,
           "G": 0,
