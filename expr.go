@@ -264,6 +264,12 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 	}
 }
 
+// EvalWithY calls eval but with a y value set
+func (ex *Expr) EvalWithY(x, t float64, h int, y float64) float64 {
+	ex.Params["y"] = y
+	return ex.Eval(x, t, h)
+}
+
 // EvalBool checks if a statement is true based on the x, y, t and h values
 func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 	if ex.Expr == "" {

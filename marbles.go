@@ -63,7 +63,7 @@ func GraphMarblesInit() {
 
 // Init makes a marble
 func (m *Marble) Init(diff float32) {
-	rand.Seed(time.Now().UnixNano())
+	// rand.Seed(time.Now().UnixNano())
 	randN := rand.Float64() - 0.5
 	xPos := randN * TheGraph.Params.Width
 	m.Pos = mat32.Vec2{X: float32(xPos) + TheGraph.Params.MarbleStartPos.X, Y: TheGraph.Params.MarbleStartPos.Y - diff}
@@ -175,8 +175,8 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 func UpdateMarblesData() {
 	for _, m := range TheGraph.Marbles {
 
-		m.Vel.Y -= float32(TheGraph.Params.Gravity.Eval(float64(m.Pos.X))) * ((gsz.Y * gsz.X) / 400)
-		updtrate := float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X)))
+		m.Vel.Y -= float32(TheGraph.Params.Gravity.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gsz.Y * gsz.X) / 400)
+		updtrate := float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
 		setColor := gist.White
@@ -197,7 +197,7 @@ func UpdateMarblesData() {
 		}
 
 		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X)))))
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
 		if setColor != gist.White {
 			m.Color = setColor
 		}
@@ -252,7 +252,7 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 	angNII := angN - angII
 	angR := math.Pi + 2*angNII
 
-	Bounce := ln.Bounce.Eval(float64(npos.X), TheGraph.State.Time, ln.TimesHit)
+	Bounce := ln.Bounce.EvalWithY(float64(npos.X), TheGraph.State.Time, ln.TimesHit, float64(yi))
 
 	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
 	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
@@ -278,7 +278,7 @@ func RunMarbles() {
 	for i := 0; i < nsteps; i++ {
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
 			UpdateMarblesData()
-			TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0)
+			TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
 		}
 		if UpdateMarbles() {
 			i--
@@ -290,7 +290,7 @@ func RunMarbles() {
 			startFrames = i
 		}
 
-		TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0)
+		TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
 		if !TheGraph.State.Running {
 			return
 		}

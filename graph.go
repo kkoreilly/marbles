@@ -89,7 +89,7 @@ var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orang
 var basicFunctionList = []string{}
 
 // functionNames has all of the supported function names, in order
-var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "y"}
+var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w"}
 
 // last evaluated x value
 var currentX float64
@@ -207,7 +207,7 @@ func (gr *Graph) Step() {
 		return
 	}
 	UpdateMarbles()
-	TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0)
+	TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
 }
 
 // SelectNextMarble calls select next marble
@@ -545,17 +545,17 @@ func (pr *Params) BasicDefaults() {
 }
 
 // Eval evaluates a parameter
-func (pr *Param) Eval(x float64) float64 {
+func (pr *Param) Eval(x, y float64) float64 {
 	if !pr.Changes {
 		return pr.BaseVal
 	}
-	return pr.Expr.Eval(x, TheGraph.State.Time, 0)
+	return pr.Expr.EvalWithY(x, TheGraph.State.Time, 0, y)
 }
 
 // Compile compiles evalexpr and sets changes
 func (pr *Param) Compile() {
 	pr.Expr.Compile()
-	if CheckIfChanges(pr.Expr.Expr) || strings.Contains(pr.Expr.Expr, "x") {
+	if CheckIfChanges(pr.Expr.Expr) || strings.Contains(pr.Expr.Expr, "x") || strings.Contains(pr.Expr.Expr, "y") {
 		pr.Changes = true
 	} else {
 		pr.BaseVal = pr.Expr.Eval(0, 0, 0)
