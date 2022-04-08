@@ -61,6 +61,9 @@ func makeBasicElements() {
 
 	params := giv.AddNewStructView(sidesplit, "params")
 	params.SetStruct(&TheGraph.Params)
+	params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.AutoGraph()
+	})
 
 	sidesplit.SetSplits(6, 4)
 

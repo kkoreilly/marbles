@@ -22,9 +22,10 @@ import (
 
 // Graph contains the lines and parameters of a graph
 type Graph struct {
-	Params Params `view:"-" desc:"the parameters for updating the marbles"`
-	Lines  Lines  `view:"-" desc:"the lines of the graph -- can have any number"`
-	State  State  `view:"-" json:"-"`
+	Params  Params    `view:"-" desc:"the parameters for updating the marbles"`
+	Lines   Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
+	Marbles []*Marble `view:"-" json:"-"`
+	State   State     `view:"-" json:"-"`
 }
 
 // State has the state of the graph
@@ -235,7 +236,7 @@ func (gr *Graph) TrackSelectedMarble() {
 	if selectedMarble == -1 {
 		return
 	}
-	Marbles[selectedMarble].ToggleTrack(selectedMarble)
+	gr.Marbles[selectedMarble].ToggleTrack(selectedMarble)
 }
 
 // AddLine adds a new blank line

@@ -246,7 +246,7 @@ Value is the value of the function specified evaluated at v. View the name of a 
 
 
 **Definition:**
-Value is the derivative of the function specified at v. View the name of a function to the right of the equation.
+Value is the derivative of the function specified at v. View the name of a function to the left of the equation.
 
 **Examples:**
 * If f(x) is x^2 + 1, then f'(2) will be equal to 4.
@@ -258,7 +258,7 @@ Value is the derivative of the function specified at v. View the name of a funct
 
 
 **Definition:**
-Value is the second derivative of the function specified at v. View the name of a function to the right of the equation.
+Value is the second derivative of the function specified at v. View the name of a function to the left of the equation.
 
 **Examples:**
 * If f(x) is x^2 + 1, then f''(2) will be equal to 2.
@@ -270,7 +270,7 @@ Value is the second derivative of the function specified at v. View the name of 
 
 
 **Definition:**
-Value is the integral of the function specified from a to b. View the name of a function to the right of the equation.
+Value is the integral of the function specified from a to b. View the name of a function to the left of the equation.
 
 **Examples:**
 * If f(x) is 2x, then fi(0, 1) will be equal to 1.
@@ -282,7 +282,7 @@ Value is the integral of the function specified from a to b. View the name of a 
 
 
 **Definition:**
-Value is the antiderivative of the function specified at v. View the name of a function to the right of the equation.
+Value is the antiderivative of the function specified at v. View the name of a function to the left of the equation.
 
 **Examples:**
 * If f(x) is x^2 + 1, then F(2) will be equal to 14/3.
