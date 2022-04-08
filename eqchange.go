@@ -28,25 +28,7 @@ var EquationChangeSlice = []EquationChange{
 	{"**", "^"},
 	{"sqrt", "√"},
 	{"pi", "π"},
-	{"X", "x"},
-	{"E", "e"},
-	{"A", "a"},
-	{"T", "t"},
-	{"H", "h"},
 	{`\`, ""},
-	{"+.", "+0."},
-	{"-.", "-0."},
-	{"*.", "*0."},
-	{"/.", "/0."},
-	{"^.", "^0."},
-	{"(.", "(0."},
-	{"<-", "< -"},
-	{">-", "> -"},
-	{"=-", "= -"},
-	{"*-", "* -"},
-	{"/-", "/ -"},
-	{"+-", "+ -"},
-	{"^-", "^ -"},
 }
 
 // PrepareExpr prepares an expression by looping both equation change slices
@@ -57,10 +39,17 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	}
 	ex.LoopEquationChangeSlice()
 	params := []string{"π", "e", "x", "a", "t", "h"}
-
+	symbols := []string{"+", "-", "*", "/", "^", ">", "<", "=", "(", ")"}
 	expr := LoopUnreadableChangeSlice(ex.Expr)
 	expr = strings.ReplaceAll(expr, "true", "(0==0)") // prevent true and false from being interpreted as functions
 	expr = strings.ReplaceAll(expr, "false", "(1==0)")
+	for _, s := range symbols {
+		expr = strings.ReplaceAll(expr, s+"-", s+" -")
+		expr = strings.ReplaceAll(expr, s+".", s+"0.")
+	}
+	for _, p := range params {
+		expr = strings.ReplaceAll(expr, strings.ToUpper(p), p)
+	}
 	i := 0
 	functionsToDelete := []string{}
 	functionsToAdd := make(map[string]govaluate.ExpressionFunction)
@@ -119,6 +108,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 			expr = strings.ReplaceAll(expr, pname+"("+fname, pname+"*("+fname)
 		}
 		expr = strings.ReplaceAll(expr, ")"+pname, ")*"+pname)
+		expr = strings.ReplaceAll(expr, pname+"(", pname+"*(")
 	}
 	for fname := range functions { // replace ()fname() with ()*fname()
 		expr = strings.ReplaceAll(expr, ")"+fname, ")*"+fname)
