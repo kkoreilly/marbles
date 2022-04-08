@@ -33,7 +33,7 @@ func makeBasicElements() {
 			}
 			lbl := widg.(*giv.StructViewInline).Parts.Child(0).(*gi.Label)
 			lbl.SetText(newLabel)
-			lbl.SetProp("background-color", "yellow")
+			// lbl.SetProp("background-color", "yellow")
 		}
 		if col == 3 {
 			clr := TheGraph.Lines[row].Colors.Color
