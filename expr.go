@@ -178,6 +178,106 @@ var DefaultFunctions = map[string]govaluate.ExpressionFunction{
 		y := math.Atan(args[0].(float64))
 		return y, nil
 	},
+	"sinh": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("sinh", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Sinh(args[0].(float64))
+		return y, nil
+	},
+	"cosh": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("cosh", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Cosh(args[0].(float64))
+		return y, nil
+	},
+	"tanh": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("tanh", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Tanh(args[0].(float64))
+		return y, nil
+	},
+	"arcsinh": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arcsinh", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Asinh(args[0].(float64))
+		return y, nil
+	},
+	"arccosh": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arccosh", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Acosh(args[0].(float64))
+		return y, nil
+	},
+	"arctanh": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arctanh", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Atanh(args[0].(float64))
+		return y, nil
+	},
+	"arcsec": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arcsec", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Acos(1 / args[0].(float64))
+		return y, nil
+	},
+	"arccsc": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arccsc", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Asin(1 / args[0].(float64))
+		return y, nil
+	},
+	"arccot": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arccot", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Atan(1 / args[0].(float64))
+		if args[0].(float64) < 0 {
+			y += math.Pi
+		}
+
+		return y, nil
+	},
+	"arcsech": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arcsech", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Acosh(1 / args[0].(float64))
+		return y, nil
+	},
+	"arccsch": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arccsch", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Asinh(1 / args[0].(float64))
+		return y, nil
+	},
+	"arccoth": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("arccoth", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Atanh(1 / args[0].(float64))
+		return y, nil
+	},
 }
 
 // Integrate returns the integral of an expression

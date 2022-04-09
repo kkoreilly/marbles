@@ -80,8 +80,8 @@ Value is the cotangent of v.
 Value is the inverse/arc sine of v.
 
 **Examples:**
-* asin(1) will be equal to pi/2
-* asin(-1) will be equal to -pi/2
+* arcsin(1) will be equal to pi/2
+* arcsin(-1) will be equal to -pi/2
 </details>
 
 <details>
@@ -92,8 +92,8 @@ Value is the inverse/arc sine of v.
 Value is the inverse/arc cosine of v.
 
 **Examples:**
-* acos(1) will be equal to pi
-* acos(0) will be equal to pi/2
+* arccos(1) will be equal to pi
+* arccos(0) will be equal to pi/2
 </details>
 
 <details>
@@ -104,8 +104,32 @@ Value is the inverse/arc cosine of v.
 Value is the inverse/arc tangent of v.
 
 **Examples:**
-* atan(0) will be equal to 0
-* atan(1) will be equal to pi/4
+* arctan(0) will be equal to 0
+* arctan(1) will be equal to pi/4
+</details>
+
+<details>
+<summary>arcsec/arccsc/arccot(v)</summary>
+
+
+**Definition:**
+Value is the inverse/arc secant/cosecant/cotangent of v.
+
+**Examples:**
+* arcsec(1) will be equal to 0
+* arccsc(1) will be equal to pi/2
+</details>
+
+<details>
+<summary>sinh/cosh/tanh/sech/csch/coth/arcsinh/arccosh/arctanh/arcsech/arccsch/arccoth(v)</summary>
+
+
+**Definition:**
+Value is the hyperbolic sine/cosine/tangent/secant/cosecant/cotangent/arcsine/arccosine/arctangent/arcsecant/arccosecant/arccotangent of v.
+
+**Examples:**
+* sinh(0) will be equal to 0
+* cosh(0) will be equal to 1
 </details>
 
 <details>
