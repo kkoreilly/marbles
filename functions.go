@@ -319,6 +319,18 @@ var DefaultFunctions = Functions{
 		}
 		return num, nil
 	},
+	"avg": func(args ...interface{}) (interface{}, error) {
+		var sum float64
+		for _, d := range args {
+			switch d.(type) {
+			case float64:
+				sum += d.(float64)
+			default:
+				return 0, errors.New("function avg requires all number values")
+			}
+		}
+		return sum / float64(len(args)), nil
+	},
 }
 
 // CheckArgs checks if a function is passed the right number of arguments, and the right type of arguments.

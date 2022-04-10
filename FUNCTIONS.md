@@ -213,7 +213,19 @@ Value is the lowest/highest value of the provided values
 
 **Examples:**
 * max(3, 5) will be equal to 5
-* min(-7.2, 1) will be equal to -7.2
+* min(1, -7.2, 3) will be equal to -7.2
+</details>
+
+<details>
+<summary>avg(v1, v2...)</summary>
+
+
+**Definition:**
+Value is the average of the provided values.
+
+**Examples:**
+* avg(1, 2) will be equal to 1.5
+* avg(0, 3, 6) will be equal to 3
 </details>
 
 <details>
