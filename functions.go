@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math"
 
@@ -289,6 +290,34 @@ var DefaultFunctions = Functions{
 		}
 		y := math.Atanh(1 / args[0].(float64))
 		return y, nil
+	},
+	"max": func(args ...interface{}) (interface{}, error) {
+		num := math.Inf(-1)
+		for _, d := range args {
+			switch d.(type) {
+			case float64:
+				if d.(float64) > num {
+					num = d.(float64)
+				}
+			default:
+				return 0, errors.New("function max requires all number values")
+			}
+		}
+		return num, nil
+	},
+	"min": func(args ...interface{}) (interface{}, error) {
+		num := math.Inf(1)
+		for _, d := range args {
+			switch d.(type) {
+			case float64:
+				if d.(float64) < num {
+					num = d.(float64)
+				}
+			default:
+				return 0, errors.New("function min requires all number values")
+			}
+		}
+		return num, nil
 	},
 }
 

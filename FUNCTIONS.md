@@ -193,6 +193,30 @@ Value is v, rounded down to the nearest integer.
 </details>
 
 <details>
+<summary>round(v)</summary>
+
+
+**Definition:**
+Value is v, rounded to the nearest integer.
+
+**Examples:**
+* round(4.5) will be equal to 5
+* round(3.1) will be equal to 3
+</details>
+
+<details>
+<summary>min/max(v1, v2...)</summary>
+
+
+**Definition:**
+Value is the lowest/highest value of the provided values
+
+**Examples:**
+* max(3, 5) will be equal to 5
+* min(-7.2, 1) will be equal to -7.2
+</details>
+
+<details>
 <summary>mod(v1, v2)</summary>
 
 

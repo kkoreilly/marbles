@@ -578,7 +578,7 @@ func ExprComplete(data interface{}, text string, posLn, posCh int) (md complete.
 	seedStart := 0
 	for i := len(text) - 1; i >= 0; i-- {
 		r := rune(text[i])
-		if unicode.IsDigit(r) || unicode.IsSymbol(r) || unicode.IsSpace(r) || r == []rune("&")[0] || r == []rune("-")[0] || r == []rune("*")[0] || r == []rune("x")[0] || r == []rune("X")[0] {
+		if !unicode.IsLetter(r) || r == []rune("x")[0] || r == []rune("X")[0] {
 			seedStart = i + 1
 			break
 		}
