@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gist"
@@ -17,6 +18,7 @@ import (
 	"github.com/goki/ki/ki"
 	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
+	"github.com/goki/pi/complete"
 	"gonum.org/v1/gonum/diff/fd"
 )
 
@@ -560,4 +562,29 @@ func (pr *Param) Compile() {
 	} else {
 		pr.BaseVal = pr.Expr.Eval(0, 0, 0)
 	}
+}
+
+// ExprComplete finds the possible completions for the expr in text field
+func ExprComplete(data interface{}, text string, posLn, posCh int) (md complete.Matches) {
+	seedStart := 0
+	for i := len(text) - 1; i >= 0; i-- {
+		r := rune(text[i])
+		if unicode.IsDigit(r) || unicode.IsSymbol(r) || unicode.IsSpace(r) || r == []rune("&")[0] || r == []rune("-")[0] || r == []rune("*")[0] || r == []rune("x")[0] || r == []rune("X")[0] {
+			seedStart = i + 1
+			break
+		}
+	}
+	md.Seed = text[seedStart:]
+	possibles := complete.MatchSeedString(basicFunctionList, md.Seed)
+	for _, p := range possibles {
+		m := complete.Completion{Text: p, Icon: ""}
+		md.Matches = append(md.Matches, m)
+	}
+	return md
+}
+
+// ExprCompleteEdit is the editing function called when using complete
+func ExprCompleteEdit(data interface{}, text string, cursorPos int, completion complete.Completion, seed string) (ed complete.Edit) {
+	ed = complete.EditWord(text, cursorPos, completion.Text, seed)
+	return ed
 }

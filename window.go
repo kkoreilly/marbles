@@ -56,8 +56,12 @@ func makeBasicElements() {
 				TheGraph.AutoGraph()
 			})
 			widg.SetProp("font-size", TheSettings.LineFontSize)
+			edit.SetCompleter(edit, ExprComplete, ExprCompleteEdit)
 		}
 	}
+	lns.ViewSig.Connect(lns.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.AutoGraph()
+	})
 
 	params := giv.AddNewStructView(sidesplit, "params")
 	params.SetStruct(&TheGraph.Params)

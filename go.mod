@@ -8,6 +8,7 @@ require (
 	github.com/goki/gi v1.2.17
 	github.com/goki/ki v1.1.5
 	github.com/goki/mat32 v1.0.10
+	github.com/goki/pi v1.0.18
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/lib/pq v1.10.5
 	golang.design/x/clipboard v0.6.1
@@ -34,7 +35,6 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220320163800-277f93cfa958 // indirect
 	github.com/go-gl/mathgl v1.0.0 // indirect
 	github.com/goki/freetype v0.0.0-20220119013949-7a161fd3728c // indirect
-	github.com/goki/pi v1.0.18 // indirect
 	github.com/goki/prof v0.0.0-20180502205428-54bc71b5d09b // indirect
 	github.com/goki/vci v1.0.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
@@ -47,13 +47,13 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/srwiley/rasterx v0.0.0-20220128185129-2efea2b9ea41 // indirect
 	github.com/srwiley/scanx v0.0.0-20190309010443-e94503791388 // indirect
-	golang.org/x/exp v0.0.0-20191002040644-a1355ae1e2c3 // indirect
+	golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4 // indirect
 	golang.org/x/exp/shiny v0.0.0-20220407100705-7b9b53b0aca4 // indirect
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a // indirect
 	golang.org/x/mobile v0.0.0-20220407111146-e579adbbc4a2 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20220407224826-aac1ed45d8e3 // indirect
-	golang.org/x/sys v0.0.0-20220406163625-3f8b81556e12 // indirect
+	golang.org/x/sys v0.0.0-20220408201424-a24fb2fb8a0f // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.10 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
