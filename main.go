@@ -56,10 +56,12 @@ func mainrun() {
 
 	mfr = win.SetMainFrame()
 	makeBasicElements()
+	TheGraph.SetFunctionsTo(DefaultFunctions)
 	InitCoords()
 	ResetMarbles()
 	TheGraph.CompileExprs()
 	TheGraph.Lines.Graph(false)
+	SetCompleteWords(TheGraph.Functions)
 	UpdateColors()
 
 	InitClipboard()

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"sort"
 	"strings"
 	"time"
 	"unicode"
@@ -24,10 +25,11 @@ import (
 
 // Graph contains the lines and parameters of a graph
 type Graph struct {
-	Params  Params    `view:"-" desc:"the parameters for updating the marbles"`
-	Lines   Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
-	Marbles []*Marble `view:"-" json:"-"`
-	State   State     `view:"-" json:"-"`
+	Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
+	Lines     Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
+	Marbles   []*Marble `view:"-" json:"-"`
+	State     State     `view:"-" json:"-"`
+	Functions Functions `view:"-" json:"-"`
 }
 
 // State has the state of the graph
@@ -89,6 +91,8 @@ type Lines []*Line
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
 var basicFunctionList = []string{}
+
+var completeWords = []string{}
 
 // functionNames has all of the supported function names, in order
 var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w"}
@@ -170,6 +174,7 @@ func (gr *Graph) Graph() {
 		return
 	}
 	gr.State.Error = nil
+	gr.SetFunctionsTo(DefaultFunctions)
 	InitCoords()
 	gr.CompileExprs()
 	ResetMarbles()
@@ -180,6 +185,7 @@ func (gr *Graph) Graph() {
 	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
 	gr.Lines.Graph(false)
+	SetCompleteWords(TheGraph.Functions)
 	if gr.State.Error == nil {
 		errorText.SetText("Graphed successfully")
 	}
@@ -318,6 +324,9 @@ func CheckCircular(expr string, k int) bool {
 
 // CheckIfReferences checks if an expr references a given function
 func CheckIfReferences(expr string, k int) bool {
+	sort.Slice(basicFunctionList, func(i, j int) bool {
+		return len(basicFunctionList[i]) > len(basicFunctionList[j])
+	})
 	for _, d := range basicFunctionList {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
@@ -339,7 +348,7 @@ func (ln *Line) SetFunctionName(k int) {
 	}
 	functionName := functionNames[k]
 	// ln.FuncName = functionName + "(x)="
-	DefaultFunctions[functionName] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName, args, "float64")
 		if err != nil {
 			return 0, err
@@ -347,7 +356,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.State.Time, ln.TimesHit))
 		return val, nil
 	}
-	DefaultFunctions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName+"d", args, "float64")
 		if err != nil {
 			return 0, err
@@ -359,7 +368,7 @@ func (ln *Line) SetFunctionName(k int) {
 		})
 		return val, nil
 	}
-	DefaultFunctions[functionName+`"`] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+`"`] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName+"dd", args, "float64")
 		if err != nil {
 			return 0, err
@@ -372,7 +381,7 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	capitalName := strings.ToUpper(functionName)
-	DefaultFunctions[capitalName] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[capitalName] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(capitalName, args, "float64")
 		if err != nil {
 			return 0, err
@@ -380,7 +389,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
 		return val, nil
 	}
-	DefaultFunctions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs(functionName+"i", args, "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -575,7 +584,7 @@ func ExprComplete(data interface{}, text string, posLn, posCh int) (md complete.
 		}
 	}
 	md.Seed = text[seedStart:]
-	possibles := complete.MatchSeedString(basicFunctionList, md.Seed)
+	possibles := complete.MatchSeedString(completeWords, md.Seed)
 	for _, p := range possibles {
 		m := complete.Completion{Text: p, Icon: ""}
 		md.Matches = append(md.Matches, m)
@@ -587,4 +596,13 @@ func ExprComplete(data interface{}, text string, posLn, posCh int) (md complete.
 func ExprCompleteEdit(data interface{}, text string, cursorPos int, completion complete.Completion, seed string) (ed complete.Edit) {
 	ed = complete.EditWord(text, cursorPos, completion.Text, seed)
 	return ed
+}
+
+// SetCompleteWords sets the words used for complete in the expressions
+func SetCompleteWords(functions Functions) {
+	completeWords = []string{}
+	for k := range functions {
+		completeWords = append(completeWords, k)
+	}
+	completeWords = append(completeWords, "true", "false", "pi", "a", "t")
 }
