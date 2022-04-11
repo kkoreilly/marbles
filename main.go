@@ -100,9 +100,11 @@ func mainrun() {
 func HandleError(err error) bool {
 	if err != nil {
 		TheGraph.State.Error = err
-		updt := statusBar.UpdateStart()
-		errorText.SetText("Error: " + TheGraph.State.Error.Error())
-		statusBar.UpdateEnd(updt)
+		if statusBar != nil {
+			updt := statusBar.UpdateStart()
+			errorText.SetText("Error: " + TheGraph.State.Error.Error())
+			statusBar.UpdateEnd(updt)
+		}
 		return true
 	}
 	return false
@@ -112,7 +114,7 @@ func HandleError(err error) bool {
 func GetVersion() string {
 	b, err := os.ReadFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"))
 	if err != nil {
-		os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"), []byte("unknown"), 0666)
+		os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"), []byte("unknown"), os.ModePerm)
 		return "unknown"
 	}
 	return string(b)
@@ -181,12 +183,12 @@ func CheckForFolders() {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
-	os.MkdirAll(filepath.Join(GetMarblesFolder(), "localData"), 0666)
+	os.MkdirAll(filepath.Join(GetMarblesFolder(), "localData"), 0777)
 	savedGraphsPath := filepath.Join(GetMarblesFolder(), "savedGraphs")
-	os.MkdirAll(savedGraphsPath, 0666)
+	os.MkdirAll(savedGraphsPath, 0777)
 	// If the directory is empty, add a blank file to prevent the app from crashing due to no files.
 	if CheckIfEmpty(savedGraphsPath) {
-		os.WriteFile(filepath.Join(savedGraphsPath, "blank.json"), []byte(""), 0666)
+		os.WriteFile(filepath.Join(savedGraphsPath, "blank.json"), []byte(""), os.ModePerm)
 	}
 	// If a file has been added, we no longer need the blank file
 	if CheckIfDirHas(savedGraphsPath, 2) {

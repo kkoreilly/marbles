@@ -43,7 +43,7 @@ func SaveImageToFile(img *image.RGBA, filename string) {
 	if HandleError(err) {
 		return
 	}
-	os.WriteFile(filename, b, 0666)
+	os.WriteFile(filename, b, os.ModePerm)
 }
 
 // InitClipboard inits the clipboard

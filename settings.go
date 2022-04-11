@@ -129,7 +129,7 @@ func (se *Settings) Save() {
 	if HandleError(err) {
 		return
 	}
-	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/settings.json"), b, 0644)
+	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/settings.json"), b, os.ModePerm)
 	HandleError(err)
 }
 

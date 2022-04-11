@@ -58,7 +58,7 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 	if HandleError(err) {
 		return err
 	}
-	err = os.WriteFile(string(filename), b, 0644)
+	err = os.WriteFile(string(filename), b, os.ModePerm)
 	HandleError(err)
 	gr.State.File = string(filename)
 	UpdateCurrentFileText()
@@ -77,7 +77,7 @@ func (gr *Graph) AutoSave() error {
 	if HandleError(err) {
 		return err
 	}
-	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/autosave.json"), b, 0644)
+	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/autosave.json"), b, os.ModePerm)
 	HandleError(err)
 	return err
 }
