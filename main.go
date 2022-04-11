@@ -5,7 +5,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/goki/gi/gi"
@@ -34,6 +36,7 @@ var (
 )
 
 func main() {
+	CheckForFolders()
 	gimain.Main(func() {
 		mainrun()
 	})
@@ -107,9 +110,10 @@ func HandleError(err error) bool {
 
 // GetVersion finds the locally installed version and returns it
 func GetVersion() string {
-	b, err := os.ReadFile("localData/version.txt")
-	if HandleError(err) {
-		return "Error getting version"
+	b, err := os.ReadFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"))
+	if err != nil {
+		os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"), []byte("unknown"), 0666)
+		return "unknown"
 	}
 	return string(b)
 }
@@ -168,4 +172,44 @@ func UpdateCurrentFileText() {
 	}
 	statusBar.UpdateEnd(updt)
 
+}
+
+// CheckForFolders makes sure that all needed folders exist
+func CheckForFolders() {
+	_, err := os.UserConfigDir()
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	os.MkdirAll(filepath.Join(GetMarblesFolder(), "localData"), 0666)
+	savedGraphsPath := filepath.Join(GetMarblesFolder(), "savedGraphs")
+	os.MkdirAll(savedGraphsPath, 0666)
+	// If the directory is empty, add a blank file to prevent the app from crashing due to no files.
+	if CheckIfEmpty(savedGraphsPath) {
+		os.WriteFile(filepath.Join(savedGraphsPath, "blank.json"), []byte(""), 0666)
+	}
+	// If a file has been added, we no longer need the blank file
+	if CheckIfDirHas(savedGraphsPath, 2) {
+		os.Remove(filepath.Join(savedGraphsPath, "blank.json"))
+	}
+}
+
+// GetMarblesFolder returns the folder where marbles data is located
+func GetMarblesFolder() string {
+	d, _ := os.UserConfigDir()
+	return filepath.Join(d, "Marbles")
+}
+
+// CheckIfEmpty checks if a directory is empty
+func CheckIfEmpty(name string) bool {
+	return !CheckIfDirHas(name, 1)
+}
+
+// CheckIfDirHas checks if a directory has at least n files
+func CheckIfDirHas(name string, n int) bool {
+	files, _ := os.ReadDir(name)
+	if len(files) >= n {
+		return true
+	}
+	return false
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/goki/gi/gi"
 )
@@ -34,7 +35,7 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 
 // OpenAutoSave opens the last graphed graph, stays between sessions of the app
 func (gr *Graph) OpenAutoSave() error {
-	b, err := os.ReadFile("localData/autosave.json")
+	b, err := os.ReadFile(filepath.Join(GetMarblesFolder(), "localData/autosave.json"))
 	if HandleError(err) {
 		return err
 	}
@@ -76,7 +77,7 @@ func (gr *Graph) AutoSave() error {
 	if HandleError(err) {
 		return err
 	}
-	err = os.WriteFile("localData/autosave.json", b, 0644)
+	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/autosave.json"), b, 0644)
 	HandleError(err)
 	return err
 }

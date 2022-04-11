@@ -1,6 +1,8 @@
 package main
 
 import (
+	"path/filepath"
+
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/giv"
 	"github.com/goki/gi/svg"
@@ -133,7 +135,7 @@ func makeMainMenu() {
 	})
 	fmen.Menu.AddSeparator("sep0")
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Open", ShortcutKey: gi.KeyFunMenuOpen}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 				TheGraph.OpenJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
@@ -148,7 +150,7 @@ func makeMainMenu() {
 		if TheGraph.State.File != "" {
 			TheGraph.SaveLast()
 		} else {
-			giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 				if sig == int64(gi.DialogAccepted) {
 					dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 					TheGraph.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
@@ -157,7 +159,7 @@ func makeMainMenu() {
 		}
 	})
 	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as", ShortcutKey: gi.KeyFunMenuSaveAs}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		giv.FileViewDialog(vp, "savedGraphs/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 				TheGraph.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))

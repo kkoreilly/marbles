@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 
 	"github.com/goki/gi/gist"
 	"github.com/goki/ki/ki"
@@ -85,7 +86,7 @@ func (se *Settings) Reset() {
 
 // Get gets the settings from localdata/settings.json
 func (se *Settings) Get() {
-	b, err := os.ReadFile("localData/settings.json")
+	b, err := os.ReadFile(filepath.Join(GetMarblesFolder(), "localData/settings.json"))
 	if err != nil {
 		se.Defaults()
 		se.Save()
@@ -128,7 +129,7 @@ func (se *Settings) Save() {
 	if HandleError(err) {
 		return
 	}
-	err = os.WriteFile("localData/settings.json", b, 0644)
+	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/settings.json"), b, 0644)
 	HandleError(err)
 }
 

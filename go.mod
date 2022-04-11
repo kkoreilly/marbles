@@ -1,6 +1,6 @@
 module github.com/kplat1/marbles
 
-go 1.17
+go 1.18
 
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
@@ -11,7 +11,7 @@ require (
 	github.com/goki/pi v1.0.18
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/lib/pq v1.10.5
-	golang.design/x/clipboard v0.6.1
+	golang.design/x/clipboard v0.6.2
 	gonum.org/v1/gonum v0.11.0
 )
 
