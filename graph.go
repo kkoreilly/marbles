@@ -58,8 +58,9 @@ type Params struct {
 	NSteps           int        `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
 	StartSpeed       float64    `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
 	UpdtRate         Param      `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	Gravity          Param      `desc:"how fast it accelerates down"`
 	TimeStep         Param      `desc:"how fast time increases"`
+	YForce           Param      `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
+	XForce           Param      `label:"X Force (Wind)" desc:"how fast the marbles move side to side without collisions, set to 0 for no movement"`
 	MinSize          mat32.Vec2
 	MaxSize          mat32.Vec2
 	TrackingSettings GraphTrackingSettings `view:"no-inline"`
@@ -305,7 +306,8 @@ func (gr *Graph) CompileExprs() {
 		ln.Compile()
 	}
 	gr.Params.UpdtRate.Compile()
-	gr.Params.Gravity.Compile()
+	gr.Params.YForce.Compile()
+	gr.Params.XForce.Compile()
 	gr.Params.TimeStep.Compile()
 }
 
@@ -531,7 +533,8 @@ func (pr *Params) Defaults() {
 	pr.NSteps = TheSettings.GraphDefaults.NSteps
 	pr.StartSpeed = TheSettings.GraphDefaults.StartSpeed
 	pr.UpdtRate = TheSettings.GraphDefaults.UpdtRate
-	pr.Gravity = TheSettings.GraphDefaults.Gravity
+	pr.YForce = TheSettings.GraphDefaults.YForce
+	pr.XForce = TheSettings.GraphDefaults.XForce
 	pr.TimeStep = TheSettings.GraphDefaults.TimeStep
 	pr.MinSize = TheSettings.GraphDefaults.MinSize
 	pr.MaxSize = TheSettings.GraphDefaults.MaxSize
@@ -546,8 +549,9 @@ func (pr *Params) BasicDefaults() {
 	pr.NSteps = -1
 	pr.StartSpeed = 0
 	pr.UpdtRate.Expr.Expr = ".02"
-	pr.Gravity.Expr.Expr = "0.1"
 	pr.TimeStep.Expr.Expr = "0.01"
+	pr.YForce.Expr.Expr = "-0.1"
+	pr.XForce.Expr.Expr = "0"
 	pr.MinSize = mat32.Vec2{X: -10, Y: -10}
 	pr.MaxSize = mat32.Vec2{X: 10, Y: 10}
 	pr.Width = 0

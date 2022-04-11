@@ -175,7 +175,8 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 func UpdateMarblesData() {
 	for _, m := range TheGraph.Marbles {
 
-		m.Vel.Y -= float32(TheGraph.Params.Gravity.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gsz.Y * gsz.X) / 400)
+		m.Vel.Y += float32(TheGraph.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gsz.Y * gsz.X) / 400)
+		m.Vel.X += float32(TheGraph.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gsz.Y * gsz.X) / 400)
 		updtrate := float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
