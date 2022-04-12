@@ -570,7 +570,11 @@ func (pr *Param) Eval(x, y float64) float64 {
 // Compile compiles evalexpr and sets changes
 func (pr *Param) Compile() {
 	pr.Expr.Compile()
-	if CheckIfChanges(pr.Expr.Expr) || strings.Contains(pr.Expr.Expr, "x") || strings.Contains(pr.Expr.Expr, "y") {
+	expr := pr.Expr.Expr
+	for _, d := range basicFunctionList {
+		expr = strings.ReplaceAll(expr, d, "")
+	}
+	if CheckIfChanges(expr) || strings.Contains(expr, "x") || strings.Contains(expr, "y") {
 		pr.Changes = true
 	} else {
 		pr.BaseVal = pr.Expr.Eval(0, 0, 0)
