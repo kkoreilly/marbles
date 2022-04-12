@@ -18,9 +18,10 @@ import (
 	"github.com/goki/mat32"
 )
 
-const ( // Width and height of the window, and size of the graph
-	width  = 1920
-	height = 1080
+const (
+	width   = 1920
+	height  = 1080
+	version = "v0.0.0-dev"
 )
 
 var (
@@ -114,8 +115,8 @@ func HandleError(err error) bool {
 func GetVersion() string {
 	b, err := os.ReadFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"))
 	if err != nil {
-		os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"), []byte("unknown"), os.ModePerm)
-		return "unknown"
+		os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/version.txt"), []byte(version), os.ModePerm)
+		return version
 	}
 	return string(b)
 }

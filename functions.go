@@ -109,6 +109,14 @@ var DefaultFunctions = Functions{
 		y := math.Log(args[0].(float64))
 		return y, nil
 	},
+	"log": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("log", args, "float64", "float64")
+		if err != nil {
+			return 0, err
+		}
+		y := math.Log(args[0].(float64)) / math.Log(args[1].(float64)) // log(v, b) = ln(v) / ln(b)
+		return y, nil
+	},
 	"csc": func(args ...interface{}) (interface{}, error) {
 		err := CheckArgs("csc", args, "float64")
 		if err != nil {

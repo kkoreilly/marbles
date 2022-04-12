@@ -257,12 +257,24 @@ Value is the square root of v.
 
 
 **Definition:**
-Value is the natural logarithm of v.
+Value is the natural logarithm of v (logarithm of v base e).
 
 **Examples:**
 * ln(e) will be equal to 1
 * ln(1) will be equal to 0
 </details> 
+
+<details>
+<summary>log(v, b)</summary>
+
+
+**Definition:**
+Value is the logarithm of v, base b.
+
+**Examples:**
+* log(e, e) will be equal to 1
+* log(1, 10) will be equal to 0
+</details>
 
 <details>
 <summary>rand(v)</summary>
@@ -297,7 +309,7 @@ If condition is true, value is v1. Otherwise value is v2
 Value is the value of the function specified evaluated at v. View the name of a function to the right of the equation.
 
 **Examples:**
-* If f(x) is x^2 + 1, then f(2) will be equal to 5.
+* If f(x) is sin(x) + x, then f(2x) will be equal to sin(2x)+2x.
 * If b(x) is sqrt(x)+5, then b(16) will be equal to 9.
 </details>
 
@@ -309,7 +321,7 @@ Value is the value of the function specified evaluated at v. View the name of a 
 Value is the derivative of the function specified at v. View the name of a function to the left of the equation.
 
 **Examples:**
-* If f(x) is x^2 + 1, then f'(2) will be equal to 4.
+* If f(x) is x^2 + 1, then f'(x) will be equal to 2x.
 * If b(x) is sqrt(x)+5, then b'(16) will be equal to 1/8.
 </details>
 
@@ -321,7 +333,7 @@ Value is the derivative of the function specified at v. View the name of a funct
 Value is the second derivative of the function specified at v. View the name of a function to the left of the equation.
 
 **Examples:**
-* If f(x) is x^2 + 1, then f''(2) will be equal to 2.
+* If f(x) is x^3 + 1, then f''(x) will be equal to 6x.
 * If b(x) is x^4, then b''(4) will be equal to 192.
 </details>
 
@@ -345,6 +357,6 @@ Value is the integral of the function specified from a to b. View the name of a 
 Value is the antiderivative of the function specified at v. View the name of a function to the left of the equation.
 
 **Examples:**
-* If f(x) is x^2 + 1, then F(2) will be equal to 14/3.
+* If f(x) is x^2 + 1, then F(x) will be equal to ((x^3)/3)+x.
 * If b(x) is x, then B(1) will be equal to 1/2.
 </details>

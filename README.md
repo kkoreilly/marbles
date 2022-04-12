@@ -30,16 +30,14 @@ $ go install github.com/kplat1/marbles@latest
   * You can set the amount of marbles that spawn (NMarbles)
   * You can set the amount of steps the graph runs for (NSteps). Set to -1 to run until marbles are stopped.
   * You can set the starting speed of the marbles (StartSpeed)
-  * You can set the update rate of the marbles (UpdtRate)
-  * You can set the gravity of the marbles (Gravity)
+  * You can set the update rate of the marbles (UpdtRate). Note: this can be an expression including parameters like x and a.
+  * You can set the gravity of the marbles (YForce). Note: this can be an expression including parameters like x and a.
+  * You can set the wind of the marbles (XForce). Note: this can be an expression including parameters like x and a.
   * You can set the range in which the marbles can spawn, 0 makes them spawn in a straight vertical line (Width)
-  * You can set the amount the variable t increases every step (TimeStep)
+  * You can set the amount the variable t increases every step (TimeStep). Note: this can be an expression including parameters like x and a.
   * You can set the size of the graph (Min/MaxX, Min/MaxY)
   * TrackingSettings - See the section on tracking settings
 * Controls
-  * Open allows you to open a saved json file of a graph
-  * Save allows you to save a graph to a json file
-  * Open autosaved opens the last graph you graphed, helpful if the app crashes
   * Graph graphs all of the lines and resets the marbles to their starting positions
   * Run runs the marbles for NSteps
   * Stop stops the marbles
@@ -56,7 +54,9 @@ $ go install github.com/kplat1/marbles@latest
   * NTrackingFrames: How many frames to track marble activity and graph it. There will only be tracking lines for this many frames for each marble on the screen.
   * Accuracy: Accuracy is how many times per 100 frames the tracking lines are updated. Accuracy can be any integer from 1 to 100. The higher accuracy the more accurate and less choppy the tracking lines will be. However higher accuracy will worsen performance.
   * Line Color: The color of the tracking lines. If set to white, the color of the tracking lines will be the color of the marble creating the tracking line.
-* Upload and Download graphs
+* Saving and Opening graphs
+  * You can save your graph to a json file and open it later. You can also open the last saved graph of the last session of marbles.
+  * You can save the graph to a png file, or copy it to your clipboard.
   * You can upload a graph you make by clicking upload graph and giving it a name. Anyone else can download that graph if they want to. Your graph will be automatically deleted after a week.
   * You can view graphs other people have uploaded by clicking download graph and choosing a graph. It will open that graph and you can run it and make any changes to it you want. You can save the graph to your device and do anything you want with it.
 * Important note for color and color switch: If you set color switch to white (RGBA(255, 255, 255, 255)), then the marbles will not change color upon hitting that line. It is strongly recommended that you have white as your default line color switch value in settings. Also, if you would like lines to automatically be in random different colors, keep the default color value for lines in settings at white. If you set it to something other than white, all new lines you make will be just that color by default.
