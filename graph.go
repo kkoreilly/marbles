@@ -257,7 +257,7 @@ func (gr *Graph) AddLine() {
 	} else {
 		color = TheSettings.LineDefaults.LineColors.Color
 	}
-	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{color, gist.White}, 0, false}
+	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{color, TheSettings.LineDefaults.LineColors.ColorSwitch}, 0, false}
 	gr.Lines = append(gr.Lines, newLine)
 }
 
