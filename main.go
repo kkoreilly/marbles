@@ -64,7 +64,7 @@ func mainrun() {
 	InitCoords()
 	ResetMarbles()
 	TheGraph.CompileExprs()
-	TheGraph.Lines.Graph(false)
+	TheGraph.Lines.Graph()
 	SetCompleteWords(TheGraph.Functions)
 	UpdateColors()
 

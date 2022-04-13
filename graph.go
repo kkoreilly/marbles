@@ -54,9 +54,10 @@ type Line struct {
 type Params struct {
 	NMarbles         int        `min:"1" max:"10000" step:"10" desc:"number of marbles"`
 	Width            float64    `min:"0" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	MarbleStartPos   mat32.Vec2 `desc:"Marble starting position"`
 	NSteps           int        `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
-	StartSpeed       float64    `min:"0" max:"2" step:".05" desc:"Coordinates per unit of time"`
+	MarbleStartPos   mat32.Vec2 `desc:"Marble starting position"`
+	StartVelY        Param      `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
+	StartVelX        Param      `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
 	UpdtRate         Param      `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
 	TimeStep         Param      `desc:"how fast time increases"`
 	YForce           Param      `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
@@ -185,7 +186,7 @@ func (gr *Graph) Graph() {
 	gr.State.Time = 0
 	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
-	gr.Lines.Graph(false)
+	gr.Lines.Graph()
 	SetCompleteWords(TheGraph.Functions)
 	if gr.State.Error == nil {
 		errorText.SetText("Graphed successfully")
@@ -275,6 +276,7 @@ func (gr *Graph) Reset() {
 	gr.Lines = nil
 	gr.Lines.Defaults()
 	gr.Params.Defaults()
+	gr.AutoGraphAndUpdate()
 }
 
 // CompileExprs gets the lines of the graph ready for graphing
@@ -312,6 +314,8 @@ func (gr *Graph) CompileExprs() {
 		ln.TimesHit = 0
 		ln.Compile()
 	}
+	gr.Params.StartVelY.Compile()
+	gr.Params.StartVelX.Compile()
 	gr.Params.UpdtRate.Compile()
 	gr.Params.YForce.Compile()
 	gr.Params.XForce.Compile()
@@ -465,33 +469,30 @@ func (ls *Lines) Defaults() {
 }
 
 // Graph graphs the lines
-func (ls *Lines) Graph(fromMarbles bool) {
-	var updt bool
-	if !fromMarbles {
-		updt = svgGraph.UpdateStart()
-	}
-	svgGraph.ViewBox.Min = TheGraph.Params.MinSize
-	svgGraph.ViewBox.Size = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
-	gmin = TheGraph.Params.MinSize
-	gmax = TheGraph.Params.MaxSize
-	gsz = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
-	nln := len(*ls)
-	if svgLines.NumChildren() != nln {
-		svgLines.SetNChildren(nln, svg.KiT_Path, "line")
+func (ls *Lines) Graph() {
+	if !TheGraph.State.Running {
+		updt := svgGraph.UpdateStart()
+		defer svgGraph.UpdateEnd(updt)
+		svgGraph.ViewBox.Min = TheGraph.Params.MinSize
+		svgGraph.ViewBox.Size = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
+		gmin = TheGraph.Params.MinSize
+		gmax = TheGraph.Params.MaxSize
+		gsz = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
+		nln := len(*ls)
+		if svgLines.NumChildren() != nln {
+			svgLines.SetNChildren(nln, svg.KiT_Path, "line")
+		}
 	}
 	for i, ln := range *ls {
-		if !ln.Changes && fromMarbles { // If the line doesn't change over time then we don't need to keep graphing it while running marbles
+		if !ln.Changes && TheGraph.State.Running { // If the line doesn't change over time then we don't need to keep graphing it while running marbles
 			continue
 		}
-		ln.Graph(i, fromMarbles)
-	}
-	if !fromMarbles {
-		svgGraph.UpdateEnd(updt)
+		ln.Graph(i)
 	}
 }
 
 // Graph graphs a single line
-func (ln *Line) Graph(lidx int, fromMarbles bool) {
+func (ln *Line) Graph(lidx int) {
 	path := svgLines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
 	path.SetProp("stroke", ln.Colors.Color)
@@ -538,7 +539,8 @@ func (pr *Params) Defaults() {
 	pr.NMarbles = TheSettings.GraphDefaults.NMarbles
 	pr.MarbleStartPos = TheSettings.GraphDefaults.MarbleStartPos
 	pr.NSteps = TheSettings.GraphDefaults.NSteps
-	pr.StartSpeed = TheSettings.GraphDefaults.StartSpeed
+	pr.StartVelY = TheSettings.GraphDefaults.StartVelY
+	pr.StartVelX = TheSettings.GraphDefaults.StartVelX
 	pr.UpdtRate = TheSettings.GraphDefaults.UpdtRate
 	pr.YForce = TheSettings.GraphDefaults.YForce
 	pr.XForce = TheSettings.GraphDefaults.XForce
@@ -554,7 +556,8 @@ func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
 	pr.MarbleStartPos = mat32.Vec2{X: 0, Y: 10}
 	pr.NSteps = -1
-	pr.StartSpeed = 0
+	pr.StartVelY.Expr.Expr = "0"
+	pr.StartVelX.Expr.Expr = "0"
 	pr.UpdtRate.Expr.Expr = ".02"
 	pr.TimeStep.Expr.Expr = "0.01"
 	pr.YForce.Expr.Expr = "-0.1"

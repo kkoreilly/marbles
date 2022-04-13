@@ -29,7 +29,7 @@ $ go install github.com/kplat1/marbles@latest
 * For the whole graph
   * You can set the amount of marbles that spawn (NMarbles)
   * You can set the amount of steps the graph runs for (NSteps). Set to -1 to run until marbles are stopped.
-  * You can set the starting speed of the marbles (StartSpeed)
+  * You can set the starting velocity of the marbles (StartVelX/StartVelY). Note: this can be an expression including parameters like x and y.
   * You can set the update rate of the marbles (UpdtRate). Note: this can be an expression including parameters like x and a.
   * You can set the gravity of the marbles (YForce). Note: this can be an expression including parameters like x and a.
   * You can set the wind of the marbles (XForce). Note: this can be an expression including parameters like x and a.

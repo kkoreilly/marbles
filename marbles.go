@@ -68,7 +68,9 @@ func (m *Marble) Init(diff float32) {
 	xPos := randN * TheGraph.Params.Width
 	m.Pos = mat32.Vec2{X: float32(xPos) + TheGraph.Params.MarbleStartPos.X, Y: TheGraph.Params.MarbleStartPos.Y - diff}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
-	m.Vel = mat32.Vec2{X: 0, Y: float32(-TheGraph.Params.StartSpeed)}
+	startY := TheGraph.Params.StartVelY.Eval(float64(m.Pos.X), float64(m.Pos.Y))
+	startX := TheGraph.Params.StartVelX.Eval(float64(m.Pos.X), float64(m.Pos.Y))
+	m.Vel = mat32.Vec2{X: float32(startX), Y: float32(startY)}
 	m.PrvPos = m.Pos
 	tls := TheSettings.TrackingSettings
 	if TheGraph.Params.TrackingSettings.Override {
@@ -126,7 +128,7 @@ func UpdateMarblesGraph() bool {
 
 	svgGraph.SetNeedsFullRender()
 
-	TheGraph.Lines.Graph(true)
+	TheGraph.Lines.Graph()
 	for i, m := range TheGraph.Marbles {
 		circle := svgMarbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
@@ -209,7 +211,7 @@ func UpdateMarblesData() {
 // Collided returns true if the marble has collided with the line, and false if the marble has not.
 func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
 	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, TheGraph.State.Time, ln.TimesHit)
-	inBounds := npos.Y > gmin.Y && npos.Y < gmax.Y && npos.X > gmin.X && npos.X < gmax.X
+	inBounds := InBounds(npos)
 	collided := (float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)
 	if collided && graphIf && inBounds {
 		return true
@@ -264,6 +266,14 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 	return pos, vel
 }
 
+// InBounds checks whether a point is in the bounds of the graph
+func InBounds(pos mat32.Vec2) bool {
+	if pos.Y > gmin.Y && pos.Y < gmax.Y && pos.X > gmin.X && pos.X < gmax.X {
+		return true
+	}
+	return false
+}
+
 // RunMarbles runs the marbles for NSteps
 func RunMarbles() {
 	if TheGraph.State.Running {
@@ -277,6 +287,9 @@ func RunMarbles() {
 		nsteps = math.MaxInt
 	}
 	for i := 0; i < nsteps; i++ {
+		if TheGraph.State.Error != nil {
+			TheGraph.State.Running = false
+		}
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
 			UpdateMarblesData()
 			TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
@@ -322,9 +335,15 @@ func SelectNextMarble() {
 		selectedMarble = 0
 	}
 	newMarble := TheGraph.Marbles[selectedMarble]
-	if newMarble.Pos.X < TheGraph.Params.MinSize.X || newMarble.Pos.X > TheGraph.Params.MaxSize.X || newMarble.Pos.Y < TheGraph.Params.MinSize.Y || newMarble.Pos.Y > TheGraph.Params.MaxSize.Y {
-		SelectNextMarble()
+	if !InBounds(newMarble.Pos) { // If the marble isn't in bounds, don't select it
+		for _, m := range TheGraph.Marbles { // If all marbles aren't in bounds, do nothing
+			if InBounds(m.Pos) {
+				SelectNextMarble()
+				return
+			}
+		}
 		return
+
 	}
 	svgMarbles.Child(selectedMarble).SetProp("stroke", "yellow")
 	svgGraph.SetNeedsFullRender()
