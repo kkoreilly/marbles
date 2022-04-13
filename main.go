@@ -28,7 +28,7 @@ var (
 	vp                                                *gi.Viewport2D
 	win                                               *gi.Window
 	lns                                               *giv.TableView
-	gstru                                             *giv.StructView
+	gstru, params                                     *giv.StructView
 	svgGraph                                          *svg.SVG
 	svgLines, svgMarbles, svgCoords, svgTrackingLines *svg.Group
 	gmin, gmax, gsz, ginc                             mat32.Vec2

@@ -172,7 +172,7 @@ func (gr *Graph) Defaults() {
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() {
 	if gr.State.Running {
-		return
+		gr.Stop()
 	}
 	gr.State.Error = nil
 	gr.SetFunctionsTo(DefaultFunctions)
@@ -198,6 +198,13 @@ func (gr *Graph) AutoGraph() {
 	TheGraph.Graph()
 	svgGraph.SetNeedsFullRender()
 	svgGraph.UpdateEnd(updt)
+}
+
+// AutoGraphAndUpdate calls autograph, and updates lns and params
+func (gr *Graph) AutoGraphAndUpdate() {
+	gr.AutoGraph()
+	lns.Update()
+	params.UpdateFields()
 }
 
 // Run runs the marbles for NSteps

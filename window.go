@@ -65,7 +65,7 @@ func makeBasicElements() {
 		TheGraph.AutoGraph()
 	})
 
-	params := giv.AddNewStructView(sidesplit, "params")
+	params = giv.AddNewStructView(sidesplit, "params")
 	params.SetStruct(&TheGraph.Params)
 	params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 		TheGraph.AutoGraph()
@@ -203,6 +203,7 @@ func makeMainMenu() {
 				var n float32 = 1.0 / float32(TheSettings.GraphInc)
 				ginc = mat32.Vec2{X: n, Y: n}
 				UpdateColors()
+				TheGraph.AutoGraphAndUpdate()
 			} else if sig == int64(gi.DialogCanceled) {
 				TheSettings = pSettings
 			}

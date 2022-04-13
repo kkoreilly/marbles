@@ -30,8 +30,7 @@ func (gr *Graph) OpenJSON(filename gi.FileName) error {
 	}
 	gr.State.File = string(filename)
 	UpdateCurrentFileText()
-	gr.AutoGraph()
-	lns.Config()
+	gr.AutoGraphAndUpdate()
 	return err
 }
 
@@ -45,8 +44,7 @@ func (gr *Graph) OpenAutoSave() error {
 	if HandleError(err) {
 		return err
 	}
-	gr.AutoGraph()
-	lns.Config()
+	gr.AutoGraphAndUpdate()
 	return err
 }
 
@@ -117,8 +115,7 @@ func (gr *Graph) Download() {
 		chooseButton.OnClicked(func() {
 			cgwin.Close()
 			gr.OpenGraphFromString(graphData)
-			gr.AutoGraph()
-			lns.Config()
+			gr.AutoGraphAndUpdate()
 		})
 		gi.AddNewSeparator(cgmfr, fmt.Sprintf("Graph%vSeparator", k), true)
 	}
