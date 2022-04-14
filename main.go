@@ -62,9 +62,9 @@ func mainrun() {
 	makeBasicElements()
 	TheGraph.SetFunctionsTo(DefaultFunctions)
 	InitCoords()
-	ResetMarbles()
 	TheGraph.CompileExprs()
 	TheGraph.Lines.Graph()
+	ResetMarbles()
 	SetCompleteWords(TheGraph.Functions)
 	UpdateColors()
 

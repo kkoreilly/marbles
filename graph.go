@@ -52,18 +52,18 @@ type Line struct {
 
 // Params is the parameters of the graph
 type Params struct {
-	NMarbles         int        `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	Width            float64    `min:"0" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	NSteps           int        `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
-	MarbleStartPos   mat32.Vec2 `desc:"Marble starting position"`
-	StartVelY        Param      `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
-	StartVelX        Param      `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
-	UpdtRate         Param      `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	TimeStep         Param      `desc:"how fast time increases"`
-	YForce           Param      `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
-	XForce           Param      `label:"X Force (Wind)" desc:"how fast the marbles move side to side without collisions, set to 0 for no movement"`
-	MinSize          mat32.Vec2
-	MaxSize          mat32.Vec2
+	NMarbles         int                   `min:"1" max:"10000" step:"10" desc:"number of marbles"`
+	Width            float64               `min:"0" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
+	NSteps           int                   `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
+	MarbleStartPos   mat32.Vec2            `desc:"Marble starting position"`
+	StartVelY        Param                 `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
+	StartVelX        Param                 `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
+	UpdtRate         Param                 `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
+	TimeStep         Param                 `desc:"how fast time increases"`
+	YForce           Param                 `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
+	XForce           Param                 `label:"X Force (Wind)" desc:"how fast the marbles move side to side without collisions, set to 0 for no movement"`
+	CenterX          Param                 `label:"Graph Center X" desc:"the center point of the graph, x"`
+	CenterY          Param                 `label:"Graph Center Y" desc:"the center point of the graph, y"`
 	TrackingSettings GraphTrackingSettings `view:"no-inline"`
 }
 
@@ -177,7 +177,6 @@ func (gr *Graph) Graph() {
 	}
 	gr.State.Error = nil
 	gr.SetFunctionsTo(DefaultFunctions)
-	InitCoords()
 	gr.CompileExprs()
 	ResetMarbles()
 	if gr.State.Error != nil {
@@ -320,6 +319,8 @@ func (gr *Graph) CompileExprs() {
 	gr.Params.YForce.Compile()
 	gr.Params.XForce.Compile()
 	gr.Params.TimeStep.Compile()
+	gr.Params.CenterX.Compile()
+	gr.Params.CenterY.Compile()
 }
 
 // CheckCircular checks if an expr references itself
@@ -412,6 +413,13 @@ func (ln *Line) SetFunctionName(k int) {
 		val := ln.Expr.Integrate(min, max, ln.TimesHit)
 		return val, nil
 	}
+	TheGraph.Functions[functionName+"h"] = func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs(functionName+"h", args, "float64")
+		if err != nil {
+			return 0, err
+		}
+		return float64(ln.TimesHit) * args[0].(float64), nil
+	}
 }
 
 // CheckIfChanges checks if an equation changes over time
@@ -473,18 +481,22 @@ func (ls *Lines) Graph() {
 	if !TheGraph.State.Running {
 		updt := svgGraph.UpdateStart()
 		defer svgGraph.UpdateEnd(updt)
-		svgGraph.ViewBox.Min = TheGraph.Params.MinSize
-		svgGraph.ViewBox.Size = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
-		gmin = TheGraph.Params.MinSize
-		gmax = TheGraph.Params.MaxSize
-		gsz = TheGraph.Params.MaxSize.Sub(TheGraph.Params.MinSize)
 		nln := len(*ls)
 		if svgLines.NumChildren() != nln {
 			svgLines.SetNChildren(nln, svg.KiT_Path, "line")
 		}
 	}
+	sizeFromCenter := mat32.Vec2{X: 10, Y: 10}
+	center := mat32.Vec2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
+	gmin = center.Sub(sizeFromCenter)
+	gmax = center.Add(sizeFromCenter)
+	gsz = sizeFromCenter.MulScalar(2)
+	svgGraph.ViewBox.Min = gmin
+	svgGraph.ViewBox.Size = gsz
+	UpdateCoords()
 	for i, ln := range *ls {
-		if !ln.Changes && TheGraph.State.Running { // If the line doesn't change over time then we don't need to keep graphing it while running marbles
+		// If the line doesn't change over time then we don't need to keep graphing it while running marbles
+		if !ln.Changes && TheGraph.State.Running && !TheGraph.Params.CenterX.Changes && !TheGraph.Params.CenterY.Changes {
 			continue
 		}
 		ln.Graph(i)
@@ -525,11 +537,24 @@ func InitCoords() {
 	updt := svgGraph.UpdateStart()
 	svgCoords.DeleteChildren(true)
 
-	xAxis = svg.AddNewLine(svgCoords, "xAxis", TheGraph.Params.MinSize.X, 0, TheGraph.Params.MaxSize.X, 0)
+	xAxis = svg.AddNewLine(svgCoords, "xAxis", gmin.X, 0, gmax.X, 0)
 	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	yAxis = svg.AddNewLine(svgCoords, "yAxis", 0, TheGraph.Params.MinSize.Y, 0, TheGraph.Params.MaxSize.Y)
+	yAxis = svg.AddNewLine(svgCoords, "yAxis", 0, gmin.Y, 0, gmax.Y)
 	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+
+	svgGraph.UpdateEnd(updt)
+}
+
+// UpdateCoords updates the x and y axis
+func UpdateCoords() {
+	updt := svgGraph.UpdateStart()
+
+	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	xAxis.Start, xAxis.End = mat32.Vec2{X: gmin.X, Y: 0}, mat32.Vec2{X: gmax.X, Y: 0}
+
+	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	yAxis.Start, yAxis.End = mat32.Vec2{X: 0, Y: gmin.Y}, mat32.Vec2{X: 0, Y: gmax.Y}
 
 	svgGraph.UpdateEnd(updt)
 }
@@ -545,8 +570,8 @@ func (pr *Params) Defaults() {
 	pr.YForce = TheSettings.GraphDefaults.YForce
 	pr.XForce = TheSettings.GraphDefaults.XForce
 	pr.TimeStep = TheSettings.GraphDefaults.TimeStep
-	pr.MinSize = TheSettings.GraphDefaults.MinSize
-	pr.MaxSize = TheSettings.GraphDefaults.MaxSize
+	pr.CenterX = TheSettings.GraphDefaults.CenterX
+	pr.CenterY = TheSettings.GraphDefaults.CenterY
 	pr.Width = TheSettings.GraphDefaults.Width
 	pr.TrackingSettings = TheSettings.GraphDefaults.TrackingSettings
 }
@@ -562,8 +587,8 @@ func (pr *Params) BasicDefaults() {
 	pr.TimeStep.Expr.Expr = "0.01"
 	pr.YForce.Expr.Expr = "-0.1"
 	pr.XForce.Expr.Expr = "0"
-	pr.MinSize = mat32.Vec2{X: -10, Y: -10}
-	pr.MaxSize = mat32.Vec2{X: 10, Y: 10}
+	pr.CenterX.Expr.Expr = "0"
+	pr.CenterY.Expr.Expr = "0"
 	pr.Width = 0
 	pr.TrackingSettings.Override = false
 	pr.TrackingSettings.TrackingSettings.Defaults()

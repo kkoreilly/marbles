@@ -360,3 +360,15 @@ Value is the antiderivative of the function specified at v. View the name of a f
 * If f(x) is x^2 + 1, then F(x) will be equal to ((x^3)/3)+x.
 * If b(x) is x, then B(1) will be equal to 1/2.
 </details>
+
+<details>
+<summary>funcNameh(v)</summary>
+
+
+**Definition:**
+Value is the amount of times the specified function has been hit, multiplied by v.
+
+**Examples:**
+* If f(x) has been hit three times, then fh(1) will be equal to 3.
+* If b(x) has been hit two times, then bh(x) will be equal to 2x.
+</details>

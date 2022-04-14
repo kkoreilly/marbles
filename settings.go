@@ -102,10 +102,6 @@ func (se *Settings) Get() {
 		se.LineDefaults.BasicDefaults()
 		se.Save()
 	}
-	if se.GraphDefaults.MinSize.X == 0 {
-		se.GraphDefaults.BasicDefaults()
-		se.Save()
-	}
 	if se.MarbleSettings.MarbleColor == "" {
 		se.MarbleSettings.Defaults()
 		se.Save()
