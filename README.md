@@ -35,7 +35,7 @@ $ go install github.com/kplat1/marbles@latest
   * You can set the wind of the marbles (XForce). Note: this can be an expression including parameters like x and a.
   * You can set the range in which the marbles can spawn, 0 makes them spawn in a straight vertical line (Width)
   * You can set the amount the variable t increases every step (TimeStep). Note: this can be an expression including parameters like x and a.
-  * You can set the size of the graph (Min/MaxX, Min/MaxY)
+  * You can set the center point of the graph (CenterX and CenterY). Note: this can be an expression including parameters like a and t.
   * TrackingSettings - See the section on tracking settings
 * Controls
   * Graph graphs all of the lines and resets the marbles to their starting positions

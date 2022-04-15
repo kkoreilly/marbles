@@ -83,8 +83,8 @@ func makeBasicElements() {
 	svgCoords = svg.AddNewGroup(svgGraph, "SvgCoords")
 	svgTrackingLines = svg.AddNewGroup(svgGraph, "SvgTrackingLines")
 	split.SetSplits(float32(width-TheSettings.GraphSize), float32(TheSettings.GraphSize)*7/8)
-	gmin = mat32.Vec2{X: -10, Y: -10}
-	gmax = mat32.Vec2{X: 10, Y: 10}
+	gmin = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
+	gmax = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
 	gsz = gmax.Sub(gmin)
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
 	ginc = mat32.Vec2{X: n, Y: n}

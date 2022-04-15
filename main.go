@@ -19,9 +19,10 @@ import (
 )
 
 const (
-	width   = 1920
-	height  = 1080
-	version = "v0.0.0-dev"
+	width            = 1920
+	height           = 1080
+	graphViewBoxSize = 10
+	version          = "v0.0.0-dev"
 )
 
 var (

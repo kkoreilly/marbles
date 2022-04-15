@@ -486,14 +486,16 @@ func (ls *Lines) Graph() {
 			svgLines.SetNChildren(nln, svg.KiT_Path, "line")
 		}
 	}
-	sizeFromCenter := mat32.Vec2{X: 10, Y: 10}
-	center := mat32.Vec2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
-	gmin = center.Sub(sizeFromCenter)
-	gmax = center.Add(sizeFromCenter)
-	gsz = sizeFromCenter.MulScalar(2)
-	svgGraph.ViewBox.Min = gmin
-	svgGraph.ViewBox.Size = gsz
-	UpdateCoords()
+	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
+		sizeFromCenter := mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
+		center := mat32.Vec2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
+		gmin = center.Sub(sizeFromCenter)
+		gmax = center.Add(sizeFromCenter)
+		gsz = sizeFromCenter.MulScalar(2)
+		svgGraph.ViewBox.Min = mat32.Vec2{X: gmin.X, Y: -gmin.Y - 2*graphViewBoxSize}
+		svgGraph.ViewBox.Size = gsz
+		UpdateCoords()
+	}
 	for i, ln := range *ls {
 		// If the line doesn't change over time then we don't need to keep graphing it while running marbles
 		if !ln.Changes && TheGraph.State.Running && !TheGraph.Params.CenterX.Changes && !TheGraph.Params.CenterY.Changes {
@@ -579,7 +581,7 @@ func (pr *Params) Defaults() {
 // BasicDefaults sets the default defaults for the graph parameters
 func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
-	pr.MarbleStartPos = mat32.Vec2{X: 0, Y: 10}
+	pr.MarbleStartPos = mat32.Vec2{X: 0, Y: graphViewBoxSize}
 	pr.NSteps = -1
 	pr.StartVelY.Expr.Expr = "0"
 	pr.StartVelX.Expr.Expr = "0"
