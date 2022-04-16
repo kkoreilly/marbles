@@ -75,27 +75,27 @@ func makeBasicElements() {
 
 	frame := gi.AddNewFrame(split, "frame", gi.LayoutHoriz)
 
-	svgGraph = svg.AddNewSVG(frame, "graph")
-	svgGraph.SetProp("min-width", TheSettings.GraphSize)
-	svgGraph.SetProp("min-height", TheSettings.GraphSize)
-	svgLines = svg.AddNewGroup(svgGraph, "SvgLines")
-	svgMarbles = svg.AddNewGroup(svgGraph, "SvgMarbles")
-	svgCoords = svg.AddNewGroup(svgGraph, "SvgCoords")
-	svgTrackingLines = svg.AddNewGroup(svgGraph, "SvgTrackingLines")
+	TheGraph.Objects.Graph = svg.AddNewSVG(frame, "graph")
+	TheGraph.Objects.Graph.SetProp("min-width", TheSettings.GraphSize)
+	TheGraph.Objects.Graph.SetProp("min-height", TheSettings.GraphSize)
+	TheGraph.Objects.Lines = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Lines")
+	TheGraph.Objects.Marbles = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Marbles")
+	TheGraph.Objects.Coords = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Coords")
+	TheGraph.Objects.TrackingLines = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.TrackingLines")
 	split.SetSplits(float32(width-TheSettings.GraphSize), float32(TheSettings.GraphSize)*7/8)
-	gmin = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
-	gmax = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
-	gsz = gmax.Sub(gmin)
+	TheGraph.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
+	TheGraph.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
+	TheGraph.Vectors.Size = TheGraph.Vectors.Max.Sub(TheGraph.Vectors.Min)
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
-	ginc = mat32.Vec2{X: n, Y: n}
+	TheGraph.Vectors.Inc = mat32.Vec2{X: n, Y: n}
 
-	svgGraph.ViewBox.Min = gmin
-	svgGraph.ViewBox.Size = gsz
-	svgGraph.Norm = true
-	svgGraph.InvertY = true
-	svgGraph.Fill = true
-	svgGraph.SetProp("background-color", "white")
-	svgGraph.SetProp("stroke-width", ".2pct")
+	TheGraph.Objects.Graph.ViewBox.Min = TheGraph.Vectors.Min
+	TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
+	TheGraph.Objects.Graph.Norm = true
+	TheGraph.Objects.Graph.InvertY = true
+	TheGraph.Objects.Graph.Fill = true
+	TheGraph.Objects.Graph.SetProp("background-color", "white")
+	TheGraph.Objects.Graph.SetProp("stroke-width", ".2pct")
 
 	statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
 	statusBar.SetStretchMaxWidth()
@@ -198,10 +198,10 @@ func makeMainMenu() {
 		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
-				svgGraph.SetProp("min-width", TheSettings.GraphSize)
-				svgGraph.SetProp("min-height", TheSettings.GraphSize)
+				TheGraph.Objects.Graph.SetProp("min-width", TheSettings.GraphSize)
+				TheGraph.Objects.Graph.SetProp("min-height", TheSettings.GraphSize)
 				var n float32 = 1.0 / float32(TheSettings.GraphInc)
-				ginc = mat32.Vec2{X: n, Y: n}
+				TheGraph.Vectors.Inc = mat32.Vec2{X: n, Y: n}
 				UpdateColors()
 				TheGraph.AutoGraphAndUpdate()
 			} else if sig == int64(gi.DialogCanceled) {

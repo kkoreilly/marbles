@@ -13,28 +13,22 @@ import (
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gimain"
 	"github.com/goki/gi/giv"
-	"github.com/goki/gi/svg"
 	"github.com/goki/ki/ki"
-	"github.com/goki/mat32"
 )
 
 const (
-	width            = 1920
-	height           = 1080
-	graphViewBoxSize = 10
-	version          = "v0.0.0-dev"
+	width   = 1920
+	height  = 1080
+	version = "v0.0.0-dev"
 )
 
 var (
-	vp                                                *gi.Viewport2D
-	win                                               *gi.Window
-	lns                                               *giv.TableView
-	gstru, params                                     *giv.StructView
-	svgGraph                                          *svg.SVG
-	svgLines, svgMarbles, svgCoords, svgTrackingLines *svg.Group
-	gmin, gmax, gsz, ginc                             mat32.Vec2
-	mfr, statusBar                                    *gi.Frame
-	fpsText, errorText, versionText, currentFileText  *gi.Label
+	vp                                               *gi.Viewport2D
+	win                                              *gi.Window
+	lns                                              *giv.TableView
+	gstru, params                                    *giv.StructView
+	mfr, statusBar                                   *gi.Frame
+	fpsText, errorText, versionText, currentFileText *gi.Label
 )
 
 func main() {
@@ -133,12 +127,12 @@ func UpdateColors() {
 	errorText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
 	fpsText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
 	currentFileText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
-	svgGraph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
+	TheGraph.Objects.Graph.SetProp("background-color", TheSettings.ColorSettings.GraphColor)
 	// Set the text color of the status bar
 	statusBar.SetProp("color", TheSettings.ColorSettings.StatusTextColor)
 	// Set the color of the graph axis
-	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
-	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.XAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 	// Set the text color of the graph and line controls
 	lns.SetProp("color", TheSettings.ColorSettings.LineTextColor)
 	gstru.SetProp("color", TheSettings.ColorSettings.GraphTextColor)
@@ -170,8 +164,7 @@ func UpdateCurrentFileText() {
 		if k != 1 {
 			continue
 		}
-		d = strings.ReplaceAll(d, `\`, "")
-		d = strings.ReplaceAll(d, `/`, "")
+		d = filepath.Base(d)
 		currentFileText.SetText(d)
 	}
 	statusBar.UpdateEnd(updt)

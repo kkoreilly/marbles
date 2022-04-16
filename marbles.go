@@ -30,22 +30,17 @@ type TrackingInfo struct {
 	StartedTrackingAt     int
 }
 
-// The current selected marble, -1 = none
-var selectedMarble = -1
-
-var curStep = 0
-
 // GraphMarblesInit initializes the graph drawing of the marbles
 func GraphMarblesInit() {
-	updt := svgGraph.UpdateStart()
+	updt := TheGraph.Objects.Graph.UpdateStart()
 
-	svgMarbles.DeleteChildren(true)
-	svgTrackingLines.DeleteChildren(true)
+	TheGraph.Objects.Marbles.DeleteChildren(true)
+	TheGraph.Objects.TrackingLines.DeleteChildren(true)
 	for i, m := range TheGraph.Marbles {
-		svg.AddNewGroup(svgTrackingLines, "tlm"+strconv.Itoa(i))
-		size := float32(TheSettings.MarbleSettings.MarbleSize) * gsz.Y / 20
+		svg.AddNewGroup(TheGraph.Objects.TrackingLines, "tlm"+strconv.Itoa(i))
+		size := float32(TheSettings.MarbleSettings.MarbleSize) * TheGraph.Vectors.Size.Y / 20
 		// fmt.Printf("size: %v \n", size)
-		circle := svg.AddNewCircle(svgMarbles, "circle", m.Pos.X, m.Pos.Y, size)
+		circle := svg.AddNewCircle(TheGraph.Objects.Marbles, "circle", m.Pos.X, m.Pos.Y, size)
 		circle.SetProp("stroke", "none")
 		circle.SetProp("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
@@ -58,7 +53,7 @@ func GraphMarblesInit() {
 		m.TrackingInfo.LastPos = mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y}
 		m.TrackingInfo.StartedTrackingAt = 0
 	}
-	svgGraph.UpdateEnd(updt)
+	TheGraph.Objects.Graph.UpdateEnd(updt)
 }
 
 // Init makes a marble
@@ -83,12 +78,12 @@ func (m *Marble) Init(diff float32) {
 func InitMarbles() {
 	TheGraph.Marbles = make([]*Marble, 0)
 	for n := 0; n < TheGraph.Params.NMarbles; n++ {
-		diff := (gsz.Y / 20) * 2 * float32(n) / float32(TheGraph.Params.NMarbles)
+		diff := (TheGraph.Vectors.Size.Y / 20) * 2 * float32(n) / float32(TheGraph.Params.NMarbles)
 		m := Marble{}
 		m.Init(diff)
 		TheGraph.Marbles = append(TheGraph.Marbles, &m)
 	}
-	selectedMarble = -1
+	TheGraph.State.SelectedMarble = -1
 }
 
 // ResetMarbles just calls InitMarbles and GraphMarblesInit
@@ -109,28 +104,28 @@ func UpdateMarbles() bool {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func UpdateMarblesGraph() bool {
-	if svgGraph.IsRendering() || svgGraph.IsUpdating() || vp.IsUpdatingNode() {
+	if TheGraph.Objects.Graph.IsRendering() || TheGraph.Objects.Graph.IsUpdating() || vp.IsUpdatingNode() {
 		return true
 	}
-	wupdt := svgGraph.TopUpdateStart()
-	defer svgGraph.TopUpdateEnd(wupdt)
+	wupdt := TheGraph.Objects.Graph.TopUpdateStart()
+	defer TheGraph.Objects.Graph.TopUpdateEnd(wupdt)
 
 	if vp.IsUpdatingNode() {
 		return true
 	}
 
-	updt := svgGraph.UpdateStart()
-	defer svgGraph.UpdateEnd(updt)
+	updt := TheGraph.Objects.Graph.UpdateStart()
+	defer TheGraph.Objects.Graph.UpdateEnd(updt)
 
 	if vp.IsUpdatingNode() {
 		return true
 	}
 
-	svgGraph.SetNeedsFullRender()
+	TheGraph.Objects.Graph.SetNeedsFullRender()
 
 	TheGraph.Lines.Graph()
 	for i, m := range TheGraph.Marbles {
-		circle := svgMarbles.Child(i).(*svg.Circle)
+		circle := TheGraph.Objects.Marbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
 		circle.SetProp("fill", m.Color)
 		m.UpdateTrackingLines(circle, i)
@@ -150,12 +145,12 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 		if fslu <= 100/tls.Accuracy {
 			m.TrackingInfo.FramesSinceLastUpdate++
 		} else {
-			svgGroup := svgTrackingLines.Child(idx)
+			svgGroup := TheGraph.Objects.TrackingLines.Child(idx)
 			lpos := m.TrackingInfo.LastPos
 			m.TrackingInfo.FramesSinceLastUpdate = 0
 			m.TrackingInfo.LastPos = m.Pos
-			if curStep-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
-				svgTrackingLines.Child(idx).DeleteChildAtIndex(0, true)
+			if TheGraph.State.Step-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
+				TheGraph.Objects.TrackingLines.Child(idx).DeleteChildAtIndex(0, true)
 			}
 			line := svg.AddNewLine(svgGroup, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
 			clr := tls.LineColor
@@ -177,8 +172,8 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 func UpdateMarblesData() {
 	for _, m := range TheGraph.Marbles {
 
-		m.Vel.Y += float32(TheGraph.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gsz.Y * gsz.X) / 400)
-		m.Vel.X += float32(TheGraph.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gsz.Y * gsz.X) / 400)
+		m.Vel.Y += float32(TheGraph.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((TheGraph.Vectors.Size.Y * TheGraph.Vectors.Size.X) / 400)
+		m.Vel.X += float32(TheGraph.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((TheGraph.Vectors.Size.Y * TheGraph.Vectors.Size.X) / 400)
 		updtrate := float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
@@ -268,7 +263,7 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 
 // InBounds checks whether a point is in the bounds of the graph
 func InBounds(pos mat32.Vec2) bool {
-	if pos.Y > gmin.Y && pos.Y < gmax.Y && pos.X > gmin.X && pos.X < gmax.X {
+	if pos.Y > TheGraph.Vectors.Min.Y && pos.Y < TheGraph.Vectors.Max.Y && pos.X > TheGraph.Vectors.Min.X && pos.X < TheGraph.Vectors.Max.X {
 		return true
 	}
 	return false
@@ -282,11 +277,7 @@ func RunMarbles() {
 	TheGraph.State.Running = true
 	startFrames := 0
 	start := time.Now()
-	nsteps := TheGraph.Params.NSteps
-	if nsteps == -1 {
-		nsteps = math.MaxInt
-	}
-	for i := 0; i < nsteps; i++ {
+	for TheGraph.State.Step = 0; TheGraph.State.Running; TheGraph.State.Step++ {
 		if TheGraph.State.Error != nil {
 			TheGraph.State.Running = false
 		}
@@ -295,46 +286,41 @@ func RunMarbles() {
 			TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
 		}
 		if UpdateMarbles() {
-			i--
+			TheGraph.State.Step--
 			continue
 		}
 		if time.Since(start).Milliseconds() >= 3000 {
-			fpsText.SetText(fmt.Sprintf("FPS: %v", (i-startFrames)/3))
+			fpsText.SetText(fmt.Sprintf("FPS: %v", (TheGraph.State.Step-startFrames)/3))
 			start = time.Now()
-			startFrames = i
+			startFrames = TheGraph.State.Step
 		}
-
 		TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
-		if !TheGraph.State.Running {
-			return
-		}
-		curStep = i
 	}
 }
 
 // ToggleTrack toogles tracking setting for a certain marble
 func (m *Marble) ToggleTrack(idx int) {
 	m.TrackingInfo.Track = !m.TrackingInfo.Track
-	svgTrackingLines.Child(idx).DeleteChildren(true)
+	TheGraph.Objects.TrackingLines.Child(idx).DeleteChildren(true)
 	m.TrackingInfo.FramesSinceLastUpdate = 0
 	m.TrackingInfo.LastPos = mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y}
-	m.TrackingInfo.StartedTrackingAt = curStep
+	m.TrackingInfo.StartedTrackingAt = TheGraph.State.Step
 }
 
 // SelectNextMarble selects the next marble in the viewbox
 func SelectNextMarble() {
 	if !TheGraph.State.Running {
-		updt := svgGraph.UpdateStart()
-		defer svgGraph.UpdateEnd(updt)
+		updt := TheGraph.Objects.Graph.UpdateStart()
+		defer TheGraph.Objects.Graph.UpdateEnd(updt)
 	}
-	if selectedMarble != -1 {
-		svgMarbles.Child(selectedMarble).SetProp("stroke", "none")
+	if TheGraph.State.SelectedMarble != -1 {
+		TheGraph.Objects.Marbles.Child(TheGraph.State.SelectedMarble).SetProp("stroke", "none")
 	}
-	selectedMarble++
-	if selectedMarble >= len(TheGraph.Marbles) {
-		selectedMarble = 0
+	TheGraph.State.SelectedMarble++
+	if TheGraph.State.SelectedMarble >= len(TheGraph.Marbles) {
+		TheGraph.State.SelectedMarble = 0
 	}
-	newMarble := TheGraph.Marbles[selectedMarble]
+	newMarble := TheGraph.Marbles[TheGraph.State.SelectedMarble]
 	if !InBounds(newMarble.Pos) { // If the marble isn't in bounds, don't select it
 		for _, m := range TheGraph.Marbles { // If all marbles aren't in bounds, do nothing
 			if InBounds(m.Pos) {
@@ -345,6 +331,6 @@ func SelectNextMarble() {
 		return
 
 	}
-	svgMarbles.Child(selectedMarble).SetProp("stroke", "yellow")
-	svgGraph.SetNeedsFullRender()
+	TheGraph.Objects.Marbles.Child(TheGraph.State.SelectedMarble).SetProp("stroke", "yellow")
+	TheGraph.Objects.Graph.SetNeedsFullRender()
 }

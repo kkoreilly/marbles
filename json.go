@@ -61,7 +61,9 @@ func (gr *Graph) SaveJSON(filename gi.FileName) error {
 		return err
 	}
 	err = os.WriteFile(string(filename), b, os.ModePerm)
-	HandleError(err)
+	if HandleError(err) {
+		return err
+	}
 	gr.State.File = string(filename)
 	UpdateCurrentFileText()
 	return err

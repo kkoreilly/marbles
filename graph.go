@@ -30,14 +30,18 @@ type Graph struct {
 	Marbles   []*Marble `view:"-" json:"-"`
 	State     State     `view:"-" json:"-"`
 	Functions Functions `view:"-" json:"-"`
+	Vectors   Vectors   `view:"-" json:"-"`
+	Objects   Objects   `view:"-" json:"-"`
 }
 
 // State has the state of the graph
 type State struct {
-	Running bool
-	Time    float64
-	Error   error
-	File    string
+	Running        bool
+	Time           float64
+	Step           int
+	Error          error
+	SelectedMarble int
+	File           string
 }
 
 // Line represents one line with an equation etc
@@ -54,7 +58,6 @@ type Line struct {
 type Params struct {
 	NMarbles         int                   `min:"1" max:"10000" step:"10" desc:"number of marbles"`
 	Width            float64               `min:"0" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	NSteps           int                   `step:"10" desc:"number of steps to take when running, set to negative 1 to run until stopped"`
 	MarbleStartPos   mat32.Vec2            `desc:"Marble starting position"`
 	StartVelY        Param                 `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
 	StartVelX        Param                 `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
@@ -86,8 +89,29 @@ type LineColors struct {
 	ColorSwitch gist.Color `desc:"Switch the color of the marble that hits this line" view:"no-inline"`
 }
 
+// Vectors contains the size and increment of the graph
+type Vectors struct {
+	Min  mat32.Vec2
+	Max  mat32.Vec2
+	Size mat32.Vec2
+	Inc  mat32.Vec2
+}
+
+// Objects contains the svg graph and the svg groups, plus the axes
+type Objects struct {
+	Graph         *svg.SVG
+	Lines         *svg.Group
+	Marbles       *svg.Group
+	Coords        *svg.Group
+	TrackingLines *svg.Group
+	XAxis         *svg.Line
+	YAxis         *svg.Line
+}
+
 // Lines is a collection of lines
 type Lines []*Line
+
+const graphViewBoxSize = 10
 
 // colors is all of the colors that are used for marbles and default lines
 var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
@@ -99,17 +123,11 @@ var completeWords = []string{}
 // functionNames has all of the supported function names, in order
 var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w"}
 
-// last evaluated x value
-var currentX float64
-
 // TheGraph is current graph
 var TheGraph Graph
 
 // KiTGraph is there to have the toolbar
 var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
-
-// X and Y axis are the x and y axis
-var xAxis, yAxis *svg.Line
 
 // GraphProps define the ToolBar for overall app
 var GraphProps = ki.Props{
@@ -194,10 +212,10 @@ func (gr *Graph) Graph() {
 
 // AutoGraph is used to graph the function when something is changed
 func (gr *Graph) AutoGraph() {
-	updt := svgGraph.UpdateStart()
-	TheGraph.Graph()
-	svgGraph.SetNeedsFullRender()
-	svgGraph.UpdateEnd(updt)
+	updt := gr.Objects.Graph.UpdateStart()
+	gr.Graph()
+	gr.Objects.Graph.SetNeedsFullRender()
+	gr.Objects.Graph.UpdateEnd(updt)
 }
 
 // AutoGraphAndUpdate calls autograph, and updates lns and params
@@ -223,7 +241,7 @@ func (gr *Graph) Step() {
 		return
 	}
 	UpdateMarbles()
-	TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
+	gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
 }
 
 // SelectNextMarble calls select next marble
@@ -235,24 +253,24 @@ func (gr *Graph) SelectNextMarble() {
 func (gr *Graph) StopSelecting() {
 	var updt bool
 	if !gr.State.Running {
-		updt = svgGraph.UpdateStart()
+		updt = gr.Objects.Graph.UpdateStart()
 	}
-	if selectedMarble != -1 {
-		svgMarbles.Child(selectedMarble).SetProp("stroke", "none")
-		selectedMarble = -1
+	if gr.State.SelectedMarble != -1 {
+		gr.Objects.Marbles.Child(gr.State.SelectedMarble).SetProp("stroke", "none")
+		gr.State.SelectedMarble = -1
 	}
 	if !gr.State.Running {
-		svgGraph.UpdateEnd(updt)
-		svgGraph.SetNeedsFullRender()
+		gr.Objects.Graph.UpdateEnd(updt)
+		gr.Objects.Graph.SetNeedsFullRender()
 	}
 }
 
 // TrackSelectedMarble toggles track for the currently selected marble
 func (gr *Graph) TrackSelectedMarble() {
-	if selectedMarble == -1 {
+	if gr.State.SelectedMarble == -1 {
 		return
 	}
-	gr.Marbles[selectedMarble].ToggleTrack(selectedMarble)
+	gr.Marbles[gr.State.SelectedMarble].ToggleTrack(gr.State.SelectedMarble)
 }
 
 // AddLine adds a new blank line
@@ -313,6 +331,11 @@ func (gr *Graph) CompileExprs() {
 		ln.TimesHit = 0
 		ln.Compile()
 	}
+	gr.CompileParams()
+}
+
+// CompileParams compiles all of the graph parameter expressions
+func (gr *Graph) CompileParams() {
 	gr.Params.StartVelY.Compile()
 	gr.Params.StartVelX.Compile()
 	gr.Params.UpdtRate.Compile()
@@ -479,21 +502,21 @@ func (ls *Lines) Defaults() {
 // Graph graphs the lines
 func (ls *Lines) Graph() {
 	if !TheGraph.State.Running {
-		updt := svgGraph.UpdateStart()
-		defer svgGraph.UpdateEnd(updt)
+		updt := TheGraph.Objects.Graph.UpdateStart()
+		defer TheGraph.Objects.Graph.UpdateEnd(updt)
 		nln := len(*ls)
-		if svgLines.NumChildren() != nln {
-			svgLines.SetNChildren(nln, svg.KiT_Path, "line")
+		if TheGraph.Objects.Lines.NumChildren() != nln {
+			TheGraph.Objects.Lines.SetNChildren(nln, svg.KiT_Path, "line")
 		}
 	}
 	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
 		sizeFromCenter := mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
 		center := mat32.Vec2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
-		gmin = center.Sub(sizeFromCenter)
-		gmax = center.Add(sizeFromCenter)
-		gsz = sizeFromCenter.MulScalar(2)
-		svgGraph.ViewBox.Min = mat32.Vec2{X: gmin.X, Y: -gmin.Y - 2*graphViewBoxSize}
-		svgGraph.ViewBox.Size = gsz
+		TheGraph.Vectors.Min = center.Sub(sizeFromCenter)
+		TheGraph.Vectors.Max = center.Add(sizeFromCenter)
+		TheGraph.Vectors.Size = sizeFromCenter.MulScalar(2)
+		TheGraph.Objects.Graph.ViewBox.Min = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*graphViewBoxSize}
+		TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
 		UpdateCoords()
 	}
 	for i, ln := range *ls {
@@ -507,20 +530,20 @@ func (ls *Lines) Graph() {
 
 // Graph graphs a single line
 func (ln *Line) Graph(lidx int) {
-	path := svgLines.Child(lidx).(*svg.Path)
+	path := TheGraph.Objects.Lines.Child(lidx).(*svg.Path)
 	path.SetProp("fill", "none")
 	path.SetProp("stroke", ln.Colors.Color)
 	ps := ""
 	start := true
 	skipped := false
-	for x := gmin.X; x < gmax.X; x += ginc.X {
+	for x := TheGraph.Vectors.Min.X; x < TheGraph.Vectors.Max.X; x += TheGraph.Vectors.Inc.X {
 		if TheGraph.State.Error != nil {
 			return
 		}
 		fx := float64(x)
 		y := ln.Expr.Eval(fx, TheGraph.State.Time, ln.TimesHit)
 		GraphIf := ln.GraphIf.EvalBool(fx, y, TheGraph.State.Time, ln.TimesHit)
-		if GraphIf && gmin.Y < float32(y) && gmax.Y > float32(y) {
+		if GraphIf && TheGraph.Vectors.Min.Y < float32(y) && TheGraph.Vectors.Max.Y > float32(y) {
 			if start || skipped {
 				ps += fmt.Sprintf("M %v %v ", x, y)
 				start, skipped = false, false
@@ -536,36 +559,35 @@ func (ln *Line) Graph(lidx int) {
 
 // InitCoords makes the x and y axis
 func InitCoords() {
-	updt := svgGraph.UpdateStart()
-	svgCoords.DeleteChildren(true)
+	updt := TheGraph.Objects.Graph.UpdateStart()
+	TheGraph.Objects.Coords.DeleteChildren(true)
 
-	xAxis = svg.AddNewLine(svgCoords, "xAxis", gmin.X, 0, gmax.X, 0)
-	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.XAxis = svg.AddNewLine(TheGraph.Objects.Coords, "TheGraph.Objects.XAxis", TheGraph.Vectors.Min.X, 0, TheGraph.Vectors.Max.X, 0)
+	TheGraph.Objects.XAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	yAxis = svg.AddNewLine(svgCoords, "yAxis", 0, gmin.Y, 0, gmax.Y)
-	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.YAxis = svg.AddNewLine(TheGraph.Objects.Coords, "TheGraph.Objects.YAxis", 0, TheGraph.Vectors.Min.Y, 0, TheGraph.Vectors.Max.Y)
+	TheGraph.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	svgGraph.UpdateEnd(updt)
+	TheGraph.Objects.Graph.UpdateEnd(updt)
 }
 
 // UpdateCoords updates the x and y axis
 func UpdateCoords() {
-	updt := svgGraph.UpdateStart()
+	updt := TheGraph.Objects.Graph.UpdateStart()
 
-	xAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
-	xAxis.Start, xAxis.End = mat32.Vec2{X: gmin.X, Y: 0}, mat32.Vec2{X: gmax.X, Y: 0}
+	TheGraph.Objects.XAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.XAxis.Start, TheGraph.Objects.XAxis.End = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: 0}, mat32.Vec2{X: TheGraph.Vectors.Max.X, Y: 0}
 
-	yAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
-	yAxis.Start, yAxis.End = mat32.Vec2{X: 0, Y: gmin.Y}, mat32.Vec2{X: 0, Y: gmax.Y}
+	TheGraph.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.YAxis.Start, TheGraph.Objects.YAxis.End = mat32.Vec2{X: 0, Y: TheGraph.Vectors.Min.Y}, mat32.Vec2{X: 0, Y: TheGraph.Vectors.Max.Y}
 
-	svgGraph.UpdateEnd(updt)
+	TheGraph.Objects.Graph.UpdateEnd(updt)
 }
 
 // Defaults sets the graph parameters to the default settings
 func (pr *Params) Defaults() {
 	pr.NMarbles = TheSettings.GraphDefaults.NMarbles
 	pr.MarbleStartPos = TheSettings.GraphDefaults.MarbleStartPos
-	pr.NSteps = TheSettings.GraphDefaults.NSteps
 	pr.StartVelY = TheSettings.GraphDefaults.StartVelY
 	pr.StartVelX = TheSettings.GraphDefaults.StartVelX
 	pr.UpdtRate = TheSettings.GraphDefaults.UpdtRate
@@ -582,7 +604,6 @@ func (pr *Params) Defaults() {
 func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
 	pr.MarbleStartPos = mat32.Vec2{X: 0, Y: graphViewBoxSize}
-	pr.NSteps = -1
 	pr.StartVelY.Expr.Expr = "0"
 	pr.StartVelX.Expr.Expr = "0"
 	pr.UpdtRate.Expr.Expr = ".02"

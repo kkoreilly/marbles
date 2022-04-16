@@ -64,11 +64,11 @@ $ go install github.com/kplat1/marbles@latest
 ## How to write equations
 
 * Equations are written in the form y = ... for now, so no circles.
-* There are 4 variables you can use: x, t, and a. x is the x value, h is the amount of times the line has been hit since the marbles were ran, t is the time passed since running the marbles (incremented by TimeStep), and a is a number that goes back and forth between -10 and 10 (defined as 10*sin(t)).
+* There are 4 variables you can use: x, h, t, and a. x is the x value, h is the amount of times the line has been hit since the marbles were ran, t is the time passed since running the marbles (incremented by TimeStep), and a is a number that goes back and forth between -10 and 10 (defined as 10*sin(t)).
 * Note: any value (including variables) can be used for the functions and operations below
 * The following operations are supported:
   * +, -, \*, /
-  * v1^v2 or v1\*\*v2 for exponents
+  * v1^v2 for exponents
   * v1%v2 for the modulo operation
 * View the supported functions [here](https://github.com/kplat1/marbles/blob/master/FUNCTIONS.md)
 

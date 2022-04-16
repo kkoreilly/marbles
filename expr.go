@@ -69,7 +69,6 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 	if ex.Expr == "" {
 		return 0
 	}
-	currentX = x
 	ex.Params["x"] = x
 	ex.Params["t"] = t
 	ex.Params["a"] = 10 * math.Sin(t)
@@ -99,7 +98,6 @@ func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 	if ex.Expr == "" {
 		return true
 	}
-	currentX = x
 	ex.Params["x"] = x
 	ex.Params["t"] = t
 	ex.Params["a"] = 10 * math.Sin(t)

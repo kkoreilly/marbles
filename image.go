@@ -19,7 +19,7 @@ func (gr *Graph) CopyGraphImage() {
 
 // Capture captures an image of the graph and returns it
 func (gr *Graph) Capture() *image.RGBA {
-	img, err := screenshot.CaptureRect(svgGraph.BBox2D())
+	img, err := screenshot.CaptureRect(gr.Objects.Graph.BBox2D())
 	HandleError(err)
 	return img
 }
