@@ -7,10 +7,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"sort"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/goki/gi/gi"
@@ -57,8 +55,8 @@ type Line struct {
 // Params is the parameters of the graph
 type Params struct {
 	NMarbles         int                   `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	Width            float64               `min:"0" step:"1" desc:"length of spawning zone for marbles, set to 0 for all spawn in a column"`
-	MarbleStartPos   mat32.Vec2            `desc:"Marble starting position"`
+	MarbleStartX     Expr                  `width:"50" desc:"Marble start position, x"`
+	MarbleStartY     Expr                  `width:"50" desc:"Marble start position, y"`
 	StartVelY        Param                 `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
 	StartVelX        Param                 `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
 	UpdtRate         Param                 `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
@@ -196,13 +194,15 @@ func (gr *Graph) Graph() {
 	gr.State.Error = nil
 	gr.SetFunctionsTo(DefaultFunctions)
 	gr.CompileExprs()
-	ResetMarbles()
 	if gr.State.Error != nil {
 		return
 	}
+	ResetMarbles()
 	gr.State.Time = 0
-	rand.Seed(time.Now().UnixNano())
-	randNum = rand.Float64()
+	SetRandNum()
+	if gr.State.Error != nil {
+		return
+	}
 	gr.Lines.Graph()
 	SetCompleteWords(TheGraph.Functions)
 	if gr.State.Error == nil {
@@ -587,7 +587,8 @@ func UpdateCoords() {
 // Defaults sets the graph parameters to the default settings
 func (pr *Params) Defaults() {
 	pr.NMarbles = TheSettings.GraphDefaults.NMarbles
-	pr.MarbleStartPos = TheSettings.GraphDefaults.MarbleStartPos
+	pr.MarbleStartX = TheSettings.GraphDefaults.MarbleStartX
+	pr.MarbleStartY = TheSettings.GraphDefaults.MarbleStartY
 	pr.StartVelY = TheSettings.GraphDefaults.StartVelY
 	pr.StartVelX = TheSettings.GraphDefaults.StartVelX
 	pr.UpdtRate = TheSettings.GraphDefaults.UpdtRate
@@ -596,14 +597,14 @@ func (pr *Params) Defaults() {
 	pr.TimeStep = TheSettings.GraphDefaults.TimeStep
 	pr.CenterX = TheSettings.GraphDefaults.CenterX
 	pr.CenterY = TheSettings.GraphDefaults.CenterY
-	pr.Width = TheSettings.GraphDefaults.Width
 	pr.TrackingSettings = TheSettings.GraphDefaults.TrackingSettings
 }
 
 // BasicDefaults sets the default defaults for the graph parameters
 func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
-	pr.MarbleStartPos = mat32.Vec2{X: 0, Y: graphViewBoxSize}
+	pr.MarbleStartX.Expr = "0(rand(1)-0.5)"
+	pr.MarbleStartY.Expr = "10-2n/nmarbles()"
 	pr.StartVelY.Expr.Expr = "0"
 	pr.StartVelX.Expr.Expr = "0"
 	pr.UpdtRate.Expr.Expr = ".02"
@@ -612,7 +613,6 @@ func (pr *Params) BasicDefaults() {
 	pr.XForce.Expr.Expr = "0"
 	pr.CenterX.Expr.Expr = "0"
 	pr.CenterY.Expr.Expr = "0"
-	pr.Width = 0
 	pr.TrackingSettings.Override = false
 	pr.TrackingSettings.TrackingSettings.Defaults()
 }

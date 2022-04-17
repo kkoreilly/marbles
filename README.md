@@ -28,12 +28,11 @@ $ go install github.com/kplat1/marbles@latest
   * You can also set the color for lines (LineColors.Color).
 * For the whole graph
   * You can set the amount of marbles that spawn (NMarbles)
-  * You can set the amount of steps the graph runs for (NSteps). Set to -1 to run until marbles are stopped.
+  * You can set the starting position of the marbles (MarbleStartX, MarbleStartY). Note: this can be an expression including parameters. For both you can use the parameter n, which is the index of the marble who's position is being set (So if it's the third marble, n will be 2). For MarbleStartY you can also use the parameter x, which is the x value of the marble as calculated by MarbleStartX. The default for MarbleStartX is '0(rand(1)-0.5)'. This expression sets the marbles to spawn randomly in a region of width 0 (a straight line). If you change 0 to 5, this region will be 5 wide. For MarbleStartY, the default is '10-2n/nmarbles()', which makes the marbles spawn with each one just above the other.
   * You can set the starting velocity of the marbles (StartVelX/StartVelY). Note: this can be an expression including parameters like x and y.
   * You can set the update rate of the marbles (UpdtRate). Note: this can be an expression including parameters like x and a.
   * You can set the gravity of the marbles (YForce). Note: this can be an expression including parameters like x and a.
   * You can set the wind of the marbles (XForce). Note: this can be an expression including parameters like x and a.
-  * You can set the range in which the marbles can spawn, 0 makes them spawn in a straight vertical line (Width)
   * You can set the amount the variable t increases every step (TimeStep). Note: this can be an expression including parameters like x and a.
   * You can set the center point of the graph (CenterX and CenterY). Note: this can be an expression including parameters like a and t.
   * TrackingSettings - See the section on tracking settings

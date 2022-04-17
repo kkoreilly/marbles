@@ -38,7 +38,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 		functions[name] = function
 	}
 	ex.LoopEquationChangeSlice()
-	params := []string{"π", "e", "x", "a", "t", "h", "y"}
+	params := []string{"π", "e", "x", "a", "t", "h", "y", "n"}
 	symbols := []string{"+", "-", "*", "/", "^", ">", "<", "=", "(", ")"}
 	expr := LoopUnreadableChangeSlice(ex.Expr)
 	expr = strings.ReplaceAll(expr, "true", "(0==0)") // prevent true and false from being interpreted as functions

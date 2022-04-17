@@ -300,6 +300,17 @@ If condition is true, value is v1. Otherwise value is v2
 * ife(sin(pi), 0, 1, 2) will be equal to 1
 </details>
 
+<details>
+<summary>nmarbles()</summary>
+
+
+**Definition:**
+Value is the value of the graph parameter NMarbles.
+
+**Examples:**
+* if the parameter NMarbles is 10, nmarbles() will be equal to 10
+</details>
+
 
 <details>
 <summary>funcName(v)</summary>

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
+	"time"
 
 	"github.com/Knetic/govaluate"
 	"gonum.org/v1/gonum/integrate"
@@ -131,4 +133,10 @@ func FactorialMemoization(n int) (res float64) {
 		return res
 	}
 	return 1
+}
+
+// SetRandNum sets the random number used in the rand(v) function
+func SetRandNum() {
+	rand.Seed(time.Now().UnixNano())
+	randNum = rand.Float64()
 }

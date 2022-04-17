@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/rand"
 	"strconv"
 	"time"
 
@@ -57,11 +56,22 @@ func GraphMarblesInit() {
 }
 
 // Init makes a marble
-func (m *Marble) Init(diff float32) {
-	// rand.Seed(time.Now().UnixNano())
-	randN := rand.Float64() - 0.5
-	xPos := randN * TheGraph.Params.Width
-	m.Pos = mat32.Vec2{X: float32(xPos) + TheGraph.Params.MarbleStartPos.X, Y: TheGraph.Params.MarbleStartPos.Y - diff}
+func (m *Marble) Init(n int) {
+	// diff := (TheGraph.Vectors.Size.Y / 20) * 2 * float32(n) / float32(TheGraph.Params.NMarbles)
+	SetRandNum()
+	if TheGraph.Params.MarbleStartX.Compile() != nil {
+		return
+	}
+	TheGraph.Params.MarbleStartX.Params["n"] = n
+	xPos := TheGraph.Params.MarbleStartX.Eval(0, 0, 0)
+
+	if TheGraph.Params.MarbleStartY.Compile() != nil {
+		return
+	}
+	TheGraph.Params.MarbleStartY.Params["n"] = n
+	yPos := TheGraph.Params.MarbleStartY.Eval(xPos, 0, 0)
+
+	m.Pos = mat32.Vec2{X: float32(xPos), Y: float32(yPos)}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	startY := TheGraph.Params.StartVelY.Eval(float64(m.Pos.X), float64(m.Pos.Y))
 	startX := TheGraph.Params.StartVelX.Eval(float64(m.Pos.X), float64(m.Pos.Y))
@@ -78,9 +88,8 @@ func (m *Marble) Init(diff float32) {
 func InitMarbles() {
 	TheGraph.Marbles = make([]*Marble, 0)
 	for n := 0; n < TheGraph.Params.NMarbles; n++ {
-		diff := (TheGraph.Vectors.Size.Y / 20) * 2 * float32(n) / float32(TheGraph.Params.NMarbles)
 		m := Marble{}
-		m.Init(diff)
+		m.Init(n)
 		TheGraph.Marbles = append(TheGraph.Marbles, &m)
 	}
 	TheGraph.State.SelectedMarble = -1

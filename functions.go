@@ -339,6 +339,14 @@ var DefaultFunctions = Functions{
 		}
 		return sum / float64(len(args)), nil
 	},
+	"nmarbles": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("nmarbles", args)
+		if err != nil {
+			return 0, err
+		}
+		y := float64(TheGraph.Params.NMarbles)
+		return y, nil
+	},
 }
 
 // CheckArgs checks if a function is passed the right number of arguments, and the right type of arguments.
