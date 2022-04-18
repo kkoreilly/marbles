@@ -77,10 +77,7 @@ func (m *Marble) Init(n int) {
 	startX := TheGraph.Params.StartVelX.Eval(float64(m.Pos.X), float64(m.Pos.Y))
 	m.Vel = mat32.Vec2{X: float32(startX), Y: float32(startY)}
 	m.PrvPos = m.Pos
-	tls := TheSettings.TrackingSettings
-	if TheGraph.Params.TrackingSettings.Override {
-		tls = TheGraph.Params.TrackingSettings.TrackingSettings
-	}
+	tls := TheGraph.Params.TrackingSettings
 	m.TrackingInfo.Track = tls.TrackByDefault
 }
 
@@ -145,10 +142,7 @@ func UpdateMarblesGraph() bool {
 
 // UpdateTrackingLines adds a tracking line for a marble, if needed
 func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
-	tls := TheSettings.TrackingSettings
-	if TheGraph.Params.TrackingSettings.Override {
-		tls = TheGraph.Params.TrackingSettings.TrackingSettings
-	}
+	tls := TheGraph.Params.TrackingSettings
 	if m.TrackingInfo.Track {
 		fslu := m.TrackingInfo.FramesSinceLastUpdate
 		if fslu <= 100/tls.Accuracy {

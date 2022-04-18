@@ -55,7 +55,7 @@ func makeBasicElements() {
 				if col == 2 {
 					TheGraph.Lines[row].Bounce.Expr = string(edit.EditTxt)
 				}
-				go TheGraph.AutoGraph()
+				TheGraph.AutoGraph()
 			})
 			widg.SetProp("font-size", TheSettings.LineFontSize)
 			edit.SetCompleter(edit, ExprComplete, ExprCompleteEdit)

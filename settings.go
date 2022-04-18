@@ -12,17 +12,16 @@ import (
 
 // Settings are the settings the app has
 type Settings struct {
-	LineDefaults     LineDefaults     `view:"no-inline" label:"Line Defaults"`
-	GraphDefaults    Params           `view:"no-inline" label:"Graph Param Defaults"`
-	MarbleSettings   MarbleSettings   `view:"inline" label:"Marble Settings"`
-	ColorSettings    ColorSettings    `view:"no-inline" label:"Color Settings"`
-	TrackingSettings TrackingSettings `view:"inline"`
-	GraphSize        int              `label:"Graph Size" min:"100" max:"1000"`
-	GraphInc         int              `label:"Line quality in n per x" min:"1" max:"100"`
-	NFramesPer       int              `label:"Number of times to update the marbles each render" min:"1" max:"100"`
-	LineFontSize     int              `label:"Line Font Size"`
-	ConfirmQuit      bool             `label:"Confirm App Close"`
-	PrettyJSON       bool             `label:"Save formatted JSON"`
+	LineDefaults   LineDefaults   `view:"no-inline" label:"Line Defaults"`
+	GraphDefaults  Params         `view:"no-inline" label:"Graph Param Defaults"`
+	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
+	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
+	GraphSize      int            `label:"Graph Size" min:"100" max:"1000"`
+	GraphInc       int            `label:"Line quality in n per x" min:"1" max:"100"`
+	NFramesPer     int            `label:"Number of times to update the marbles each render" min:"1" max:"100"`
+	LineFontSize   int            `label:"Line Font Size"`
+	ConfirmQuit    bool           `label:"Confirm App Close"`
+	PrettyJSON     bool           `label:"Save formatted JSON"`
 }
 
 // ColorSettings are the background and text colors of the app
@@ -135,7 +134,6 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
-	se.TrackingSettings.Defaults()
 	se.GraphSize = 800
 	se.GraphInc = 40
 	se.NFramesPer = 1

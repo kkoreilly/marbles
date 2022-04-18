@@ -54,31 +54,25 @@ type Line struct {
 
 // Params is the parameters of the graph
 type Params struct {
-	NMarbles         int                   `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	MarbleStartX     Expr                  `width:"50" desc:"Marble start position, x"`
-	MarbleStartY     Expr                  `width:"50" desc:"Marble start position, y"`
-	StartVelY        Param                 `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
-	StartVelX        Param                 `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
-	UpdtRate         Param                 `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	TimeStep         Param                 `desc:"how fast time increases"`
-	YForce           Param                 `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
-	XForce           Param                 `label:"X Force (Wind)" desc:"how fast the marbles move side to side without collisions, set to 0 for no movement"`
-	CenterX          Param                 `label:"Graph Center X" desc:"the center point of the graph, x"`
-	CenterY          Param                 `label:"Graph Center Y" desc:"the center point of the graph, y"`
-	TrackingSettings GraphTrackingSettings `view:"no-inline"`
+	NMarbles         int              `min:"1" max:"10000" step:"10" desc:"number of marbles"`
+	MarbleStartX     Expr             `width:"100" desc:"Marble start position, x"`
+	MarbleStartY     Expr             `width:"100" desc:"Marble start position, y"`
+	StartVelY        Param            `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
+	StartVelX        Param            `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
+	UpdtRate         Param            `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
+	TimeStep         Param            `desc:"how fast time increases"`
+	YForce           Param            `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
+	XForce           Param            `label:"X Force (Wind)" desc:"how fast the marbles move side to side without collisions, set to 0 for no movement"`
+	CenterX          Param            `label:"Graph Center X" desc:"the center point of the graph, x"`
+	CenterY          Param            `label:"Graph Center Y" desc:"the center point of the graph, y"`
+	TrackingSettings TrackingSettings `view:"inline"`
 }
 
 // Param is the type of certain parameters that can change over time and x
 type Param struct {
-	Expr    Expr    `width:"50" label:""`
+	Expr    Expr    `width:"100" label:""`
 	Changes bool    `view:"-"`
 	BaseVal float64 `view:"-"`
-}
-
-// GraphTrackingSettings contains tracking line settings and a bool for whether the graph should override user settings.
-type GraphTrackingSettings struct {
-	Override         bool             `label:"Override user tracking settings. If false, TrackingSettings has no effect"`
-	TrackingSettings TrackingSettings `view:"inline"`
 }
 
 // LineColors contains the color and colorswitch for a line
@@ -119,7 +113,7 @@ var basicFunctionList = []string{}
 var completeWords = []string{}
 
 // functionNames has all of the supported function names, in order
-var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "u", "v", "w"}
+var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "q", "r", "s", "u", "v", "w"}
 
 // TheGraph is current graph
 var TheGraph Graph
@@ -227,6 +221,7 @@ func (gr *Graph) AutoGraphAndUpdate() {
 
 // Run runs the marbles for NSteps
 func (gr *Graph) Run() {
+	gr.AutoSave()
 	go RunMarbles()
 }
 
@@ -603,7 +598,7 @@ func (pr *Params) Defaults() {
 // BasicDefaults sets the default defaults for the graph parameters
 func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 10
-	pr.MarbleStartX.Expr = "0(rand(1)-0.5)"
+	pr.MarbleStartX.Expr = "0(rand(1)-0.5)+0"
 	pr.MarbleStartY.Expr = "10-2n/nmarbles()"
 	pr.StartVelY.Expr.Expr = "0"
 	pr.StartVelX.Expr.Expr = "0"
@@ -613,8 +608,7 @@ func (pr *Params) BasicDefaults() {
 	pr.XForce.Expr.Expr = "0"
 	pr.CenterX.Expr.Expr = "0"
 	pr.CenterY.Expr.Expr = "0"
-	pr.TrackingSettings.Override = false
-	pr.TrackingSettings.TrackingSettings.Defaults()
+	pr.TrackingSettings.Defaults()
 }
 
 // Eval evaluates a parameter
