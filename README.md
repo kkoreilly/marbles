@@ -45,10 +45,9 @@ $ go install github.com/kplat1/marbles@latest
   * You can customize the default line that will be added if a line is empty
   * You can customize the default graph parameters
   * You can change the size and color of marbles, default means the marbles will spawn in different random colors. Note that collision is not affected by changing the size of the marbles, so it is not recommended to change the size too much or things will look weird
-  * TrackingSettings - see section on tracking settings.
   * You can change the color of most things in the app
 * Tracking Settings
-  * Tracking allows you to view the paths of marbles. You can set tracking settings in your user settings. The tracking settings set in your user settings will apply for any graph that does not have its own settings with override. For each graph, in graph parameters, you may set tracking settings. These tracking settings only take effect if override is on. Only set graph tracking settings if the purpose of the graph is something created by tracking.
+  * Tracking allows you to view the paths of marbles.
   * TrackByDefault: Whether all marbles start with tracking on. You can go between individual marbles with the next marble button and then click track to toggle the tracking settings for that marble.
   * NTrackingFrames: How many frames to track marble activity and graph it. There will only be tracking lines for this many frames for each marble on the screen.
   * Accuracy: Accuracy is how many times per 100 frames the tracking lines are updated. Accuracy can be any integer from 1 to 100. The higher accuracy the more accurate and less choppy the tracking lines will be. However higher accuracy will worsen performance.
