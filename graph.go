@@ -187,6 +187,7 @@ func (gr *Graph) Graph() {
 	}
 	gr.State.Error = nil
 	gr.SetFunctionsTo(DefaultFunctions)
+	gr.AddLineFunctions()
 	gr.CompileExprs()
 	if gr.State.Error != nil {
 		return
@@ -291,6 +292,13 @@ func (gr *Graph) Reset() {
 	gr.AutoGraphAndUpdate()
 }
 
+// AddLineFunctions adds all of the line functions
+func (gr *Graph) AddLineFunctions() {
+	for k, ln := range gr.Lines {
+		ln.SetFunctionName(k)
+	}
+}
+
 // CompileExprs gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
 	for k, ln := range gr.Lines {
@@ -319,7 +327,6 @@ func (gr *Graph) CompileExprs() {
 			HandleError(errors.New("circular logic detected"))
 			return
 		}
-		ln.SetFunctionName(k)
 		if CheckIfChanges(ln.Expr.Expr) || CheckIfChanges(ln.GraphIf.Expr) || CheckIfChanges(ln.Bounce.Expr) {
 			ln.Changes = true
 		}

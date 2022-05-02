@@ -72,6 +72,7 @@ func mainrun() {
 			return
 		}
 		TheGraph.Stop()
+		TheGraph.AutoSave()
 		if !TheSettings.ConfirmQuit {
 			gi.Quit()
 		}
@@ -82,9 +83,6 @@ func mainrun() {
 				inClosePrompt = false
 			}
 		})
-	})
-	gi.SetQuitCleanFunc(func() {
-		TheGraph.AutoSave()
 	})
 	makeMainMenu()
 	win.MainMenuUpdated()
