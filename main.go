@@ -23,12 +23,12 @@ const (
 )
 
 var (
-	vp                                               *gi.Viewport2D
-	win                                              *gi.Window
-	lns                                              *giv.TableView
-	gstru, params                                    *giv.StructView
-	mfr, statusBar                                   *gi.Frame
-	fpsText, errorText, versionText, currentFileText *gi.Label
+	vp                                                          *gi.Viewport2D
+	win                                                         *gi.Window
+	lns                                                         *giv.TableView
+	gstru, params                                               *giv.StructView
+	mfr, statusBar                                              *gi.Frame
+	fpsText, valueText, errorText, versionText, currentFileText *gi.Label
 )
 
 func main() {

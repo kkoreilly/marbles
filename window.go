@@ -2,6 +2,7 @@ package main
 
 import (
 	"path/filepath"
+	"strconv"
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/giv"
@@ -56,6 +57,14 @@ func makeBasicElements() {
 					TheGraph.Lines[row].Bounce.Expr = string(edit.EditTxt)
 				}
 				TheGraph.AutoGraph()
+				if col == 0 && TheGraph.State.Error == nil {
+					val := TheGraph.Lines[row].Expr.Eval(0, 0, 0)
+					funcName := "y"
+					if row < len(functionNames) {
+						funcName = functionNames[row]
+					}
+					valueText.SetText(funcName + "(0) ≈ " + strconv.FormatFloat(val, 'f', 3, 64))
+				}
 			})
 			widg.SetProp("font-size", TheSettings.LineFontSize)
 			edit.SetCompleter(edit, ExprComplete, ExprCompleteEdit)
@@ -103,6 +112,10 @@ func makeBasicElements() {
 	fpsText.SetProp("font-weight", "bold")
 	fpsText.SetStretchMaxWidth()
 	fpsText.Redrawable = true
+	valueText = gi.AddNewLabel(statusBar, "valueText", "f(0) ≈ ")
+	valueText.SetProp("font-weight", "bold")
+	valueText.SetStretchMaxWidth()
+	valueText.Redrawable = true
 	errorText = gi.AddNewLabel(statusBar, "errorText", "")
 	errorText.SetProp("font-weight", "bold")
 	errorText.SetStretchMaxWidth()

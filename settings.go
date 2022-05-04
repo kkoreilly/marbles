@@ -139,7 +139,7 @@ func (se *Settings) Defaults() {
 	se.NFramesPer = 1
 	se.LineFontSize = 24
 	se.ConfirmQuit = true
-	se.PrettyJSON = true
+	se.PrettyJSON = false
 }
 
 // Defaults sets the default settings for the tracking lines.

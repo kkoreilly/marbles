@@ -42,7 +42,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	symbols := []string{"+", "-", "*", "/", "^", ">", "<", "=", "(", ")"}
 	expr := LoopUnreadableChangeSlice(ex.Expr)
 	expr = strings.ReplaceAll(expr, "true", "(0==0)") // prevent true and false from being interpreted as functions
-	expr = strings.ReplaceAll(expr, "false", "(1==0)")
+	expr = strings.ReplaceAll(expr, "false", "(0!=0)")
 	for _, s := range symbols {
 		expr = strings.ReplaceAll(expr, s+"-", s+" -")
 		expr = strings.ReplaceAll(expr, s+".", s+"0.")
