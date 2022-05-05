@@ -19,6 +19,7 @@ type EquationChange struct {
 var UnreadableChangeSlice = []EquationChange{
 	{"^", "**"},
 	{"√", "sqrt"},
+	{"∞", "inf()"},
 	{")(", ")*("},
 }
 
@@ -28,6 +29,7 @@ var EquationChangeSlice = []EquationChange{
 	{"**", "^"},
 	{"sqrt", "√"},
 	{"pi", "π"},
+	{"inf", "∞"},
 	{`\`, ""},
 }
 
@@ -131,27 +133,3 @@ func LoopUnreadableChangeSlice(expr string) string {
 	}
 	return expr
 }
-
-// func (ln *Line) CheckForDerivatives() {
-// 	re := regexp.MustCompile(`\[(.*?)\]`)
-// 	strs := strings.SplitAfter(ln.Expr.Expr, "]")
-// 	var results []string
-// 	for _, d := range strs {
-// 		submatchall := re.FindAllString(d, -1)
-// 		result := d
-// 		for _, element := range submatchall {
-// 			element = strings.ReplaceAll(element, "[", "")
-// 			element = strings.ReplaceAll(element, "]", "")
-// 			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, element, fmt.Sprintf("(%v, %v)", element, strings.ReplaceAll(element, "x", "x+0.001")))
-// 			// fmt.Println(ln.Expr.Expr)
-// 			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, "[", "")
-// 			// ln.Expr.Expr = strings.ReplaceAll(ln.Expr.Expr, "]", "")
-// 			// fmt.Println(ln.Expr.Expr)
-
-// 			result = re.ReplaceAllString(d, fmt.Sprintf("(%v, %v)", element, strings.ReplaceAll(element, "x", "(x+0.001)")))
-// 		}
-// 		results = append(results, result)
-// 	}
-// 	ln.Expr.Expr = strings.Join(results, "")
-
-// }

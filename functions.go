@@ -347,6 +347,13 @@ var DefaultFunctions = Functions{
 		y := float64(TheGraph.Params.NMarbles)
 		return y, nil
 	},
+	"inf": func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs("inf", args)
+		if err != nil {
+			return 0, err
+		}
+		return math.Inf(1), nil
+	},
 }
 
 // CheckArgs checks if a function is passed the right number of arguments, and the right type of arguments.

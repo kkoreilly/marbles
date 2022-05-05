@@ -26,6 +26,7 @@ func makeBasicElements() {
 	lns = giv.AddNewTableView(sidesplit, "lns")
 	lns.Viewport = vp
 	lns.SetProp("index", false)
+	lns.SetProp("inact-key-nav", false)
 	lns.NoAdd = true
 	lns.SetSlice(&TheGraph.Lines)
 	lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
@@ -129,11 +130,10 @@ func makeBasicElements() {
 	versionText.SetProp("font-weight", "bold")
 	versionText.SetStretchMaxWidth()
 	versionText.SetText("Running version " + GetVersion())
-	lns.ChildByName("toolbar", -1).Delete(true)
-	params.ChildByName("toolbar", -1).Delete(true)
-	gstru.ChildByName("toolbar", -1).ChildByName("UpdtView", -1).Delete(true)
+	lns.ToolBar().Delete(true)
+	params.ToolBar().Delete(true)
+	gstru.ToolBar().Child(0).Delete(true)
 	gstru.SetProp("overflow", "hidden")
-
 }
 
 func makeMainMenu() {
