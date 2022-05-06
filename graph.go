@@ -18,7 +18,6 @@ import (
 	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
 	"github.com/goki/pi/complete"
-	"gonum.org/v1/gonum/diff/fd"
 )
 
 // Graph contains the lines and parameters of a graph
@@ -169,7 +168,7 @@ var GraphProps = ki.Props{
 			"label":    "Add New Line",
 			"desc":     "Adds a new line",
 			"icon":     "plus",
-			"shortcut": "Control+M",
+			"shortcut": "Command+M",
 		}},
 	},
 }
@@ -292,13 +291,6 @@ func (gr *Graph) Reset() {
 	gr.AutoGraphAndUpdate()
 }
 
-// AddLineFunctions adds all of the line functions
-func (gr *Graph) AddLineFunctions() {
-	for k, ln := range gr.Lines {
-		ln.SetFunctionName(k)
-	}
-}
-
 // CompileExprs gets the lines of the graph ready for graphing
 func (gr *Graph) CompileExprs() {
 	for k, ln := range gr.Lines {
@@ -377,74 +369,6 @@ func CheckIfReferences(expr string, k int) bool {
 		return true
 	}
 	return false
-}
-
-// SetFunctionName sets the function name for a line and adds the function to the functions
-func (ln *Line) SetFunctionName(k int) {
-	if k >= len(functionNames) {
-		// ln.FuncName = "unassigned"
-		return
-	}
-	functionName := functionNames[k]
-	// ln.FuncName = functionName + "(x)="
-	TheGraph.Functions[functionName] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName, args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.State.Time, ln.TimesHit))
-		return val, nil
-	}
-	TheGraph.Functions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"d", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, TheGraph.State.Time, ln.TimesHit)
-		}, args[0].(float64), &fd.Settings{
-			Formula: fd.Central,
-		})
-		return val, nil
-	}
-	TheGraph.Functions[functionName+`"`] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"dd", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		val := fd.Derivative(func(x float64) float64 {
-			return ln.Expr.Eval(x, TheGraph.State.Time, ln.TimesHit)
-		}, args[0].(float64), &fd.Settings{
-			Formula: fd.Central2nd,
-		})
-		return val, nil
-	}
-	capitalName := strings.ToUpper(functionName)
-	TheGraph.Functions[capitalName] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(capitalName, args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
-		return val, nil
-	}
-	TheGraph.Functions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"i", args, "float64", "float64")
-		if err != nil {
-			return 0, err
-		}
-		min := args[0].(float64)
-		max := args[1].(float64)
-		val := ln.Expr.Integrate(min, max, ln.TimesHit)
-		return val, nil
-	}
-	TheGraph.Functions[functionName+"h"] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"h", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		return float64(ln.TimesHit) * args[0].(float64), nil
-	}
 }
 
 // CheckIfChanges checks if an equation changes over time
