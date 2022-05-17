@@ -349,7 +349,7 @@ Value is the second derivative of the function specified at v. View the name of 
 </details>
 
 <details>
-<summary>funcNamei(a, b)</summary>
+<summary>funcNameint(a, b)</summary>
 
 
 **Definition:**
@@ -370,6 +370,32 @@ Value is the antiderivative of the function specified at v. View the name of a f
 **Examples:**
 * If f(x) is x^2 + 1, then F(x) will be equal to ((x^3)/3)+x.
 * If b(x) is x, then B(1) will be equal to 1/2.
+</details>
+
+<details>
+<summary>funcNamesum(a, b)</summary>
+
+
+**Definition:**
+Value is the sum of the function from n=a to b.
+
+**Examples:**
+* If f(x) is 3, then fsum(1, 5) will be equal to 15.    
+* If b(x) is x, then bsum(3, 6) will be equal to 18.
+</details>
+
+<details>
+
+<details>
+<summary>funcNamepsum(a, b)</summary>
+
+
+**Definition:**
+Value is the product sum of the function from n=a to b.
+
+**Examples:**
+* If f(x) is x, then fpsum(1, 6) will be equal to 720. 
+* If b(x) is 1/x, then bpsum(1, 3) will be equal to 1/6.
 </details>
 
 <details>

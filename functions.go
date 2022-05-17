@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/Knetic/govaluate"
-	"github.com/gonum/diff/fd"
+	"gonum.org/v1/gonum/diff/fd"
 )
 
 // Functions are a map of named expression functions
@@ -403,7 +403,7 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	TheGraph.Functions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"d", args, "float64")
+		err := CheckArgs(functionName+"'", args, "float64")
 		if err != nil {
 			return 0, err
 		}
@@ -415,7 +415,7 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	TheGraph.Functions[functionName+`"`] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"dd", args, "float64")
+		err := CheckArgs(functionName+`"`, args, "float64")
 		if err != nil {
 			return 0, err
 		}
@@ -435,8 +435,8 @@ func (ln *Line) SetFunctionName(k int) {
 		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
 		return val, nil
 	}
-	TheGraph.Functions[functionName+"i"] = func(args ...interface{}) (interface{}, error) {
-		err := CheckArgs(functionName+"i", args, "float64", "float64")
+	TheGraph.Functions[functionName+"int"] = func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs(functionName+"int", args, "float64", "float64")
 		if err != nil {
 			return 0, err
 		}
@@ -451,5 +451,27 @@ func (ln *Line) SetFunctionName(k int) {
 			return 0, err
 		}
 		return float64(ln.TimesHit) * args[0].(float64), nil
+	}
+	TheGraph.Functions[functionName+"sum"] = func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs(functionName+"sum", args, "float64", "float64")
+		if err != nil {
+			return 0, err
+		}
+		total := 0.0
+		for i := args[0].(float64); i <= args[1].(float64); i++ {
+			total += (ln.Expr.Eval(i, TheGraph.State.Time, ln.TimesHit))
+		}
+		return total, nil
+	}
+	TheGraph.Functions[functionName+"psum"] = func(args ...interface{}) (interface{}, error) {
+		err := CheckArgs(functionName+"psum", args, "float64", "float64")
+		if err != nil {
+			return 0, err
+		}
+		total := 1.0
+		for i := args[0].(float64); i <= args[1].(float64); i++ {
+			total *= (ln.Expr.Eval(i, TheGraph.State.Time, ln.TimesHit))
+		}
+		return total, nil
 	}
 }

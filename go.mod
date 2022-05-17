@@ -9,9 +9,8 @@ require (
 	github.com/goki/ki v1.1.5
 	github.com/goki/mat32 v1.0.10
 	github.com/goki/pi v1.0.18
-	github.com/gonum/diff v0.0.0-20181124234638-500114f11e71
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
-	github.com/lib/pq v1.10.5
+	github.com/lib/pq v1.10.6
 	golang.design/x/clipboard v0.6.2
 	gonum.org/v1/gonum v0.11.0
 )
@@ -38,11 +37,6 @@ require (
 	github.com/goki/freetype v0.0.0-20220119013949-7a161fd3728c // indirect
 	github.com/goki/prof v0.0.0-20180502205428-54bc71b5d09b // indirect
 	github.com/goki/vci v1.0.1 // indirect
-	github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac // indirect
-	github.com/gonum/floats v0.0.0-20181209220543-c233463c7e82 // indirect
-	github.com/gonum/internal v0.0.0-20181124074243-f884aa714029 // indirect
-	github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9 // indirect
-	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/ianbruene/go-difflib v1.2.0 // indirect
@@ -53,13 +47,13 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/srwiley/rasterx v0.0.0-20220128185129-2efea2b9ea41 // indirect
 	github.com/srwiley/scanx v0.0.0-20190309010443-e94503791388 // indirect
-	golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4 // indirect
-	golang.org/x/exp/shiny v0.0.0-20220428152302-39d4317da171 // indirect
+	golang.org/x/exp v0.0.0-20191002040644-a1355ae1e2c3 // indirect
+	golang.org/x/exp/shiny v0.0.0-20220516143420-24438e51023a // indirect
 	golang.org/x/image v0.0.0-20220413100746-70e8d0d3baa9 // indirect
 	golang.org/x/mobile v0.0.0-20220504144722-50dca8fc073d // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
-	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
+	golang.org/x/net v0.0.0-20220516155154-20f960328961 // indirect
+	golang.org/x/sys v0.0.0-20220513210249-45d2b4557a2a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.10 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect

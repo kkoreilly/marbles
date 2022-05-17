@@ -63,6 +63,7 @@ $ go install github.com/kplat1/marbles@latest
 
 * Equations are written in the form y = ... for now, so no circles.
 * There are 4 variables you can use: x, h, t, and a. x is the x value, h is the amount of times the line has been hit since the marbles were ran, t is the time passed since running the marbles (incremented by TimeStep), and a is a number that goes back and forth between -10 and 10 (defined as 10*sin(t)).
+* There are three constants you can use: pi, e, and inf.
 * Note: any value (including variables) can be used for the functions and operations below
 * The following operations are supported:
   * +, -, \*, /

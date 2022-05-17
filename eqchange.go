@@ -20,6 +20,9 @@ var UnreadableChangeSlice = []EquationChange{
 	{"^", "**"},
 	{"√", "sqrt"},
 	{"∞", "inf()"},
+	{"∫", "int"},
+	{"∏", "psum"},
+	{"Σ", "sum"},
 	{")(", ")*("},
 }
 
@@ -30,6 +33,9 @@ var EquationChangeSlice = []EquationChange{
 	{"sqrt", "√"},
 	{"pi", "π"},
 	{"inf", "∞"},
+	{"int", "∫"},
+	{"psum", "∏"},
+	{"sum", "Σ"},
 	{`\`, ""},
 }
 
