@@ -16,7 +16,7 @@ type Settings struct {
 	GraphDefaults  Params         `view:"no-inline" label:"Graph Param Defaults"`
 	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
 	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
-	GraphSize      int            `label:"Graph Size" min:"100" max:"1000"`
+	GraphSize      int            `label:"Graph Size" min:"100" max:"800"`
 	GraphInc       int            `label:"Line quality in n per x" min:"1" max:"100"`
 	NFramesPer     int            `label:"Number of times to update the marbles each render" min:"1" max:"100"`
 	LineFontSize   int            `label:"Line Font Size"`
@@ -134,7 +134,7 @@ func (se *Settings) Defaults() {
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
 	se.ColorSettings.Defaults()
-	se.GraphSize = 800
+	se.GraphSize = 700
 	se.GraphInc = 40
 	se.NFramesPer = 1
 	se.LineFontSize = 24
@@ -168,11 +168,10 @@ func (ms *MarbleSettings) Defaults() {
 // Defaults sets the color settings to their defaults
 func (cs *ColorSettings) Defaults() {
 	grey, _ := gist.ColorFromName("grey")
-	lightblue, _ := gist.ColorFromName("lightblue")
 	cs.BackgroundColor = gist.White
 	cs.GraphColor = gist.White
 	cs.AxisColor = grey
-	cs.StatusBarColor = lightblue
+	cs.StatusBarColor = gist.White
 	cs.ButtonColor = gist.White
 	cs.StatusTextColor = gist.Black
 	cs.GraphTextColor = gist.Black

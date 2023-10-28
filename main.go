@@ -26,7 +26,9 @@ var (
 	vp                                                          *gi.Viewport2D
 	win                                                         *gi.Window
 	lns                                                         *giv.TableView
-	gstru, params                                               *giv.StructView
+	params                                                      *giv.StructView
+	mainSplit                                                   *gi.SplitView
+	graphToolbar                                                *gi.ToolBar
 	mfr, statusBar                                              *gi.Frame
 	fpsText, valueText, errorText, versionText, currentFileText *gi.Label
 )
@@ -53,7 +55,6 @@ func mainrun() {
 	vp = win.WinViewport2D()
 	updt := vp.UpdateStart()
 
-	mfr = win.SetMainFrame()
 	makeBasicElements()
 	TheGraph.SetFunctionsTo(DefaultFunctions)
 	InitCoords()
@@ -119,7 +120,7 @@ func UpdateColors() {
 	// Set the background color of the app
 	mfr.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
 	lns.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
-	gstru.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
+	graphToolbar.SetProp("background-color", TheSettings.ColorSettings.BackgroundColor)
 	// Set the background color of the status bar and graph
 	statusBar.SetProp("background-color", TheSettings.ColorSettings.StatusBarColor)
 	errorText.CurBgColor = TheSettings.ColorSettings.StatusBarColor
@@ -133,16 +134,16 @@ func UpdateColors() {
 	TheGraph.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 	// Set the text color of the graph and line controls
 	lns.SetProp("color", TheSettings.ColorSettings.LineTextColor)
-	gstru.SetProp("color", TheSettings.ColorSettings.GraphTextColor)
+	graphToolbar.SetProp("color", TheSettings.ColorSettings.GraphTextColor)
 	// Set the background color and button color for the toolbar
-	tb := gstru.ToolBar()
+	tb := graphToolbar
 	tb.SetProp("background-color", TheSettings.ColorSettings.ToolBarColor)
 	children := tb.Children()
 	for _, d := range []ki.Ki(*children) {
 		d.SetProp("background-color", TheSettings.ColorSettings.ToolBarButtonColor)
 	}
 	// Set the background color for the graph parameters
-	gstru.StructGrid().SetProp("background-color", TheSettings.ColorSettings.GraphParamsColor)
+	params.SetProp("background-color", TheSettings.ColorSettings.GraphParamsColor)
 	// Set the background color for the lines
 	lFrame := lns.ChildByName("frame", -1)
 	lFrame.SetProp("background-color", TheSettings.ColorSettings.LinesBackgroundColor)

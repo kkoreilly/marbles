@@ -7,21 +7,30 @@ import (
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/giv"
 	"github.com/goki/gi/svg"
+	"github.com/goki/gi/units"
 	"github.com/goki/ki/ki"
 	"github.com/goki/mat32"
 )
 
 func makeBasicElements() {
+	mfr = win.SetMainFrame()
+	mfr.SetStretchMax()
 
-	// the StructView will also show the Graph Toolbar which is main actions..
-	gstru = giv.AddNewStructView(mfr, "gstru")
-	gstru.Viewport = vp // needs vp early for toolbar
-	gstru.SetProp("height", "1em")
-	gstru.SetStruct(&TheGraph)
+	// graphToolbar = giv.AddNewStructView(mfr, "graphToolbar")
+	// graphToolbar.Viewport = vp // needs vp early for toolbar
+	// graphToolbar.SetProp("height", "1em")
+	// graphToolbar.SetStruct(&TheGraph)
+	// graphToolbar.StructGrid()
 
-	split := gi.AddNewSplitView(mfr, "split")
-	split.SetProp("min-height", TheSettings.GraphSize)
-	sidesplit := gi.AddNewSplitView(split, "sidesplit")
+	// graphToolbar.ToolBar().Child(0).Delete(true)
+	// graphToolbar.SetProp("overflow", "hidden")
+	makeToolbar()
+
+	mainSplit = gi.AddNewSplitView(mfr, "mainSplit")
+	mainSplit.Dim = mat32.X
+	mainSplit.SetStretchMax()
+
+	sidesplit := gi.AddNewSplitView(mainSplit, "sidesplit")
 	sidesplit.Dim = mat32.Y
 	lns = giv.AddNewTableView(sidesplit, "lns")
 	lns.Viewport = vp
@@ -83,16 +92,18 @@ func makeBasicElements() {
 
 	sidesplit.SetSplits(6, 4)
 
-	frame := gi.AddNewFrame(split, "frame", gi.LayoutHoriz)
+	graphFrame := gi.AddNewFrame(mainSplit, "graphFrame", gi.LayoutVert)
 
-	TheGraph.Objects.Graph = svg.AddNewSVG(frame, "graph")
-	TheGraph.Objects.Graph.SetProp("min-width", TheSettings.GraphSize)
-	TheGraph.Objects.Graph.SetProp("min-height", TheSettings.GraphSize)
+	TheGraph.Objects.Graph = svg.AddNewSVG(graphFrame, "graph")
+	TheGraph.Objects.Graph.SetFixedHeight(units.NewDot(float32(TheSettings.GraphSize) - 20))
+	TheGraph.Objects.Graph.SetFixedWidth(units.NewDot(float32(TheSettings.GraphSize) - 20))
+	// TheGraph.Objects.Graph.SetStretchMaxWidth()
+
 	TheGraph.Objects.Lines = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Lines")
 	TheGraph.Objects.Marbles = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Marbles")
 	TheGraph.Objects.Coords = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Coords")
 	TheGraph.Objects.TrackingLines = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.TrackingLines")
-	split.SetSplits(float32(width-TheSettings.GraphSize), float32(TheSettings.GraphSize)*7/8)
+
 	TheGraph.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
 	TheGraph.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
 	TheGraph.Vectors.Size = TheGraph.Vectors.Max.Sub(TheGraph.Vectors.Min)
@@ -106,6 +117,11 @@ func makeBasicElements() {
 	TheGraph.Objects.Graph.Fill = true
 	TheGraph.Objects.Graph.SetProp("background-color", "white")
 	TheGraph.Objects.Graph.SetProp("stroke-width", ".2pct")
+
+	gp := float32(TheSettings.GraphSize) / float32(width)
+	mainSplit.SetSplits(1-gp, gp)
+
+	gi.AddNewSeparator(graphFrame, "sep", true)
 
 	statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
 	statusBar.SetStretchMaxWidth()
@@ -132,8 +148,49 @@ func makeBasicElements() {
 	versionText.SetText("Running version " + GetVersion())
 	lns.ToolBar().Delete(true)
 	params.ToolBar().Delete(true)
-	gstru.ToolBar().Child(0).Delete(true)
-	gstru.SetProp("overflow", "hidden")
+}
+
+func makeToolbar() {
+	graphToolbar = gi.AddNewToolBar(mfr, "graphToolbar")
+	graphToolbar.AddAction(gi.ActOpts{Name: "Graph", Label: "Graph", Icon: "file-image", Tooltip: "graph the equations and reset the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.Graph()
+		vp.SetNeedsFullRender()
+	})
+
+	graphToolbar.AddAction(gi.ActOpts{Name: "Run", Label: "Run", Icon: "run", Tooltip: "runs the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.Run()
+	})
+
+	graphToolbar.AddAction(gi.ActOpts{Name: "Stop", Label: "Stop", Icon: "stop", Tooltip: "stop the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.Stop()
+	})
+
+	graphToolbar.AddAction(gi.ActOpts{Name: "Step", Label: "Step", Icon: "step-fwd", Tooltip: "steps the marbles for one step"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.Step()
+	})
+
+	graphToolbar.AddSeparator("sep1")
+
+	graphToolbar.AddAction(gi.ActOpts{Name: "NextMarble", Label: "Next Marble", Icon: "forward", ShortcutKey: gi.KeyFunFocusNext, Tooltip: "selects the next marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.SelectNextMarble()
+	})
+	graphToolbar.AddAction(gi.ActOpts{Name: "Unselect", Label: "Unselect", Icon: "stop", Tooltip: "stops selecting the marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.StopSelecting()
+	})
+	graphToolbar.AddAction(gi.ActOpts{Name: "Track", Label: "Track", Icon: "edit", ShortcutKey: gi.KeyFunTranspose, Tooltip: "toggles track for the currently selected marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.TrackSelectedMarble()
+	})
+
+	graphToolbar.AddSeparator("sep2")
+
+	graphToolbar.AddAction(gi.ActOpts{Name: "NewLine", Label: "New Line", Icon: "plus", Shortcut: "Command+M", Tooltip: "adds a new blank line"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		TheGraph.AddLine()
+		vp.SetNeedsFullRender()
+	})
+
+	for _, d := range *graphToolbar.Children() {
+		d.SetProp("border-radius", units.NewPx(7))
+	}
 }
 
 func makeMainMenu() {
@@ -215,7 +272,11 @@ func makeMainMenu() {
 				TheGraph.Objects.Graph.SetProp("min-height", TheSettings.GraphSize)
 				var n float32 = 1.0 / float32(TheSettings.GraphInc)
 				TheGraph.Vectors.Inc = mat32.Vec2{X: n, Y: n}
+				gp := float32(TheSettings.GraphSize) / float32(width)
+				mainSplit.SetSplits(1-gp, gp)
 				UpdateColors()
+				TheGraph.Objects.Graph.SetFixedHeight(units.NewDot(float32(TheSettings.GraphSize) - 20))
+				TheGraph.Objects.Graph.SetFixedWidth(units.NewDot(float32(TheSettings.GraphSize) - 20))
 				TheGraph.AutoGraphAndUpdate()
 			} else if sig == int64(gi.DialogCanceled) {
 				TheSettings = pSettings

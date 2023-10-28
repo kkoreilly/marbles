@@ -11,11 +11,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gist"
 	"github.com/goki/gi/svg"
-	"github.com/goki/ki/ki"
-	"github.com/goki/ki/kit"
 	"github.com/goki/mat32"
 	"github.com/goki/pi/complete"
 )
@@ -118,60 +115,60 @@ var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "
 var TheGraph Graph
 
 // KiTGraph is there to have the toolbar
-var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
+// var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
 
-// GraphProps define the ToolBar for overall app
-var GraphProps = ki.Props{
-	"ToolBar": ki.PropSlice{
-		{Name: "Graph", Value: ki.Props{
-			"desc": "updates graph for current equations",
-			"icon": "file-image",
-		}},
-		{Name: "Run", Value: ki.Props{
-			"desc":            "runs the marbles for NSteps",
-			"icon":            "run",
-			"no-update-after": true,
-		}},
-		{Name: "Stop", Value: ki.Props{
-			"desc":            "runs the marbles for NSteps",
-			"icon":            "stop",
-			"no-update-after": true,
-		}},
-		{Name: "Step", Value: ki.Props{
-			"desc":            "steps the marbles for one step",
-			"icon":            "step-fwd",
-			"no-update-after": true,
-		}},
-		{Name: "sep-ctrl", Value: ki.BlankProp{}},
-		{Name: "SelectNextMarble", Value: ki.Props{
-			"label":           "Next Marble",
-			"desc":            "selects the next marble",
-			"icon":            "forward",
-			"no-update-after": true,
-			"shortcut":        gi.KeyFunFocusNext,
-		}},
-		{Name: "StopSelecting", Value: ki.Props{
-			"label":           "Unselect",
-			"desc":            "stops selecting the marble",
-			"icon":            "stop",
-			"no-update-after": true,
-		}},
-		{Name: "TrackSelectedMarble", Value: ki.Props{
-			"label":           "Track",
-			"desc":            "toggles track for the currently selected marble",
-			"icon":            "edit",
-			"no-update-after": true,
-			"shortcut":        gi.KeyFunTranspose,
-		}},
-		{Name: "sep-ctrl", Value: ki.BlankProp{}},
-		{Name: "AddLine", Value: ki.Props{
-			"label":    "Add New Line",
-			"desc":     "Adds a new line",
-			"icon":     "plus",
-			"shortcut": "Command+M",
-		}},
-	},
-}
+// // GraphProps define the ToolBar for overall app
+// var GraphProps = ki.Props{
+// 	"ToolBar": ki.PropSlice{
+// 		{Name: "Graph", Value: ki.Props{
+// 			"desc": "updates graph for current equations",
+// 			"icon": "file-image",
+// 		}},
+// 		{Name: "Run", Value: ki.Props{
+// 			"desc":            "runs the marbles for NSteps",
+// 			"icon":            "run",
+// 			"no-update-after": true,
+// 		}},
+// 		{Name: "Stop", Value: ki.Props{
+// 			"desc":            "runs the marbles for NSteps",
+// 			"icon":            "stop",
+// 			"no-update-after": true,
+// 		}},
+// 		{Name: "Step", Value: ki.Props{
+// 			"desc":            "steps the marbles for one step",
+// 			"icon":            "step-fwd",
+// 			"no-update-after": true,
+// 		}},
+// 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
+// 		{Name: "SelectNextMarble", Value: ki.Props{
+// 			"label":           "Next Marble",
+// 			"desc":            "selects the next marble",
+// 			"icon":            "forward",
+// 			"no-update-after": true,
+// 			"shortcut":        gi.KeyFunFocusNext,
+// 		}},
+// 		{Name: "StopSelecting", Value: ki.Props{
+// 			"label":           "Unselect",
+// 			"desc":            "stops selecting the marble",
+// 			"icon":            "stop",
+// 			"no-update-after": true,
+// 		}},
+// 		{Name: "TrackSelectedMarble", Value: ki.Props{
+// 			"label":           "Track",
+// 			"desc":            "toggles track for the currently selected marble",
+// 			"icon":            "edit",
+// 			"no-update-after": true,
+// 			"shortcut":        gi.KeyFunTranspose,
+// 		}},
+// 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
+// 		{Name: "AddLine", Value: ki.Props{
+// 			"label":    "Add New Line",
+// 			"desc":     "Adds a new line",
+// 			"icon":     "plus",
+// 			"shortcut": "Command+M",
+// 		}},
+// 	},
+// }
 
 // Defaults sets the default parameters and lines for the graph, specified in settings
 func (gr *Graph) Defaults() {
@@ -255,8 +252,8 @@ func (gr *Graph) StopSelecting() {
 		gr.State.SelectedMarble = -1
 	}
 	if !gr.State.Running {
-		gr.Objects.Graph.UpdateEnd(updt)
 		gr.Objects.Graph.SetNeedsFullRender()
+		gr.Objects.Graph.UpdateEnd(updt)
 	}
 }
 
