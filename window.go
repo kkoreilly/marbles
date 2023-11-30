@@ -1,89 +1,68 @@
 package main
 
 import (
-	"path/filepath"
-	"strconv"
-
 	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/giv"
-	"goki.dev/girl/units"
-	"goki.dev/ki/v2"
-	"goki.dev/mat32/v2"
-	"goki.dev/svg"
+	"goki.dev/goosi/events"
 )
 
-func makeBasicElements() {
-	mfr = win.SetMainFrame()
-	mfr.SetStretchMax()
+func makeBasicElements(b *gi.Body) {
+	sp := gi.NewSplits(b)
 
-	// graphToolbar = giv.AddNewStructView(mfr, "graphToolbar")
-	// graphToolbar.Viewport = vp // needs vp early for toolbar
-	// graphToolbar.SetProp("height", "1em")
-	// graphToolbar.SetStruct(&TheGraph)
-	// graphToolbar.StructGrid()
-
-	// graphToolbar.ToolBar().Child(0).Delete(true)
-	// graphToolbar.SetProp("overflow", "hidden")
-	makeToolbar()
-
-	mainSplit = gi.AddNewSplitView(mfr, "mainSplit")
-	mainSplit.Dim = mat32.X
-	mainSplit.SetStretchMax()
-
-	sidesplit := gi.AddNewSplitView(mainSplit, "sidesplit")
-	sidesplit.Dim = mat32.Y
-	lns = giv.AddNewTableView(sidesplit, "lns")
-	lns.Viewport = vp
-	lns.SetProp("index", false)
-	lns.SetProp("inact-key-nav", false)
-	lns.NoAdd = true
-	lns.SetSlice(&TheGraph.Lines)
-	lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
-		if col == 0 {
-			newLabel := "<i><b>y=</b></i>"
-			if row < len(functionNames) {
-				newLabel = "<i><b>" + functionNames[row] + "(x)=</b></i>"
+	lns := giv.NewTableView(sp).SetSlice(&TheGraph.Lines)
+	/*
+		lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
+			if col == 0 {
+				newLabel := "<i><b>y=</b></i>"
+				if row < len(functionNames) {
+					newLabel = "<i><b>" + functionNames[row] + "(x)=</b></i>"
+				}
+				lbl := widg.(*giv.StructViewInline).Parts.Child(0).(*gi.Label)
+				lbl.SetText(newLabel)
+				// lbl.SetProp("background-color", "yellow")
 			}
-			lbl := widg.(*giv.StructViewInline).Parts.Child(0).(*gi.Label)
-			lbl.SetText(newLabel)
-			// lbl.SetProp("background-color", "yellow")
-		}
-		if col == 3 {
-			clr := TheGraph.Lines[row].Colors.Color
-			widg.SetProp("background-color", clr)
-			widg.SetProp("color", clr)
-			widg.(*gi.Action).Text = "LColors"
-		}
-		if col < 3 {
-			edit := widg.(*giv.StructViewInline).Parts.Child(1).(*gi.TextField)
-			edit.TextFieldSig.Connect(edit.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-				if col == 0 {
-					TheGraph.Lines[row].Expr.Expr = string(edit.EditTxt)
-				}
-				if col == 1 {
-					TheGraph.Lines[row].GraphIf.Expr = string(edit.EditTxt)
-				}
-				if col == 2 {
-					TheGraph.Lines[row].Bounce.Expr = string(edit.EditTxt)
-				}
-				TheGraph.AutoGraph()
-				if col == 0 && TheGraph.State.Error == nil {
-					val := TheGraph.Lines[row].Expr.Eval(0, 0, 0)
-					funcName := "y"
-					if row < len(functionNames) {
-						funcName = functionNames[row]
+			if col == 3 {
+				clr := TheGraph.Lines[row].Colors.Color
+				widg.SetProp("background-color", clr)
+				widg.SetProp("color", clr)
+				widg.(*gi.Action).Text = "LColors"
+			}
+			if col < 3 {
+				edit := widg.(*giv.StructViewInline).Parts.Child(1).(*gi.TextField)
+				edit.TextFieldSig.Connect(edit.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+					if col == 0 {
+						TheGraph.Lines[row].Expr.Expr = string(edit.EditTxt)
 					}
-					valueText.SetText(funcName + "(0) ≈ " + strconv.FormatFloat(val, 'f', 3, 64))
-				}
-			})
-			widg.SetProp("font-size", TheSettings.LineFontSize)
-			edit.SetCompleter(edit, ExprComplete, ExprCompleteEdit)
+					if col == 1 {
+						TheGraph.Lines[row].GraphIf.Expr = string(edit.EditTxt)
+					}
+					if col == 2 {
+						TheGraph.Lines[row].Bounce.Expr = string(edit.EditTxt)
+					}
+					TheGraph.AutoGraph()
+					if col == 0 && TheGraph.State.Error == nil {
+						val := TheGraph.Lines[row].Expr.Eval(0, 0, 0)
+						funcName := "y"
+						if row < len(functionNames) {
+							funcName = functionNames[row]
+						}
+						valueText.SetText(funcName + "(0) ≈ " + strconv.FormatFloat(val, 'f', 3, 64))
+					}
+				})
+				widg.SetProp("font-size", TheSettings.LineFontSize)
+				edit.SetCompleter(edit, ExprComplete, ExprCompleteEdit)
+			}
 		}
-	}
-	lns.ViewSig.Connect(lns.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	*/
+	lns.OnChange(func(e events.Event) {
 		TheGraph.AutoGraph()
 	})
 
+	gi.NewFrame(sp)
+	sp.SetSplits(0.3, 0.7)
+}
+
+/*
 	params = giv.AddNewStructView(sidesplit, "params")
 	params.SetStruct(&TheGraph.Params)
 	params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
@@ -91,8 +70,9 @@ func makeBasicElements() {
 	})
 
 	sidesplit.SetSplits(6, 4)
-
-	graphFrame := gi.AddNewFrame(mainSplit, "graphFrame", gi.LayoutVert)
+*/
+/*
+	graphFrame := gi.AddNewFrame(sp, "graphFrame", gi.LayoutVert)
 
 	TheGraph.Objects.Graph = svg.AddNewSVG(graphFrame, "graph")
 	TheGraph.Objects.Graph.SetFixedHeight(units.NewDot(float32(TheSettings.GraphSize) - 20))
@@ -119,7 +99,7 @@ func makeBasicElements() {
 	TheGraph.Objects.Graph.SetProp("stroke-width", ".2pct")
 
 	gp := float32(TheSettings.GraphSize) / float32(width)
-	mainSplit.SetSplits(1-gp, gp)
+	sp.SetSplits(1-gp, gp)
 
 	gi.AddNewSeparator(graphFrame, "sep", true)
 
@@ -293,3 +273,4 @@ func makeMainMenu() {
 	emen.Menu.AddCopyCutPaste(win)
 
 }
+*/

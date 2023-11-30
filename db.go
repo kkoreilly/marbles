@@ -1,13 +1,10 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"time"
-
 	_ "github.com/lib/pq"
 )
 
+/*
 // Database to share and download graphs
 var db *sql.DB
 
@@ -79,3 +76,4 @@ func RemoveGraph(id int) {
 	_, err := db.Exec(cmd)
 	HandleError(err)
 }
+*/
