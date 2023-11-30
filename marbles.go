@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/chewxy/math32"
-	"github.com/goki/gi/gist"
-	"github.com/goki/gi/svg"
-	"github.com/goki/mat32"
+	"goki.dev/gi/gist"
+	"goki.dev/mat32/v2"
+	"goki.dev/svg"
 )
 
 // Marble contains the information of a marble

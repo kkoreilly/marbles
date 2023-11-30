@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/goki/gi/gi"
-	"github.com/goki/gi/giv"
-	"github.com/goki/gi/svg"
-	"github.com/goki/gi/units"
-	"github.com/goki/ki/ki"
-	"github.com/goki/mat32"
+	"goki.dev/gi/v2/gi"
+	"goki.dev/gi/v2/giv"
+	"goki.dev/girl/units"
+	"goki.dev/ki/v2"
+	"goki.dev/mat32/v2"
+	"goki.dev/svg"
 )
 
 func makeBasicElements() {

@@ -11,10 +11,10 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/goki/gi/gist"
-	"github.com/goki/gi/svg"
-	"github.com/goki/mat32"
-	"github.com/goki/pi/complete"
+	"goki.dev/girl/gist"
+	"goki.dev/mat32/v2"
+	"goki.dev/pi/v2/complete"
+	"goki.dev/svg"
 )
 
 // Graph contains the lines and parameters of a graph

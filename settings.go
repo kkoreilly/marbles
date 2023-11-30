@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/goki/gi/gist"
-	"github.com/goki/ki/ki"
-	"github.com/goki/ki/kit"
+	"goki.dev/gi/gist"
+	"goki.dev/ki/kit"
+	"goki.dev/ki/v2"
 )
 
 // Settings are the settings the app has

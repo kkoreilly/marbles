@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/goki/gi/gi"
+	"goki.dev/gi/v2/gi"
 )
 
 // SaveLast saves to the last opened or saved file
