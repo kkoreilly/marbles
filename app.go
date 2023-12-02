@@ -62,7 +62,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	})
 
 	gr.Objects.Graph = gi.NewSVG(sp)
-	gr.Objects.SVG = svg.NewSVG(500, 500)
+	gr.Objects.SVG = svg.NewSVG(800, 800)
 	gr.Objects.Graph.SVG = gr.Objects.SVG
 
 	gr.Objects.SVG.Norm = true

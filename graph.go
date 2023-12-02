@@ -277,7 +277,7 @@ func (gr *Graph) AddLine() {
 	k := len(gr.Lines)
 	var color color.RGBA
 	if TheSettings.LineDefaults.LineColors.Color == colors.White {
-		color = colors.List(k, 48, 40)[k-1]
+		color = colors.AccentList(k)[k-1]
 	} else {
 		color = TheSettings.LineDefaults.LineColors.Color
 	}
@@ -304,7 +304,7 @@ func (gr *Graph) CompileExprs() {
 		}
 		if colors.IsNil(ln.Colors.Color) {
 			if TheSettings.LineDefaults.LineColors.Color == colors.White {
-				ln.Colors.Color = colors.List(len(gr.Lines), 48, 40)[k]
+				ln.Colors.Color = colors.AccentList(len(gr.Lines))[k]
 			} else {
 				ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 			}
@@ -409,7 +409,7 @@ func (ln *Line) Compile() {
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
 	if TheSettings.LineDefaults.LineColors.Color == colors.White {
-		ln.Colors.Color = colors.List(len(TheGraph.Lines), 48, 40)[lidx]
+		ln.Colors.Color = colors.AccentList(len(TheGraph.Lines))[lidx]
 	} else {
 		ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 	}
