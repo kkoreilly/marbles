@@ -1,7 +1,9 @@
 package main
 
 import (
-	"github.com/goki/gi/gist"
+	"image/color"
+
+	"goki.dev/colors"
 )
 
 // Settings are the settings the app has
@@ -20,18 +22,18 @@ type Settings struct {
 
 // ColorSettings are the background and text colors of the app
 type ColorSettings struct {
-	BackgroundColor      gist.Color `label:"Background Color"`
-	GraphColor           gist.Color `label:"Graph Background Color"`
-	AxisColor            gist.Color `label:"Graph Axis Color"`
-	StatusBarColor       gist.Color `label:"Status Bar Background Color"`
-	ButtonColor          gist.Color `label:"Button Color"`
-	StatusTextColor      gist.Color `label:"Status Bar Text Color"`
-	GraphTextColor       gist.Color `label:"Graph Controls Text Color"`
-	LineTextColor        gist.Color `label:"Line Text Color"`
-	ToolBarColor         gist.Color `label:"Toolbar Background Color"`
-	ToolBarButtonColor   gist.Color `label:"Toolbar Button Color"`
-	GraphParamsColor     gist.Color `label:"Graph Parameters Background Color"`
-	LinesBackgroundColor gist.Color `label:"Lines Background Color"`
+	BackgroundColor      color.RGBA `label:"Background Color"`
+	GraphColor           color.RGBA `label:"Graph Background Color"`
+	AxisColor            color.RGBA `label:"Graph Axis Color"`
+	StatusBarColor       color.RGBA `label:"Status Bar Background Color"`
+	ButtonColor          color.RGBA `label:"Button Color"`
+	StatusTextColor      color.RGBA `label:"Status Bar Text Color"`
+	GraphTextColor       color.RGBA `label:"Graph Controls Text Color"`
+	LineTextColor        color.RGBA `label:"Line Text Color"`
+	ToolBarColor         color.RGBA `label:"Toolbar Background Color"`
+	ToolBarButtonColor   color.RGBA `label:"Toolbar Button Color"`
+	GraphParamsColor     color.RGBA `label:"Graph Parameters Background Color"`
+	LinesBackgroundColor color.RGBA `label:"Lines Background Color"`
 }
 
 // MarbleSettings are the settings for the marbles in the app
@@ -53,7 +55,7 @@ type TrackingSettings struct {
 	TrackByDefault  bool
 	NTrackingFrames int `min:"0" step:"10"`
 	Accuracy        int `min:"1" max:"100" step:"5"`
-	LineColor       gist.Color
+	LineColor       color.RGBA
 }
 
 // TheSettings is the instance of settings
@@ -135,13 +137,13 @@ func (se *Settings) Defaults() {
 	se.ConfirmQuit = true
 	se.PrettyJSON = false
 }
-
+*/
 // Defaults sets the default settings for the tracking lines.
 func (ts *TrackingSettings) Defaults() {
 	ts.TrackByDefault = false
 	ts.NTrackingFrames = 300
 	ts.Accuracy = 20
-	ts.LineColor = gist.White
+	ts.LineColor = colors.White
 }
 
 // BasicDefaults sets the line defaults to their defaults
@@ -153,6 +155,7 @@ func (ln *LineDefaults) BasicDefaults() {
 	ln.LineColors.ColorSwitch = colors.White
 }
 
+/*
 // Defaults sets the marble settings to their defaults
 func (ms *MarbleSettings) Defaults() {
 	ms.MarbleColor = "default"

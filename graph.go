@@ -5,9 +5,17 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"image/color"
+	"sort"
+	"strings"
+	"unicode"
 
+	"goki.dev/colors"
+	"goki.dev/gi/v2/gi"
 	"goki.dev/mat32/v2"
+	"goki.dev/pi/v2/complete"
 	"goki.dev/svg"
 )
 
@@ -81,7 +89,8 @@ type Vectors struct {
 
 // Objects contains the svg graph and the svg groups, plus the axes
 type Objects struct {
-	Graph         *svg.SVG
+	Graph         *gi.SVG
+	SVG           *svg.SVG
 	Root          *svg.SVGNode
 	Lines         *svg.Group
 	Marbles       *svg.Group
@@ -162,6 +171,7 @@ var TheGraph Graph
 // 		}},
 // 	},
 // }
+*/
 
 // Defaults sets the default parameters and lines for the graph, specified in settings
 func (gr *Graph) Defaults() {
@@ -189,17 +199,16 @@ func (gr *Graph) Graph() {
 	}
 	gr.Lines.Graph()
 	SetCompleteWords(TheGraph.Functions)
-	if gr.State.Error == nil {
-		errorText.SetText("Graphed successfully")
-	}
+	// if gr.State.Error == nil {
+	// 	errorText.SetText("Graphed successfully")
+	// }
 }
 
 // AutoGraph is used to graph the function when something is changed
 func (gr *Graph) AutoGraph() {
 	updt := gr.Objects.Graph.UpdateStart()
 	gr.Graph()
-	gr.Objects.Graph.SetNeedsFullRender()
-	gr.Objects.Graph.UpdateEnd(updt)
+	gr.Objects.Graph.UpdateEndRender(updt)
 }
 
 // AutoGraphAndUpdate calls autograph, and updates lns and params
@@ -245,8 +254,7 @@ func (gr *Graph) StopSelecting() {
 		gr.State.SelectedMarble = -1
 	}
 	if !gr.State.Running {
-		gr.Objects.Graph.SetNeedsFullRender()
-		gr.Objects.Graph.UpdateEnd(updt)
+		gr.Objects.Graph.UpdateEndRender(updt)
 	}
 }
 
@@ -261,9 +269,9 @@ func (gr *Graph) TrackSelectedMarble() {
 // AddLine adds a new blank line
 func (gr *Graph) AddLine() {
 	k := len(gr.Lines)
-	var color gist.Color
-	if TheSettings.LineDefaults.LineColors.Color == gist.White {
-		color, _ = gist.ColorFromName(colors[k%len(colors)])
+	var color color.RGBA
+	if TheSettings.LineDefaults.LineColors.Color == colors.White {
+		color = colors.List(k, 48, 40)[k-1]
 	} else {
 		color = TheSettings.LineDefaults.LineColors.Color
 	}
@@ -274,7 +282,7 @@ func (gr *Graph) AddLine() {
 // Reset resets the graph to its starting position (one default line and default params)
 func (gr *Graph) Reset() {
 	gr.State.File = ""
-	UpdateCurrentFileText()
+	// UpdateCurrentFileText()
 	gr.Lines = nil
 	gr.Lines.Defaults()
 	gr.Params.Defaults()
@@ -288,15 +296,14 @@ func (gr *Graph) CompileExprs() {
 		if ln.Expr.Expr == "" {
 			ln.Expr.Expr = TheSettings.LineDefaults.Expr
 		}
-		if ln.Colors.Color == gist.NilColor {
-			if TheSettings.LineDefaults.LineColors.Color == gist.White {
-				color, _ := gist.ColorFromName(colors[k%len(colors)])
-				ln.Colors.Color = color
+		if colors.IsNil(ln.Colors.Color) {
+			if TheSettings.LineDefaults.LineColors.Color == colors.White {
+				ln.Colors.Color = colors.List(len(gr.Lines), 48, 40)[k]
 			} else {
 				ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 			}
 		}
-		if ln.Colors.ColorSwitch == gist.NilColor {
+		if colors.IsNil(ln.Colors.ColorSwitch) {
 			ln.Colors.ColorSwitch = TheSettings.LineDefaults.LineColors.ColorSwitch
 		}
 		if ln.Bounce.Expr == "" {
@@ -395,9 +402,8 @@ func (ln *Line) Compile() {
 // Defaults sets the line to the defaults specified in settings
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
-	if TheSettings.LineDefaults.LineColors.Color == gist.White {
-		color, _ := gist.ColorFromName(colors[lidx%len(colors)])
-		ln.Colors.Color = color
+	if TheSettings.LineDefaults.LineColors.Color == colors.White {
+		ln.Colors.Color = colors.List(len(TheGraph.Lines), 48, 40)[lidx]
 	} else {
 		ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 	}
@@ -422,7 +428,7 @@ func (ls *Lines) Graph() {
 		defer TheGraph.Objects.Graph.UpdateEnd(updt)
 		nln := len(*ls)
 		if TheGraph.Objects.Lines.NumChildren() != nln {
-			TheGraph.Objects.Lines.SetNChildren(nln, svg.KiT_Path, "line")
+			TheGraph.Objects.Lines.SetNChildren(nln, svg.PathType, "line")
 		}
 	}
 	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
@@ -431,8 +437,8 @@ func (ls *Lines) Graph() {
 		TheGraph.Vectors.Min = center.Sub(sizeFromCenter)
 		TheGraph.Vectors.Max = center.Add(sizeFromCenter)
 		TheGraph.Vectors.Size = sizeFromCenter.MulScalar(2)
-		TheGraph.Objects.Graph.ViewBox.Min = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*graphViewBoxSize}
-		TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
+		TheGraph.Objects.Root.ViewBox.Min = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*graphViewBoxSize}
+		TheGraph.Objects.Root.ViewBox.Size = TheGraph.Vectors.Size
 		UpdateCoords()
 	}
 	for i, ln := range *ls {
@@ -474,17 +480,21 @@ func (ln *Line) Graph(lidx int) {
 }
 
 // InitCoords makes the x and y axis
-func InitCoords() {
-	updt := TheGraph.Objects.Graph.UpdateStart()
-	TheGraph.Objects.Coords.DeleteChildren(true)
+func (gr *Graph) InitCoords() {
+	updt := gr.Objects.Graph.UpdateStart()
+	gr.Objects.Coords.DeleteChildren(true)
 
-	TheGraph.Objects.XAxis = svg.AddNewLine(TheGraph.Objects.Coords, "TheGraph.Objects.XAxis", TheGraph.Vectors.Min.X, 0, TheGraph.Vectors.Max.X, 0)
-	TheGraph.Objects.XAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords, "x-axis")
+	gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
+	gr.Objects.XAxis.End.X = gr.Vectors.Max.X
+	gr.Objects.XAxis.SetProp("stroke", colors.Scheme.Outline)
 
-	TheGraph.Objects.YAxis = svg.AddNewLine(TheGraph.Objects.Coords, "TheGraph.Objects.YAxis", 0, TheGraph.Vectors.Min.Y, 0, TheGraph.Vectors.Max.Y)
-	TheGraph.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords, "y-axis")
+	gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
+	gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
+	gr.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
 
-	TheGraph.Objects.Graph.UpdateEnd(updt)
+	gr.Objects.Graph.UpdateEnd(updt)
 }
 
 // UpdateCoords updates the x and y axis
@@ -587,4 +597,3 @@ func SetCompleteWords(functions Functions) {
 	}
 	completeWords = append(completeWords, "true", "false", "pi", "a", "t")
 }
-*/

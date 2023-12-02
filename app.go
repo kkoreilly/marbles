@@ -59,11 +59,11 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 		// TheGraph.AutoGraph()
 	})
 
-	sv := gi.NewSVG(sp)
-	gr.Objects.Graph = svg.NewSVG(500, 500)
-	sv.SVG = gr.Objects.Graph
+	gr.Objects.Graph = gi.NewSVG(sp)
+	gr.Objects.SVG = svg.NewSVG(500, 500)
+	gr.Objects.Graph.SVG = gr.Objects.SVG
 
-	gr.Objects.Root = &gr.Objects.Graph.Root
+	gr.Objects.Root = &gr.Objects.SVG.Root
 	gr.Objects.Root.ViewBox.Size.Set(20, 20)
 	gr.Objects.Root.ViewBox.Min.Set(-10, -10)
 
