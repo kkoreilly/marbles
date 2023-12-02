@@ -21,7 +21,9 @@ func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
 func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	sp := gi.NewSplits(b)
 
-	lns := giv.NewTableView(sp).SetSlice(&gr.Lines)
+	lsp := gi.NewSplits(sp).SetDim(mat32.Y)
+
+	lns := giv.NewTableView(lsp).SetSlice(&gr.Lines)
 	/*
 		lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
 			if col == 0 {
@@ -69,6 +71,13 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	lns.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
+
+	params := giv.NewStructView(lsp).SetStruct(&gr.Params)
+	params.OnChange(func(e events.Event) {
+		gr.Graph()
+	})
+
+	lsp.SetSplits(0.7, 0.3)
 
 	gr.Objects.Graph = gi.NewSVG(sp)
 
