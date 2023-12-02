@@ -1,9 +1,11 @@
 package main
 
 import (
+	"goki.dev/colors"
 	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/giv"
 	"goki.dev/goosi/events"
+	"goki.dev/mat32/v2"
 	"goki.dev/svg"
 )
 
@@ -63,9 +65,20 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.SVG = svg.NewSVG(500, 500)
 	gr.Objects.Graph.SVG = gr.Objects.SVG
 
+	gr.Objects.SVG.Norm = true
+	gr.Objects.SVG.InvertY = true
+	gr.Objects.SVG.Fill = true
+	gr.Objects.SVG.BackgroundColor.SetSolid(colors.Scheme.Surface)
+
+	gr.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
+	gr.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
+	gr.Vectors.Size = gr.Vectors.Max.Sub(gr.Vectors.Min)
+	var n float32 = 1.0 / float32(TheSettings.GraphInc)
+	gr.Vectors.Inc = mat32.Vec2{X: n, Y: n}
+
 	gr.Objects.Root = &gr.Objects.SVG.Root
-	gr.Objects.Root.ViewBox.Size.Set(20, 20)
-	gr.Objects.Root.ViewBox.Min.Set(-10, -10)
+	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
+	gr.Objects.Root.ViewBox.Size = gr.Vectors.Size
 
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
 
@@ -92,12 +105,6 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root, "marbles")
 	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root, "coords")
 	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root, "tracking-lines")
-
-	// TheGraph.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
-	// TheGraph.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
-	// TheGraph.Vectors.Size = TheGraph.Vectors.Max.Sub(TheGraph.Vectors.Min)
-	// var n float32 = 1.0 / float32(TheSettings.GraphInc)
-	// TheGraph.Vectors.Inc = mat32.Vec2{X: n, Y: n}
 
 	// TheGraph.Objects.Graph.ViewBox.Min = TheGraph.Vectors.Min
 	// TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
