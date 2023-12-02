@@ -61,6 +61,7 @@ func makeBasicElements(b *gi.Body) {
 
 	gr := gi.NewSVG(sp)
 	gr.SVG = svg.NewSVG(500, 500)
+	svg.NewCircle(&gr.SVG.Root, "circle")
 
 	sp.SetSplits(0.3, 0.7)
 }
