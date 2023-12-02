@@ -5,14 +5,15 @@ import (
 	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/giv"
 	"goki.dev/goosi/events"
+	"goki.dev/icons"
 	"goki.dev/mat32/v2"
 	"goki.dev/svg"
 )
 
 func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
 	gi.DefaultTopAppBar(tb)
-	giv.NewFuncButton(tb, gr.Graph)
-	giv.NewFuncButton(tb, gr.Run)
+	giv.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
+	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayCircle)
 }
 
 func (gr *Graph) MakeBasicElements(b *gi.Body) {

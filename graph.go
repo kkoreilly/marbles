@@ -20,7 +20,7 @@ import (
 )
 
 // Graph contains the lines and parameters of a graph
-type Graph struct {
+type Graph struct { //gti:add
 	Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
 	Lines     Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
 	Marbles   []*Marble `view:"-" json:"-"`
@@ -192,7 +192,7 @@ func (gr *Graph) Defaults() {
 }
 
 // Graph updates graph for current equations, and resets marbles too
-func (gr *Graph) Graph() {
+func (gr *Graph) Graph() { //gti:add
 	if gr.State.Running {
 		gr.Stop()
 	}
@@ -231,7 +231,7 @@ func (gr *Graph) AutoGraphAndUpdate() {
 }
 
 // Run runs the marbles for NSteps
-func (gr *Graph) Run() {
+func (gr *Graph) Run() { //gti:add
 	// gr.AutoSave()
 	go gr.RunMarbles()
 }
