@@ -167,13 +167,17 @@ func (gr *Graph) UpdateMarblesData() {
 				continue
 			}
 
-			yp := ln.Expr.Eval(float64(m.Pos.X), gr.State.Time, ln.TimesHit)
+			// previous line y (with old time)
+			yp := ln.Expr.Eval(float64(m.Pos.X), gr.State.PrevTime, ln.TimesHit)
+			// new line y with old time
+			yno := ln.Expr.Eval(float64(npos.X), gr.State.PrevTime, ln.TimesHit)
+			// new line y
 			yn := ln.Expr.Eval(float64(npos.X), gr.State.Time, ln.TimesHit)
 
 			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
 				setColor = ln.Colors.ColorSwitch
-				m.Pos, m.Vel = m.CalcCollide(ln, npos, yp, yn)
+				m.Pos, m.Vel = m.CalcCollide(ln, npos, yp, yn, yno)
 				break
 			}
 		}
@@ -198,8 +202,9 @@ func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
 	return false
 }
 
-// CalcCollide calculates the new position and velocityof a marble after collision
-func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.Vec2, mat32.Vec2) {
+// CalcCollide calculates the new position and velocity of a marble after a collision with the given
+// line, given the previous line y, new line y, and new line y with old time
+func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn, yno float64) (mat32.Vec2, mat32.Vec2) {
 	dly := yn - yp // change in the lines y
 	dx := npos.X - m.Pos.X
 
@@ -240,7 +245,7 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 	nvy := float32(Bounce) * (m.Vel.X*mat32.Sin(angR) + m.Vel.Y*mat32.Cos(angR))
 
 	vel := mat32.Vec2{X: nvx, Y: nvy}
-	pos := mat32.Vec2{X: xi, Y: yi}
+	pos := mat32.Vec2{X: xi, Y: yi + float32(yn-yno)} // adding change from prev time to current time in same pos fixes collisions with moving lines
 
 	return pos, vel
 }
@@ -267,6 +272,7 @@ func (gr *Graph) RunMarbles() {
 		}
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
 			gr.UpdateMarblesData()
+			gr.State.PrevTime = gr.State.Time
 			gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
 		}
 		if gr.UpdateMarbles() {
@@ -279,6 +285,7 @@ func (gr *Graph) RunMarbles() {
 			start = time.Now()
 			startFrames = gr.State.Step
 		}
+		gr.State.PrevTime = gr.State.Time
 		gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
 	}
 }

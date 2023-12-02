@@ -34,6 +34,7 @@ type Graph struct {
 type State struct {
 	Running        bool
 	Time           float64
+	PrevTime       float64
 	Step           int
 	Error          error
 	SelectedMarble int
