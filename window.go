@@ -70,76 +70,76 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
 
 	sp.SetSplits(0.3, 0.7)
-}
 
-/*
-	params = giv.AddNewStructView(sidesplit, "params")
-	params.SetStruct(&TheGraph.Params)
-	params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		TheGraph.AutoGraph()
-	})
+	/*
+		params = giv.AddNewStructView(sidesplit, "params")
+		params.SetStruct(&TheGraph.Params)
+		params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			TheGraph.AutoGraph()
+		})
 
-	sidesplit.SetSplits(6, 4)
-*/
-/*
-	graphFrame := gi.AddNewFrame(sp, "graphFrame", gi.LayoutVert)
+		sidesplit.SetSplits(6, 4)
+	*/
 
-	TheGraph.Objects.Graph = svg.AddNewSVG(graphFrame, "graph")
-	TheGraph.Objects.Graph.SetFixedHeight(units.NewDot(float32(TheSettings.GraphSize) - 20))
-	TheGraph.Objects.Graph.SetFixedWidth(units.NewDot(float32(TheSettings.GraphSize) - 20))
+	// graphFrame := gi.AddNewFrame(sp, "graphFrame", gi.LayoutVert)
+
+	// TheGraph.Objects.Graph = svg.AddNewSVG(graphFrame, "graph")
+	// TheGraph.Objects.Graph.SetFixedHeight(units.NewDot(float32(TheSettings.GraphSize) - 20))
+	// TheGraph.Objects.Graph.SetFixedWidth(units.NewDot(float32(TheSettings.GraphSize) - 20))
 	// TheGraph.Objects.Graph.SetStretchMaxWidth()
 
-	TheGraph.Objects.Lines = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Lines")
-	TheGraph.Objects.Marbles = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Marbles")
-	TheGraph.Objects.Coords = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.Coords")
-	TheGraph.Objects.TrackingLines = svg.AddNewGroup(TheGraph.Objects.Graph, "TheGraph.Objects.TrackingLines")
+	gr.Objects.Lines = svg.NewGroup(gr.Objects.Root, "lines")
+	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root, "marbles")
+	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root, "coords")
+	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root, "tracking-lines")
 
-	TheGraph.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
-	TheGraph.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
-	TheGraph.Vectors.Size = TheGraph.Vectors.Max.Sub(TheGraph.Vectors.Min)
-	var n float32 = 1.0 / float32(TheSettings.GraphInc)
-	TheGraph.Vectors.Inc = mat32.Vec2{X: n, Y: n}
+	// TheGraph.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
+	// TheGraph.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
+	// TheGraph.Vectors.Size = TheGraph.Vectors.Max.Sub(TheGraph.Vectors.Min)
+	// var n float32 = 1.0 / float32(TheSettings.GraphInc)
+	// TheGraph.Vectors.Inc = mat32.Vec2{X: n, Y: n}
 
-	TheGraph.Objects.Graph.ViewBox.Min = TheGraph.Vectors.Min
-	TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
-	TheGraph.Objects.Graph.Norm = true
-	TheGraph.Objects.Graph.InvertY = true
-	TheGraph.Objects.Graph.Fill = true
-	TheGraph.Objects.Graph.SetProp("background-color", "white")
-	TheGraph.Objects.Graph.SetProp("stroke-width", ".2pct")
+	// TheGraph.Objects.Graph.ViewBox.Min = TheGraph.Vectors.Min
+	// TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
+	// TheGraph.Objects.Graph.Norm = true
+	// TheGraph.Objects.Graph.InvertY = true
+	// TheGraph.Objects.Graph.Fill = true
+	// TheGraph.Objects.Graph.SetProp("background-color", "white")
+	// TheGraph.Objects.Graph.SetProp("stroke-width", ".2pct")
 
-	gp := float32(TheSettings.GraphSize) / float32(width)
-	sp.SetSplits(1-gp, gp)
+	// gp := float32(TheSettings.GraphSize) / float32(width)
+	// sp.SetSplits(1-gp, gp)
 
-	gi.AddNewSeparator(graphFrame, "sep", true)
+	// gi.AddNewSeparator(graphFrame, "sep", true)
 
-	statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
-	statusBar.SetStretchMaxWidth()
-	fpsText = gi.AddNewLabel(statusBar, "fpsText", "FPS: ")
-	fpsText.SetProp("font-weight", "bold")
-	fpsText.SetStretchMaxWidth()
-	fpsText.Redrawable = true
-	valueText = gi.AddNewLabel(statusBar, "valueText", "f(0) ≈ ")
-	valueText.SetProp("font-weight", "bold")
-	valueText.SetStretchMaxWidth()
-	valueText.Redrawable = true
-	errorText = gi.AddNewLabel(statusBar, "errorText", "")
-	errorText.SetProp("font-weight", "bold")
-	errorText.SetStretchMaxWidth()
-	errorText.Redrawable = true
-	errorText.SetText("Graphed successfully")
-	currentFileText = gi.AddNewLabel(statusBar, "currentFileText", "untitled.json")
-	currentFileText.SetProp("font-weight", "bold")
-	currentFileText.SetStretchMaxWidth()
-	currentFileText.Redrawable = true
-	versionText = gi.AddNewLabel(statusBar, "versionText", "")
-	versionText.SetProp("font-weight", "bold")
-	versionText.SetStretchMaxWidth()
-	versionText.SetText("Running version " + GetVersion())
-	lns.ToolBar().Delete(true)
-	params.ToolBar().Delete(true)
+	// statusBar = gi.AddNewFrame(mfr, "statusBar", gi.LayoutHoriz)
+	// statusBar.SetStretchMaxWidth()
+	// fpsText = gi.AddNewLabel(statusBar, "fpsText", "FPS: ")
+	// fpsText.SetProp("font-weight", "bold")
+	// fpsText.SetStretchMaxWidth()
+	// fpsText.Redrawable = true
+	// valueText = gi.AddNewLabel(statusBar, "valueText", "f(0) ≈ ")
+	// valueText.SetProp("font-weight", "bold")
+	// valueText.SetStretchMaxWidth()
+	// valueText.Redrawable = true
+	// errorText = gi.AddNewLabel(statusBar, "errorText", "")
+	// errorText.SetProp("font-weight", "bold")
+	// errorText.SetStretchMaxWidth()
+	// errorText.Redrawable = true
+	// errorText.SetText("Graphed successfully")
+	// currentFileText = gi.AddNewLabel(statusBar, "currentFileText", "untitled.json")
+	// currentFileText.SetProp("font-weight", "bold")
+	// currentFileText.SetStretchMaxWidth()
+	// currentFileText.Redrawable = true
+	// versionText = gi.AddNewLabel(statusBar, "versionText", "")
+	// versionText.SetProp("font-weight", "bold")
+	// versionText.SetStretchMaxWidth()
+	// versionText.SetText("Running version " + GetVersion())
+	// lns.ToolBar().Delete(true)
+	// params.ToolBar().Delete(true)
 }
 
+/*
 func makeToolbar() {
 	graphToolbar = gi.AddNewToolBar(mfr, "graphToolbar")
 	graphToolbar.AddAction(gi.ActOpts{Name: "Graph", Label: "Graph", Icon: "file-image", Tooltip: "graph the equations and reset the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
