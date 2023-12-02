@@ -193,6 +193,7 @@ func (gr *Graph) Defaults() {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() { //gti:add
+	updt := gr.Objects.Graph.UpdateStart()
 	if gr.State.Running {
 		gr.Stop()
 	}
@@ -201,12 +202,14 @@ func (gr *Graph) Graph() { //gti:add
 	gr.AddLineFunctions()
 	gr.CompileExprs()
 	if gr.State.Error != nil {
+		gr.Objects.Graph.UpdateEndRender(updt)
 		return
 	}
 	gr.ResetMarbles()
 	gr.State.Time = 0
 	SetRandNum()
 	if gr.State.Error != nil {
+		gr.Objects.Graph.UpdateEndRender(updt)
 		return
 	}
 	gr.Lines.Graph()
@@ -214,20 +217,7 @@ func (gr *Graph) Graph() { //gti:add
 	// if gr.State.Error == nil {
 	// 	errorText.SetText("Graphed successfully")
 	// }
-}
-
-// AutoGraph is used to graph the function when something is changed
-func (gr *Graph) AutoGraph() {
-	updt := gr.Objects.Graph.UpdateStart()
-	gr.Graph()
 	gr.Objects.Graph.UpdateEndRender(updt)
-}
-
-// AutoGraphAndUpdate calls autograph, and updates lns and params
-func (gr *Graph) AutoGraphAndUpdate() {
-	gr.AutoGraph()
-	// gr.Lines.Update()
-	// params.UpdateFields()
 }
 
 // Run runs the marbles for NSteps
@@ -293,7 +283,7 @@ func (gr *Graph) Reset() {
 	gr.Lines = nil
 	gr.Lines.Defaults()
 	gr.Params.Defaults()
-	gr.AutoGraphAndUpdate()
+	gr.Graph()
 }
 
 // CompileExprs gets the lines of the graph ready for graphing

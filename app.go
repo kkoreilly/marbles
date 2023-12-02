@@ -67,7 +67,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 		}
 	*/
 	lns.OnChange(func(e events.Event) {
-		gr.AutoGraph()
+		gr.Graph()
 	})
 
 	gr.Objects.Graph = gi.NewSVG(sp)
