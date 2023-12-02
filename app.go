@@ -79,6 +79,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.Root = &gr.Objects.SVG.Root
 	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
 	gr.Objects.Root.ViewBox.Size = gr.Vectors.Size
+	gr.Objects.Root.SetProp("stroke-width", "0.1dot")
 
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
 
