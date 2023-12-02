@@ -18,6 +18,7 @@ func app() {
 
 	b := gi.NewBody()
 
+	TheSettings.Defaults()
 	TheGraph.Init(b)
 
 	b.NewWindow().Run().Wait()

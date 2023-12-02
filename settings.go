@@ -11,29 +11,12 @@ type Settings struct {
 	LineDefaults   LineDefaults   `view:"no-inline" label:"Line Defaults"`
 	GraphDefaults  Params         `view:"no-inline" label:"Graph Param Defaults"`
 	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
-	ColorSettings  ColorSettings  `view:"no-inline" label:"Color Settings"`
 	GraphSize      int            `label:"Graph Size" min:"100" max:"800"`
 	GraphInc       int            `label:"Line quality in n per x" min:"1" max:"100"`
 	NFramesPer     int            `label:"Number of times to update the marbles each render" min:"1" max:"100"`
 	LineFontSize   int            `label:"Line Font Size"`
 	ConfirmQuit    bool           `label:"Confirm App Close"`
 	PrettyJSON     bool           `label:"Save formatted JSON"`
-}
-
-// ColorSettings are the background and text colors of the app
-type ColorSettings struct {
-	BackgroundColor      color.RGBA `label:"Background Color"`
-	GraphColor           color.RGBA `label:"Graph Background Color"`
-	AxisColor            color.RGBA `label:"Graph Axis Color"`
-	StatusBarColor       color.RGBA `label:"Status Bar Background Color"`
-	ButtonColor          color.RGBA `label:"Button Color"`
-	StatusTextColor      color.RGBA `label:"Status Bar Text Color"`
-	GraphTextColor       color.RGBA `label:"Graph Controls Text Color"`
-	LineTextColor        color.RGBA `label:"Line Text Color"`
-	ToolBarColor         color.RGBA `label:"Toolbar Background Color"`
-	ToolBarButtonColor   color.RGBA `label:"Toolbar Button Color"`
-	GraphParamsColor     color.RGBA `label:"Graph Parameters Background Color"`
-	LinesBackgroundColor color.RGBA `label:"Lines Background Color"`
 }
 
 // MarbleSettings are the settings for the marbles in the app
@@ -124,6 +107,7 @@ func (se *Settings) Save() {
 	err = os.WriteFile(filepath.Join(GetMarblesFolder(), "localData/settings.json"), b, os.ModePerm)
 	HandleError(err)
 }
+*/
 
 // Defaults defaults the settings
 func (se *Settings) Defaults() {
@@ -137,7 +121,7 @@ func (se *Settings) Defaults() {
 	se.ConfirmQuit = true
 	se.PrettyJSON = false
 }
-*/
+
 // Defaults sets the default settings for the tracking lines.
 func (ts *TrackingSettings) Defaults() {
 	ts.TrackByDefault = false
@@ -155,10 +139,8 @@ func (ln *LineDefaults) BasicDefaults() {
 	ln.LineColors.ColorSwitch = colors.White
 }
 
-/*
 // Defaults sets the marble settings to their defaults
 func (ms *MarbleSettings) Defaults() {
 	ms.MarbleColor = "default"
 	ms.MarbleSize = 0.1
 }
-*/

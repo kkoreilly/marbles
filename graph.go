@@ -175,6 +175,7 @@ var TheGraph Graph
 
 // Init sets up the graph for the given body. It should only be called once.
 func (gr *Graph) Init(b *gi.Body) {
+	gr.Defaults()
 	gr.MakeBasicElements(b)
 	gr.SetFunctionsTo(DefaultFunctions)
 	gr.InitCoords()
