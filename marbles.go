@@ -43,7 +43,7 @@ func (gr *Graph) GraphMarblesInit() {
 		circle.SetProp("stroke", "none")
 		circle.SetProp("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
-			m.Color = colors.AccentList(len(gr.Marbles))[i]
+			m.Color = colors.AccentVariantList(len(gr.Marbles))[i]
 			circle.SetProp("fill", m.Color)
 		} else {
 			m.Color = grr.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))

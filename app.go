@@ -74,8 +74,6 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 
 	gr.Objects.SVG = gr.Objects.Graph.SVG
 	gr.Objects.SVG.InvertY = true
-	gr.Objects.SVG.Fill = true
-	gr.Objects.SVG.BackgroundColor.SetSolid(colors.Scheme.Primary.Base)
 
 	gr.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
 	gr.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
@@ -87,10 +85,11 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
 	gr.Objects.Root.ViewBox.Size = gr.Vectors.Size
 	gr.Objects.Root.SetProp("stroke-width", "0.1dot")
+	gr.Objects.Root.SetProp("fill", colors.Scheme.Surface)
 
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
 
-	sp.SetSplits(0.3, 0.7)
+	sp.SetSplits(0.5, 0.5)
 
 	/*
 		params = giv.AddNewStructView(sidesplit, "params")
