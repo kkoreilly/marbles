@@ -12,7 +12,7 @@ import (
 func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	sp := gi.NewSplits(b)
 
-	lns := giv.NewTableView(sp).SetSlice(&[]struct{}{})
+	lns := giv.NewTableView(sp).SetSlice(&gr.Lines)
 	/*
 		lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
 			if col == 0 {
@@ -58,7 +58,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 		}
 	*/
 	lns.OnChange(func(e events.Event) {
-		// TheGraph.AutoGraph()
+		gr.AutoGraph()
 	})
 
 	gr.Objects.Graph = gi.NewSVG(sp)
