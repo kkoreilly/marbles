@@ -237,12 +237,12 @@ func (gr *Graph) Run() { //gti:add
 }
 
 // Stop stops the marbles
-func (gr *Graph) Stop() {
+func (gr *Graph) Stop() { //gti:add
 	gr.State.Running = false
 }
 
 // Step does one step update of marbles
-func (gr *Graph) Step() {
+func (gr *Graph) Step() { //gti:add
 	if gr.State.Running {
 		return
 	}

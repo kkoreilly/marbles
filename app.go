@@ -13,7 +13,9 @@ import (
 func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
 	gi.DefaultTopAppBar(tb)
 	giv.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
-	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayCircle)
+	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
+	giv.NewFuncButton(tb, gr.Stop)
+	giv.NewFuncButton(tb, gr.Step)
 }
 
 func (gr *Graph) MakeBasicElements(b *gi.Body) {
