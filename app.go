@@ -71,13 +71,11 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	})
 
 	gr.Objects.Graph = gi.NewSVG(sp)
-	gr.Objects.SVG = svg.NewSVG(800, 800)
-	gr.Objects.Graph.SVG = gr.Objects.SVG
 
-	gr.Objects.SVG.Norm = true
+	gr.Objects.SVG = gr.Objects.Graph.SVG
 	gr.Objects.SVG.InvertY = true
 	gr.Objects.SVG.Fill = true
-	gr.Objects.SVG.BackgroundColor.SetSolid(colors.Scheme.Surface)
+	gr.Objects.SVG.BackgroundColor.SetSolid(colors.Scheme.Primary.Base)
 
 	gr.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
 	gr.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
