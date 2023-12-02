@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"bytes"
 	"image"
@@ -50,3 +51,4 @@ func SaveImageToFile(img *image.RGBA, filename string) {
 func InitClipboard() {
 	clipboard.Init()
 }
+*/

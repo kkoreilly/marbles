@@ -4,6 +4,7 @@
 
 package main
 
+/*
 import (
 	"errors"
 	"fmt"
@@ -594,3 +595,4 @@ func SetCompleteWords(functions Functions) {
 	}
 	completeWords = append(completeWords, "true", "false", "pi", "a", "t")
 }
+*/

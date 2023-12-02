@@ -1,15 +1,6 @@
 package main
 
-import (
-	"encoding/json"
-	"os"
-	"path/filepath"
-
-	"goki.dev/gi/gist"
-	"goki.dev/ki/kit"
-	"goki.dev/ki/v2"
-)
-
+/*
 // Settings are the settings the app has
 type Settings struct {
 	LineDefaults   LineDefaults   `view:"no-inline" label:"Line Defaults"`
@@ -181,3 +172,4 @@ func (cs *ColorSettings) Defaults() {
 	cs.GraphParamsColor = gist.White
 	cs.LinesBackgroundColor = gist.White
 }
+*/

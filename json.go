@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"encoding/json"
 	"fmt"
@@ -130,3 +131,4 @@ func (gr *Graph) OpenGraphFromString(data string) {
 	err := json.Unmarshal([]byte(data), gr)
 	HandleError(err)
 }
+*/

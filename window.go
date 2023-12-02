@@ -4,12 +4,13 @@ import (
 	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/giv"
 	"goki.dev/goosi/events"
+	"goki.dev/svg"
 )
 
 func makeBasicElements(b *gi.Body) {
 	sp := gi.NewSplits(b)
 
-	lns := giv.NewTableView(sp).SetSlice(&TheGraph.Lines)
+	lns := giv.NewTableView(sp).SetSlice(&[]struct{}{})
 	/*
 		lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
 			if col == 0 {
@@ -55,10 +56,12 @@ func makeBasicElements(b *gi.Body) {
 		}
 	*/
 	lns.OnChange(func(e events.Event) {
-		TheGraph.AutoGraph()
+		// TheGraph.AutoGraph()
 	})
 
-	gi.NewFrame(sp)
+	gr := gi.NewSVG(sp)
+	gr.SVG = svg.NewSVG(500, 500)
+
 	sp.SetSplits(0.3, 0.7)
 }
 

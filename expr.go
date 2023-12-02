@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"math"
@@ -140,3 +141,4 @@ func SetRandNum() {
 	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
 }
+*/
