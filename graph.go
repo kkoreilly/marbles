@@ -492,12 +492,12 @@ func (gr *Graph) InitCoords() {
 	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords, "x-axis")
 	gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
 	gr.Objects.XAxis.End.X = gr.Vectors.Max.X
-	gr.Objects.XAxis.Paint.StrokeStyle.SetColor(colors.Scheme.Outline)
+	gr.Objects.XAxis.SetProp("stroke", colors.Scheme.Primary.Base)
 
 	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords, "y-axis")
 	gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
 	gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
-	gr.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	gr.Objects.YAxis.SetProp("stroke", colors.Scheme.Primary.Base)
 
 	gr.Objects.Graph.UpdateEnd(updt)
 }
@@ -506,10 +506,10 @@ func (gr *Graph) InitCoords() {
 func UpdateCoords() {
 	updt := TheGraph.Objects.Graph.UpdateStart()
 
-	TheGraph.Objects.XAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.XAxis.SetProp("stroke", colors.Scheme.Primary.Base)
 	TheGraph.Objects.XAxis.Start, TheGraph.Objects.XAxis.End = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: 0}, mat32.Vec2{X: TheGraph.Vectors.Max.X, Y: 0}
 
-	TheGraph.Objects.YAxis.SetProp("stroke", TheSettings.ColorSettings.AxisColor)
+	TheGraph.Objects.YAxis.SetProp("stroke", colors.Scheme.Primary.Base)
 	TheGraph.Objects.YAxis.Start, TheGraph.Objects.YAxis.End = mat32.Vec2{X: 0, Y: TheGraph.Vectors.Min.Y}, mat32.Vec2{X: 0, Y: TheGraph.Vectors.Max.Y}
 
 	TheGraph.Objects.Graph.UpdateEnd(updt)
