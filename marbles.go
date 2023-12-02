@@ -1,6 +1,17 @@
 package main
 
-/*
+import (
+	"fmt"
+	"math"
+	"strconv"
+	"time"
+
+	"github.com/chewxy/math32"
+	"github.com/goki/gi/gist"
+	"goki.dev/gi/svg"
+	"goki.dev/mat32/v2"
+)
+
 // Marble contains the information of a marble
 type Marble struct {
 	Pos          mat32.Vec2
@@ -326,4 +337,3 @@ func SelectNextMarble() {
 	TheGraph.Objects.Marbles.Child(TheGraph.State.SelectedMarble).SetProp("stroke", "yellow")
 	TheGraph.Objects.Graph.SetNeedsFullRender()
 }
-*/

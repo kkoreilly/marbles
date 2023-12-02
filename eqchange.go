@@ -1,6 +1,5 @@
 package main
 
-/*
 import (
 	"fmt"
 	"sort"
@@ -140,4 +139,3 @@ func LoopUnreadableChangeSlice(expr string) string {
 	}
 	return expr
 }
-*/

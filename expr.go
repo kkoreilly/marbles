@@ -1,11 +1,9 @@
 package main
 
-/*
 import (
 	"fmt"
 	"math"
 	"math/rand"
-	"time"
 
 	"github.com/Knetic/govaluate"
 	"gonum.org/v1/gonum/integrate"
@@ -13,7 +11,8 @@ import (
 
 // Expr is an expression
 type Expr struct {
-	Expr   string                         `label:"" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
+	// Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)
+	Expr   string                         `label:""`
 	Val    *govaluate.EvaluableExpression `view:"-" json:"-"`
 	Params map[string]interface{}         `view:"-" json:"-"`
 }
@@ -138,7 +137,5 @@ func FactorialMemoization(n int) (res float64) {
 
 // SetRandNum sets the random number used in the rand(v) function
 func SetRandNum() {
-	rand.Seed(time.Now().UnixNano())
 	randNum = rand.Float64()
 }
-*/

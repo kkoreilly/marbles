@@ -13,13 +13,13 @@ import (
 
 // Graph contains the lines and parameters of a graph
 type Graph struct {
-	// Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
-	// Lines Lines `view:"-" desc:"the lines of the graph -- can have any number"`
-	// Marbles   []*Marble `view:"-" json:"-"`
-	State State `view:"-" json:"-"`
-	// Functions Functions `view:"-" json:"-"`
-	Vectors Vectors `view:"-" json:"-"`
-	Objects Objects `view:"-" json:"-"`
+	Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
+	Lines     Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
+	Marbles   []*Marble `view:"-" json:"-"`
+	State     State     `view:"-" json:"-"`
+	Functions Functions `view:"-" json:"-"`
+	Vectors   Vectors   `view:"-" json:"-"`
+	Objects   Objects   `view:"-" json:"-"`
 }
 
 // State has the state of the graph
@@ -32,7 +32,6 @@ type State struct {
 	File           string
 }
 
-/*
 // Line represents one line with an equation etc
 type Line struct {
 	Expr     Expr       `width:"70" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
@@ -65,7 +64,6 @@ type Param struct {
 	Changes bool    `view:"-"`
 	BaseVal float64 `view:"-"`
 }
-*/
 
 // LineColors contains the color and colorswitch for a line
 type LineColors struct {
@@ -94,12 +92,9 @@ type Objects struct {
 }
 
 // Lines is a collection of lines
-// type Lines []*Line
+type Lines []*Line
 
 const graphViewBoxSize = 10
-
-// colors is all of the colors that are used for marbles and default lines
-var colors = []string{"black", "red", "blue", "green", "purple", "brown", "orange"}
 
 var basicFunctionList = []string{}
 

@@ -1,6 +1,5 @@
 package main
 
-/*
 import (
 	"errors"
 	"fmt"
@@ -476,4 +475,3 @@ func (ln *Line) SetFunctionName(k int) {
 		return total, nil
 	}
 }
-*/

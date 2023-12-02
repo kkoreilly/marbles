@@ -7,6 +7,7 @@ package main
 import (
 	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/gimain"
+	"goki.dev/grr"
 )
 
 func main() { gimain.Run(app) }
@@ -20,4 +21,9 @@ func app() {
 	TheGraph.MakeBasicElements(b)
 
 	b.NewWindow().Run().Wait()
+}
+
+// TODO(kai/marbles): better error handling
+func HandleError(err error) bool {
+	return grr.Log(err) != nil
 }

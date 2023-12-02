@@ -1,6 +1,9 @@
 package main
 
-/*
+import (
+	"github.com/goki/gi/gist"
+)
+
 // Settings are the settings the app has
 type Settings struct {
 	LineDefaults   LineDefaults   `view:"no-inline" label:"Line Defaults"`
@@ -56,6 +59,7 @@ type TrackingSettings struct {
 // TheSettings is the instance of settings
 var TheSettings Settings
 
+/*
 // SettingProps is the toolbar for settings
 var SettingProps = ki.Props{
 	"ToolBar": ki.PropSlice{
@@ -124,7 +128,6 @@ func (se *Settings) Defaults() {
 	se.LineDefaults.BasicDefaults()
 	se.GraphDefaults.BasicDefaults()
 	se.MarbleSettings.Defaults()
-	se.ColorSettings.Defaults()
 	se.GraphSize = 700
 	se.GraphInc = 40
 	se.NFramesPer = 1
@@ -144,32 +147,15 @@ func (ts *TrackingSettings) Defaults() {
 // BasicDefaults sets the line defaults to their defaults
 func (ln *LineDefaults) BasicDefaults() {
 	ln.Expr = "x"
-	ln.LineColors.Color = gist.White
+	ln.LineColors.Color = colors.White
 	ln.Bounce = "0.95"
 	ln.GraphIf = "true"
-	ln.LineColors.ColorSwitch = gist.White
+	ln.LineColors.ColorSwitch = colors.White
 }
 
 // Defaults sets the marble settings to their defaults
 func (ms *MarbleSettings) Defaults() {
 	ms.MarbleColor = "default"
 	ms.MarbleSize = 0.1
-}
-
-// Defaults sets the color settings to their defaults
-func (cs *ColorSettings) Defaults() {
-	grey, _ := gist.ColorFromName("grey")
-	cs.BackgroundColor = gist.White
-	cs.GraphColor = gist.White
-	cs.AxisColor = grey
-	cs.StatusBarColor = gist.White
-	cs.ButtonColor = gist.White
-	cs.StatusTextColor = gist.Black
-	cs.GraphTextColor = gist.Black
-	cs.LineTextColor = gist.Black
-	cs.ToolBarColor = gist.White
-	cs.ToolBarButtonColor = gist.White
-	cs.GraphParamsColor = gist.White
-	cs.LinesBackgroundColor = gist.White
 }
 */
