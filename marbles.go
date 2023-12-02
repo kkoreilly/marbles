@@ -122,6 +122,7 @@ func (gr *Graph) UpdateMarblesGraph() bool {
 	}
 
 	gr.Objects.Graph.UpdateEndRender(updt)
+	gr.Objects.Graph.Render()
 
 	return false
 }
