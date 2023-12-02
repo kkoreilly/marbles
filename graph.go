@@ -173,6 +173,16 @@ var TheGraph Graph
 // }
 */
 
+// Init sets up the graph for the given body. It should only be called once.
+func (gr *Graph) Init(b *gi.Body) {
+	gr.MakeBasicElements(b)
+	gr.SetFunctionsTo(DefaultFunctions)
+	gr.InitCoords()
+	gr.CompileExprs()
+	gr.Lines.Graph()
+	gr.ResetMarbles()
+}
+
 // Defaults sets the default parameters and lines for the graph, specified in settings
 func (gr *Graph) Defaults() {
 	gr.Params.Defaults()

@@ -18,7 +18,7 @@ func app() {
 
 	b := gi.NewBody()
 
-	TheGraph.MakeBasicElements(b)
+	TheGraph.Init(b)
 
 	b.NewWindow().Run().Wait()
 }
