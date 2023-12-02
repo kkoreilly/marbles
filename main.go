@@ -16,9 +16,11 @@ func app() {
 	gi.SetAppName("marbles")
 	gi.SetAppAbout("marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!")
 
-	b := gi.NewBody()
-
 	TheSettings.Defaults()
+
+	b := gi.NewBody()
+	b.AddTopAppBar(TheGraph.TopAppBar)
+
 	TheGraph.Init(b)
 
 	b.NewWindow().Run().Wait()

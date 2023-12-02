@@ -9,6 +9,12 @@ import (
 	"goki.dev/svg"
 )
 
+func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
+	gi.DefaultTopAppBar(tb)
+	giv.NewFuncButton(tb, gr.Graph)
+	giv.NewFuncButton(tb, gr.Run)
+}
+
 func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	sp := gi.NewSplits(b)
 
