@@ -492,7 +492,7 @@ func (gr *Graph) InitCoords() {
 	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords, "x-axis")
 	gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
 	gr.Objects.XAxis.End.X = gr.Vectors.Max.X
-	gr.Objects.XAxis.SetProp("stroke", colors.Scheme.Outline)
+	gr.Objects.XAxis.Paint.StrokeStyle.SetColor(colors.Scheme.Outline)
 
 	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords, "y-axis")
 	gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
