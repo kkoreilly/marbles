@@ -7,7 +7,7 @@ import (
 	"goki.dev/svg"
 )
 
-func makeBasicElements(b *gi.Body) {
+func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	sp := gi.NewSplits(b)
 
 	lns := giv.NewTableView(sp).SetSlice(&[]struct{}{})
@@ -59,12 +59,15 @@ func makeBasicElements(b *gi.Body) {
 		// TheGraph.AutoGraph()
 	})
 
-	gr := gi.NewSVG(sp)
-	gr.SVG = svg.NewSVG(500, 500)
-	gr.SVG.Root.ViewBox.Size.Set(20, 20)
-	gr.SVG.Root.ViewBox.Min.Set(-10, -10)
+	sv := gi.NewSVG(sp)
+	gr.Objects.Graph = svg.NewSVG(500, 500)
+	sv.SVG = gr.Objects.Graph
 
-	svg.NewCircle(&gr.SVG.Root).SetRadius(50)
+	gr.Objects.Root = &gr.Objects.Graph.Root
+	gr.Objects.Root.ViewBox.Size.Set(20, 20)
+	gr.Objects.Root.ViewBox.Min.Set(-10, -10)
+
+	svg.NewCircle(gr.Objects.Root).SetRadius(50)
 
 	sp.SetSplits(0.3, 0.7)
 }

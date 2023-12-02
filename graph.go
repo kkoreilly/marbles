@@ -4,29 +4,22 @@
 
 package main
 
-/*
 import (
-	"errors"
-	"fmt"
-	"sort"
-	"strings"
-	"unicode"
+	"image/color"
 
-	"goki.dev/girl/gist"
 	"goki.dev/mat32/v2"
-	"goki.dev/pi/v2/complete"
 	"goki.dev/svg"
 )
 
 // Graph contains the lines and parameters of a graph
 type Graph struct {
-	Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
-	Lines     Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
-	Marbles   []*Marble `view:"-" json:"-"`
-	State     State     `view:"-" json:"-"`
-	Functions Functions `view:"-" json:"-"`
-	Vectors   Vectors   `view:"-" json:"-"`
-	Objects   Objects   `view:"-" json:"-"`
+	// Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
+	// Lines Lines `view:"-" desc:"the lines of the graph -- can have any number"`
+	// Marbles   []*Marble `view:"-" json:"-"`
+	State State `view:"-" json:"-"`
+	// Functions Functions `view:"-" json:"-"`
+	Vectors Vectors `view:"-" json:"-"`
+	Objects Objects `view:"-" json:"-"`
 }
 
 // State has the state of the graph
@@ -39,6 +32,7 @@ type State struct {
 	File           string
 }
 
+/*
 // Line represents one line with an equation etc
 type Line struct {
 	Expr     Expr       `width:"70" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
@@ -71,11 +65,12 @@ type Param struct {
 	Changes bool    `view:"-"`
 	BaseVal float64 `view:"-"`
 }
+*/
 
 // LineColors contains the color and colorswitch for a line
 type LineColors struct {
-	Color       gist.Color `desc:"color to draw the line in" view:"no-inline"`
-	ColorSwitch gist.Color `desc:"Switch the color of the marble that hits this line" view:"no-inline"`
+	Color       color.RGBA `desc:"color to draw the line in"`
+	ColorSwitch color.RGBA `desc:"Switch the color of the marble that hits this line"`
 }
 
 // Vectors contains the size and increment of the graph
@@ -89,6 +84,7 @@ type Vectors struct {
 // Objects contains the svg graph and the svg groups, plus the axes
 type Objects struct {
 	Graph         *svg.SVG
+	Root          *svg.SVGNode
 	Lines         *svg.Group
 	Marbles       *svg.Group
 	Coords        *svg.Group
@@ -98,7 +94,7 @@ type Objects struct {
 }
 
 // Lines is a collection of lines
-type Lines []*Line
+// type Lines []*Line
 
 const graphViewBoxSize = 10
 
@@ -115,6 +111,7 @@ var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "
 // TheGraph is current graph
 var TheGraph Graph
 
+/*
 // KiTGraph is there to have the toolbar
 // var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
 
