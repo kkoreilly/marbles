@@ -1,15 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"image/color"
 	"math"
 	"strconv"
 	"time"
 
-	"github.com/chewxy/math32"
-	"github.com/goki/gi/gist"
-	"goki.dev/gi/svg"
+	"goki.dev/colors"
+	"goki.dev/grr"
 	"goki.dev/mat32/v2"
+	"goki.dev/svg"
 )
 
 // Marble contains the information of a marble
@@ -17,7 +17,7 @@ type Marble struct {
 	Pos          mat32.Vec2
 	Vel          mat32.Vec2
 	PrvPos       mat32.Vec2
-	Color        gist.Color
+	Color        color.RGBA
 	TrackingInfo TrackingInfo
 }
 
@@ -30,29 +30,29 @@ type TrackingInfo struct {
 }
 
 // GraphMarblesInit initializes the graph drawing of the marbles
-func GraphMarblesInit() {
-	updt := TheGraph.Objects.Graph.UpdateStart()
+func (gr *Graph) GraphMarblesInit() {
+	updt := gr.Objects.Graph.UpdateStart()
 
-	TheGraph.Objects.Marbles.DeleteChildren(true)
-	TheGraph.Objects.TrackingLines.DeleteChildren(true)
-	for i, m := range TheGraph.Marbles {
-		svg.AddNewGroup(TheGraph.Objects.TrackingLines, "tlm"+strconv.Itoa(i))
-		size := float32(TheSettings.MarbleSettings.MarbleSize) * TheGraph.Vectors.Size.Y / 20
+	gr.Objects.Marbles.DeleteChildren(true)
+	gr.Objects.TrackingLines.DeleteChildren(true)
+	for i, m := range gr.Marbles {
+		svg.NewGroup(gr.Objects.TrackingLines, "tlm"+strconv.Itoa(i))
+		size := float32(TheSettings.MarbleSettings.MarbleSize) * gr.Vectors.Size.Y / 20
 		// fmt.Printf("size: %v \n", size)
-		circle := svg.AddNewCircle(TheGraph.Objects.Marbles, "circle", m.Pos.X, m.Pos.Y, size)
+		circle := svg.NewCircle(gr.Objects.Marbles, "circle").SetPos(m.Pos).SetRadius(size)
 		circle.SetProp("stroke", "none")
 		circle.SetProp("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
-			circle.SetProp("fill", colors[i%len(colors)])
-			m.Color, _ = gist.ColorFromName(colors[i%len(colors)])
+			m.Color = colors.List(len(gr.Marbles), 48, 40)[i]
+			circle.SetProp("fill", m.Color)
 		} else {
+			m.Color = grr.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
 			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
-			m.Color, _ = gist.ColorFromName(TheSettings.MarbleSettings.MarbleColor)
 		}
 		m.TrackingInfo.LastPos = mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y}
 		m.TrackingInfo.StartedTrackingAt = 0
 	}
-	TheGraph.Objects.Graph.UpdateEnd(updt)
+	gr.Objects.Graph.UpdateEnd(updt)
 }
 
 // Init makes a marble
@@ -82,26 +82,26 @@ func (m *Marble) Init(n int) {
 }
 
 // InitMarbles creates the marbles and puts them at their initial positions
-func InitMarbles() {
-	TheGraph.Marbles = make([]*Marble, 0)
-	for n := 0; n < TheGraph.Params.NMarbles; n++ {
+func (gr *Graph) InitMarbles() {
+	gr.Marbles = make([]*Marble, 0)
+	for n := 0; n < gr.Params.NMarbles; n++ {
 		m := Marble{}
 		m.Init(n)
-		TheGraph.Marbles = append(TheGraph.Marbles, &m)
+		gr.Marbles = append(gr.Marbles, &m)
 	}
-	TheGraph.State.SelectedMarble = -1
+	gr.State.SelectedMarble = -1
 }
 
 // ResetMarbles just calls InitMarbles and GraphMarblesInit
-func ResetMarbles() {
-	InitMarbles()
-	GraphMarblesInit()
+func (gr *Graph) ResetMarbles() {
+	gr.InitMarbles()
+	gr.GraphMarblesInit()
 }
 
 // UpdateMarbles calls update marbles graph and update marbles data
-func UpdateMarbles() bool {
-	if !UpdateMarblesGraph() {
-		UpdateMarblesData()
+func (gr *Graph) UpdateMarbles() bool {
+	if !gr.UpdateMarblesGraph() {
+		gr.UpdateMarblesData()
 	} else {
 		return true
 	}
@@ -109,34 +109,20 @@ func UpdateMarbles() bool {
 }
 
 // UpdateMarblesGraph updates the graph of the marbles
-func UpdateMarblesGraph() bool {
-	if TheGraph.Objects.Graph.IsRendering() || TheGraph.Objects.Graph.IsUpdating() || vp.IsUpdatingNode() {
-		return true
-	}
-	wupdt := TheGraph.Objects.Graph.TopUpdateStart()
-	defer TheGraph.Objects.Graph.TopUpdateEnd(wupdt)
+func (gr *Graph) UpdateMarblesGraph() bool {
+	updt := gr.Objects.Graph.UpdateStart()
 
-	if vp.IsUpdatingNode() {
-		return true
-	}
-
-	updt := TheGraph.Objects.Graph.UpdateStart()
-	defer TheGraph.Objects.Graph.UpdateEnd(updt)
-
-	if vp.IsUpdatingNode() {
-		return true
-	}
-
-	TheGraph.Objects.Graph.SetNeedsFullRender()
-
-	TheGraph.Lines.Graph()
-	for i, m := range TheGraph.Marbles {
-		circle := TheGraph.Objects.Marbles.Child(i).(*svg.Circle)
+	gr.Lines.Graph()
+	for i, m := range gr.Marbles {
+		circle := gr.Objects.Marbles.Child(i).(*svg.Circle)
 		circle.Pos = m.Pos
 		circle.SetProp("fill", m.Color)
 		m.UpdateTrackingLines(circle, i)
 
 	}
+
+	gr.Objects.Graph.UpdateEndRender(updt)
+
 	return false
 }
 
@@ -155,16 +141,10 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 			if TheGraph.State.Step-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
 				TheGraph.Objects.TrackingLines.Child(idx).DeleteChildAtIndex(0, true)
 			}
-			line := svg.AddNewLine(svgGroup, "line", lpos.X, lpos.Y, m.Pos.X, m.Pos.Y)
+			line := svg.NewLine(svgGroup, "line").SetStart(lpos).SetEnd(m.Pos)
 			clr := tls.LineColor
-			if clr == gist.White {
-				switch circle.Prop("fill").(type) {
-				case string:
-					clr, _ = gist.ColorFromName(circle.Prop("fill").(string))
-				case gist.Color:
-					clr = circle.Prop("fill").(gist.Color)
-				}
-
+			if clr == colors.White {
+				clr = grr.Log1(colors.FromAny(circle.Prop("fill"), colors.White))
 			}
 			line.SetProp("stroke", clr)
 		}
@@ -172,22 +152,22 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 }
 
 // UpdateMarblesData updates marbles data
-func UpdateMarblesData() {
-	for _, m := range TheGraph.Marbles {
+func (gr *Graph) UpdateMarblesData() {
+	for _, m := range gr.Marbles {
 
-		m.Vel.Y += float32(TheGraph.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((TheGraph.Vectors.Size.Y * TheGraph.Vectors.Size.X) / 400)
-		m.Vel.X += float32(TheGraph.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((TheGraph.Vectors.Size.Y * TheGraph.Vectors.Size.X) / 400)
-		updtrate := float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
+		m.Vel.Y += float32(gr.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
+		m.Vel.X += float32(gr.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
+		updtrate := float32(gr.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
-		setColor := gist.White
-		for _, ln := range TheGraph.Lines {
+		setColor := colors.White
+		for _, ln := range gr.Lines {
 			if ln.Expr.Val == nil {
 				continue
 			}
 
-			yp := ln.Expr.Eval(float64(m.Pos.X), TheGraph.State.Time, ln.TimesHit)
-			yn := ln.Expr.Eval(float64(npos.X), TheGraph.State.Time, ln.TimesHit)
+			yp := ln.Expr.Eval(float64(m.Pos.X), gr.State.Time, ln.TimesHit)
+			yn := ln.Expr.Eval(float64(npos.X), gr.State.Time, ln.TimesHit)
 
 			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
@@ -198,8 +178,8 @@ func UpdateMarblesData() {
 		}
 
 		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(TheGraph.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
-		if setColor != gist.White {
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(gr.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
+		if setColor != colors.White {
 			m.Color = setColor
 		}
 
@@ -209,7 +189,7 @@ func UpdateMarblesData() {
 // Collided returns true if the marble has collided with the line, and false if the marble has not.
 func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
 	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, TheGraph.State.Time, ln.TimesHit)
-	inBounds := InBounds(npos)
+	inBounds := TheGraph.InBounds(npos)
 	collided := (float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)
 	if collided && graphIf && inBounds {
 		return true
@@ -244,10 +224,10 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 	yr := ln.Expr.Eval(float64(xi)+.01, TheGraph.State.Time, ln.TimesHit) // point to the right of x
 
 	//slp := (yr - yl) / .02
-	angLn := math32.Atan2(float32(yr-yl), 0.02)
+	angLn := mat32.Atan2(float32(yr-yl), 0.02)
 	angN := angLn + math.Pi/2 // + 90 deg
 
-	angI := math32.Atan2(m.Vel.Y, m.Vel.X)
+	angI := mat32.Atan2(m.Vel.Y, m.Vel.X)
 	angII := angI + math.Pi
 
 	angNII := angN - angII
@@ -255,8 +235,8 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 
 	Bounce := ln.Bounce.EvalWithY(float64(npos.X), TheGraph.State.Time, ln.TimesHit, float64(yi))
 
-	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
-	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
+	nvx := float32(Bounce) * (m.Vel.X*mat32.Cos(angR) - m.Vel.Y*mat32.Sin(angR))
+	nvy := float32(Bounce) * (m.Vel.X*mat32.Sin(angR) + m.Vel.Y*mat32.Cos(angR))
 
 	vel := mat32.Vec2{X: nvx, Y: nvy}
 	pos := mat32.Vec2{X: xi, Y: yi}
@@ -265,39 +245,40 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn float64) (mat32.V
 }
 
 // InBounds checks whether a point is in the bounds of the graph
-func InBounds(pos mat32.Vec2) bool {
-	if pos.Y > TheGraph.Vectors.Min.Y && pos.Y < TheGraph.Vectors.Max.Y && pos.X > TheGraph.Vectors.Min.X && pos.X < TheGraph.Vectors.Max.X {
+func (gr *Graph) InBounds(pos mat32.Vec2) bool {
+	if pos.Y > gr.Vectors.Min.Y && pos.Y < gr.Vectors.Max.Y && pos.X > gr.Vectors.Min.X && pos.X < gr.Vectors.Max.X {
 		return true
 	}
 	return false
 }
 
 // RunMarbles runs the marbles for NSteps
-func RunMarbles() {
-	if TheGraph.State.Running {
+func (gr *Graph) RunMarbles() {
+	if gr.State.Running {
 		return
 	}
-	TheGraph.State.Running = true
+	gr.State.Running = true
 	startFrames := 0
 	start := time.Now()
-	for TheGraph.State.Step = 0; TheGraph.State.Running; TheGraph.State.Step++ {
-		if TheGraph.State.Error != nil {
-			TheGraph.State.Running = false
+	for gr.State.Step = 0; gr.State.Running; gr.State.Step++ {
+		if gr.State.Error != nil {
+			gr.State.Running = false
 		}
 		for j := 0; j < TheSettings.NFramesPer-1; j++ {
-			UpdateMarblesData()
-			TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
+			gr.UpdateMarblesData()
+			gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
 		}
-		if UpdateMarbles() {
-			TheGraph.State.Step--
+		if gr.UpdateMarbles() {
+			gr.State.Step--
 			continue
 		}
 		if time.Since(start).Milliseconds() >= 3000 {
-			fpsText.SetText(fmt.Sprintf("FPS: %v", (TheGraph.State.Step-startFrames)/3))
+			_ = startFrames
+			// fpsText.SetText(fmt.Sprintf("FPS: %v", (gr.State.Step-startFrames)/3))
 			start = time.Now()
-			startFrames = TheGraph.State.Step
+			startFrames = gr.State.Step
 		}
-		TheGraph.State.Time += TheGraph.Params.TimeStep.Eval(0, 0)
+		gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
 	}
 }
 
@@ -311,29 +292,28 @@ func (m *Marble) ToggleTrack(idx int) {
 }
 
 // SelectNextMarble selects the next marble in the viewbox
-func SelectNextMarble() {
-	if !TheGraph.State.Running {
-		updt := TheGraph.Objects.Graph.UpdateStart()
-		defer TheGraph.Objects.Graph.UpdateEnd(updt)
+func (gr *Graph) SelectNextMarble() {
+	if !gr.State.Running {
+		updt := gr.Objects.Graph.UpdateStart()
+		defer gr.Objects.Graph.UpdateEndRender(updt)
 	}
-	if TheGraph.State.SelectedMarble != -1 {
-		TheGraph.Objects.Marbles.Child(TheGraph.State.SelectedMarble).SetProp("stroke", "none")
+	if gr.State.SelectedMarble != -1 {
+		gr.Objects.Marbles.Child(gr.State.SelectedMarble).SetProp("stroke", "none")
 	}
-	TheGraph.State.SelectedMarble++
-	if TheGraph.State.SelectedMarble >= len(TheGraph.Marbles) {
-		TheGraph.State.SelectedMarble = 0
+	gr.State.SelectedMarble++
+	if gr.State.SelectedMarble >= len(gr.Marbles) {
+		gr.State.SelectedMarble = 0
 	}
-	newMarble := TheGraph.Marbles[TheGraph.State.SelectedMarble]
-	if !InBounds(newMarble.Pos) { // If the marble isn't in bounds, don't select it
-		for _, m := range TheGraph.Marbles { // If all marbles aren't in bounds, do nothing
-			if InBounds(m.Pos) {
-				SelectNextMarble()
+	newMarble := gr.Marbles[gr.State.SelectedMarble]
+	if !gr.InBounds(newMarble.Pos) { // If the marble isn't in bounds, don't select it
+		for _, m := range gr.Marbles { // If all marbles aren't in bounds, do nothing
+			if gr.InBounds(m.Pos) {
+				gr.SelectNextMarble()
 				return
 			}
 		}
 		return
 
 	}
-	TheGraph.Objects.Marbles.Child(TheGraph.State.SelectedMarble).SetProp("stroke", "yellow")
-	TheGraph.Objects.Graph.SetNeedsFullRender()
+	gr.Objects.Marbles.Child(gr.State.SelectedMarble).SetProp("stroke", "yellow")
 }

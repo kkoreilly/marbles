@@ -221,7 +221,7 @@ func (gr *Graph) AutoGraphAndUpdate() {
 // Run runs the marbles for NSteps
 func (gr *Graph) Run() {
 	gr.AutoSave()
-	go RunMarbles()
+	go gr.RunMarbles()
 }
 
 // Stop stops the marbles
@@ -234,13 +234,8 @@ func (gr *Graph) Step() {
 	if gr.State.Running {
 		return
 	}
-	UpdateMarbles()
+	gr.UpdateMarbles()
 	gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
-}
-
-// SelectNextMarble calls select next marble
-func (gr *Graph) SelectNextMarble() {
-	SelectNextMarble()
 }
 
 // StopSelecting stops selecting current marble
