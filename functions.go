@@ -304,10 +304,10 @@ var DefaultFunctions = Functions{
 	"max": func(args ...interface{}) (interface{}, error) {
 		num := math.Inf(-1)
 		for _, d := range args {
-			switch d.(type) {
+			switch d := d.(type) {
 			case float64:
-				if d.(float64) > num {
-					num = d.(float64)
+				if d > num {
+					num = d
 				}
 			default:
 				return 0, errors.New("function max requires all number values")
@@ -318,10 +318,10 @@ var DefaultFunctions = Functions{
 	"min": func(args ...interface{}) (interface{}, error) {
 		num := math.Inf(1)
 		for _, d := range args {
-			switch d.(type) {
+			switch d := d.(type) {
 			case float64:
-				if d.(float64) < num {
-					num = d.(float64)
+				if d < num {
+					num = d
 				}
 			default:
 				return 0, errors.New("function min requires all number values")
@@ -332,9 +332,9 @@ var DefaultFunctions = Functions{
 	"avg": func(args ...interface{}) (interface{}, error) {
 		var sum float64
 		for _, d := range args {
-			switch d.(type) {
+			switch d := d.(type) {
 			case float64:
-				sum += d.(float64)
+				sum += d
 			default:
 				return 0, errors.New("function avg requires all number values")
 			}

@@ -191,7 +191,7 @@ func (gr *Graph) Graph() {
 	if gr.State.Error != nil {
 		return
 	}
-	ResetMarbles()
+	gr.ResetMarbles()
 	gr.State.Time = 0
 	SetRandNum()
 	if gr.State.Error != nil {
@@ -214,13 +214,13 @@ func (gr *Graph) AutoGraph() {
 // AutoGraphAndUpdate calls autograph, and updates lns and params
 func (gr *Graph) AutoGraphAndUpdate() {
 	gr.AutoGraph()
-	lns.Update()
-	params.UpdateFields()
+	// gr.Lines.Update()
+	// params.UpdateFields()
 }
 
 // Run runs the marbles for NSteps
 func (gr *Graph) Run() {
-	gr.AutoSave()
+	// gr.AutoSave()
 	go gr.RunMarbles()
 }
 

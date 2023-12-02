@@ -79,9 +79,9 @@ func (ex *Expr) Eval(x, t float64, h int) float64 {
 	if HandleError(err) {
 		return 0
 	}
-	switch yi.(type) {
+	switch y := yi.(type) {
 	case float64:
-		return yi.(float64)
+		return y
 	default:
 		TheGraph.Stop()
 		HandleError(fmt.Errorf("expression %v is invalid, it is a %T value, should be a float64 value", ex.Expr, yi))
@@ -109,9 +109,9 @@ func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 	if HandleError(err) {
 		return true
 	}
-	switch ri.(type) {
+	switch r := ri.(type) {
 	case bool:
-		return ri.(bool)
+		return r
 	default:
 		TheGraph.Stop()
 		HandleError(fmt.Errorf("expression %v is invalid, it is a %T value, should be a bool value", ex.Expr, ri))
