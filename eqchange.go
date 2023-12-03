@@ -73,12 +73,14 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	slices.SortFunc(functionKeys, func(a, b string) int {
 		return cmp.Compare(len(a), len(b))
 	})
+	isZeroArg := map[string]bool{}
 	for _, name := range functionKeys { // to prevent issues with the equation, all functions are turned into zfunctionindexz. z is just a letter that isn't used in anything else.
 		function := functions[name]
 		newName := fmt.Sprintf("z%vz", i)
 		expr = strings.ReplaceAll(expr, name, newName)
 		functionsToAdd[newName] = function
 		functionsToDelete = append(functionsToDelete, name)
+		isZeroArg[newName] = slices.Contains(ZeroArgFunctions, name)
 		i++
 	}
 	for name, function := range functionsToAdd {
@@ -88,7 +90,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 		delete(functions, name)
 	}
 	for fname := range functions { // if there is a function name and no parentheses after, put parentheses around the next character, or directly after it if it is a zero-arg function
-		if slices.Contains(ZeroArgFunctions, fname) {
+		if isZeroArg[fname] {
 			expr = strings.ReplaceAll(expr, fname, fname+"()")
 			expr = strings.ReplaceAll(expr, fname+"()()", fname+"()")
 		}
