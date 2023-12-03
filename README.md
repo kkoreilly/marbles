@@ -6,7 +6,7 @@ Graph equations and run marbles on them. Based on [desmos.com](https://desmos.co
 
 To install run 
 ``` bash
-$ go install github.com/kplat1/marbles@latest
+$ go install github.com/kkoreilly/marbles@latest
 ```
 Once you have done this you should be able to launch marbles by just doing
 ```bash
@@ -16,6 +16,6 @@ If the install does not work, check the [GoKi Install Page](https://github.com/g
 
 If there is a new version of marbles released, just run this command again to update:
 ``` bash
-$ go install github.com/kplat1/marbles@latest
+$ go install github.com/kkoreilly/marbles@latest
 ```
 
