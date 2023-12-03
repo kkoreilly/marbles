@@ -12,9 +12,11 @@ import (
 // Expr is an expression
 type Expr struct {
 	// Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)
-	Expr   string                         `label:""`
-	Val    *govaluate.EvaluableExpression `view:"-" json:"-"`
-	Params map[string]interface{}         `view:"-" json:"-"`
+	Expr string `width:"40" label:""`
+
+	Val *govaluate.EvaluableExpression `view:"-" json:"-"`
+
+	Params map[string]interface{} `view:"-" json:"-"`
 }
 
 // factorial variables

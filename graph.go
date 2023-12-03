@@ -20,14 +20,23 @@ import (
 )
 
 // Graph contains the lines and parameters of a graph
-type Graph struct { //gti:add
-	Params    Params    `view:"-" desc:"the parameters for updating the marbles"`
-	Lines     Lines     `view:"-" desc:"the lines of the graph -- can have any number"`
-	Marbles   []*Marble `view:"-" json:"-"`
-	State     State     `view:"-" json:"-"`
+type Graph struct {
+
+	// the parameters for updating the marbles
+	Params Params `view:"-"`
+
+	// the lines of the graph -- can have any number
+	Lines Lines `view:"-"`
+
+	Marbles []*Marble `view:"-" json:"-"`
+
+	State State `view:"-" json:"-"`
+
 	Functions Functions `view:"-" json:"-"`
-	Vectors   Vectors   `view:"-" json:"-"`
-	Objects   Objects   `view:"-" json:"-"`
+
+	Vectors Vectors `view:"-" json:"-"`
+
+	Objects Objects `view:"-" json:"-"`
 }
 
 // State has the state of the graph
@@ -43,41 +52,80 @@ type State struct {
 
 // Line represents one line with an equation etc
 type Line struct {
-	Expr     Expr       `width:"70" desc:"Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)"`
-	GraphIf  Expr       `width:"50" desc:"Graph this line if this condition is true. Ex: x>3"`
-	Bounce   Expr       `width:"30" min:"0" max:"2" step:".05" desc:"how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all"`
-	Colors   LineColors `desc:"Line color and colorswitch" view:"no-inline"`
-	TimesHit int        `view:"-" json:"-"`
-	Changes  bool       `view:"-" json:"-"`
+
+	// Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)
+	Expr Expr
+
+	// Graph this line if this condition is true. Ex: x>3
+	GraphIf Expr
+
+	// how bouncy the line is -- 1 = perfectly bouncy, 0 = no bounce at all
+	Bounce Expr `min:"0" max:"2" step:".05"`
+
+	// Line color and colorswitch
+	Colors LineColors ` view:"no-inline"`
+
+	TimesHit int `view:"-" json:"-"`
+
+	Changes bool `view:"-" json:"-"`
 }
 
 // Params is the parameters of the graph
 type Params struct {
-	NMarbles         int              `min:"1" max:"10000" step:"10" desc:"number of marbles"`
-	MarbleStartX     Expr             `width:"100" desc:"Marble start position, x"`
-	MarbleStartY     Expr             `width:"100" desc:"Marble start position, y"`
-	StartVelY        Param            `label:"Starting Velocity Y" desc:"Starting velocity of the marbles, y"`
-	StartVelX        Param            `label:"Starting Velocity X" desc:"Starting velocity of the marbles, x"`
-	UpdtRate         Param            `desc:"how fast to move along velocity vector -- lower = smoother, more slow-mo"`
-	TimeStep         Param            `desc:"how fast time increases"`
-	YForce           Param            `label:"Y Force (Gravity)" desc:"how fast it accelerates down"`
-	XForce           Param            `label:"X Force (Wind)" desc:"how fast the marbles move side to side without collisions, set to 0 for no movement"`
-	CenterX          Param            `label:"Graph Center X" desc:"the center point of the graph, x"`
-	CenterY          Param            `label:"Graph Center Y" desc:"the center point of the graph, y"`
+
+	// Number of marbles
+	NMarbles int `min:"1" max:"10000" step:"10" label:"Number of marbles"`
+
+	// Marble horizontal start position
+	MarbleStartX Expr
+
+	// Marble vertical start position
+	MarbleStartY Expr
+
+	// Starting horizontal velocity of the marbles
+	StartVelY Param `label:"Starting velocity y"`
+
+	// Starting vertical velocity of the marbles
+	StartVelX Param `label:"Starting velocity x"`
+
+	// how fast to move along velocity vector -- lower = smoother, more slow-mo
+	UpdateRate Param
+
+	// how fast time increases
+	TimeStep Param
+
+	// how fast it accelerates down
+	YForce Param `label:"Y Force (Gravity)"`
+
+	// how fast the marbles move side to side without collisions, set to 0 for no movement
+	XForce Param `label:"X Force (Wind)"`
+
+	// the center point of the graph, x
+	CenterX Param `label:"Graph Center X"`
+
+	// the center point of the graph, y
+	CenterY Param `label:"Graph Center Y"`
+
 	TrackingSettings TrackingSettings `view:"inline"`
 }
 
 // Param is the type of certain parameters that can change over time and x
 type Param struct {
-	Expr    Expr    `width:"100" label:""`
-	Changes bool    `view:"-"`
+	Expr Expr `label:""`
+
+	Changes bool `view:"-"`
+
 	BaseVal float64 `view:"-"`
 }
 
 // LineColors contains the color and colorswitch for a line
 type LineColors struct {
-	Color       color.RGBA `desc:"color to draw the line in"`
-	ColorSwitch color.RGBA `desc:"Switch the color of the marble that hits this line"`
+
+	// color to draw the line in
+	Color color.RGBA
+
+	// Switch the color of the marble that hits this line
+	ColorSwitch color.RGBA
 }
 
 // Vectors contains the size and increment of the graph
@@ -326,7 +374,7 @@ func (gr *Graph) CompileExprs() {
 func (gr *Graph) CompileParams() {
 	gr.Params.StartVelY.Compile()
 	gr.Params.StartVelX.Compile()
-	gr.Params.UpdtRate.Compile()
+	gr.Params.UpdateRate.Compile()
 	gr.Params.YForce.Compile()
 	gr.Params.XForce.Compile()
 	gr.Params.TimeStep.Compile()
@@ -514,7 +562,7 @@ func (pr *Params) Defaults() {
 	pr.MarbleStartY = TheSettings.GraphDefaults.MarbleStartY
 	pr.StartVelY = TheSettings.GraphDefaults.StartVelY
 	pr.StartVelX = TheSettings.GraphDefaults.StartVelX
-	pr.UpdtRate = TheSettings.GraphDefaults.UpdtRate
+	pr.UpdateRate = TheSettings.GraphDefaults.UpdateRate
 	pr.YForce = TheSettings.GraphDefaults.YForce
 	pr.XForce = TheSettings.GraphDefaults.XForce
 	pr.TimeStep = TheSettings.GraphDefaults.TimeStep
@@ -530,7 +578,7 @@ func (pr *Params) BasicDefaults() {
 	pr.MarbleStartY.Expr = "10-2n/nmarbles()"
 	pr.StartVelY.Expr.Expr = "0"
 	pr.StartVelX.Expr.Expr = "0"
-	pr.UpdtRate.Expr.Expr = ".02"
+	pr.UpdateRate.Expr.Expr = ".02"
 	pr.TimeStep.Expr.Expr = "0.01"
 	pr.YForce.Expr.Expr = "-0.1"
 	pr.XForce.Expr.Expr = "0"

@@ -8,15 +8,20 @@ import (
 
 // Settings are the settings the app has
 type Settings struct {
-	LineDefaults   LineDefaults   `view:"no-inline" label:"Line Defaults"`
-	GraphDefaults  Params         `view:"no-inline" label:"Graph Param Defaults"`
+	LineDefaults LineDefaults `view:"no-inline" label:"Line Defaults"`
+
+	GraphDefaults Params `view:"no-inline" label:"Graph Param Defaults"`
+
 	MarbleSettings MarbleSettings `view:"inline" label:"Marble Settings"`
-	GraphSize      int            `label:"Graph Size" min:"100" max:"800"`
-	GraphInc       int            `label:"Line quality in n per x" min:"1" max:"100"`
-	NFramesPer     int            `label:"Number of times to update the marbles each render" min:"1" max:"100"`
-	LineFontSize   int            `label:"Line Font Size"`
-	ConfirmQuit    bool           `label:"Confirm App Close"`
-	PrettyJSON     bool           `label:"Save formatted JSON"`
+
+	GraphSize int `label:"Graph Size" min:"100" max:"800"`
+
+	GraphInc int `label:"Line quality in n per x" min:"1" max:"100"`
+
+	NFramesPer   int  `label:"Number of times to update the marbles each render" min:"1" max:"100"`
+	LineFontSize int  `label:"Line Font Size"`
+	ConfirmQuit  bool `label:"Confirm App Close"`
+	PrettyJSON   bool `label:"Save formatted JSON"`
 }
 
 // MarbleSettings are the settings for the marbles in the app
@@ -35,10 +40,12 @@ type LineDefaults struct {
 
 // TrackingSettings contains the tracking line settings
 type TrackingSettings struct {
-	TrackByDefault  bool
+	TrackByDefault bool
+
 	NTrackingFrames int `min:"0" step:"10"`
-	Accuracy        int `min:"1" max:"100" step:"5"`
-	LineColor       color.RGBA
+
+	Accuracy  int `min:"1" max:"100" step:"5"`
+	LineColor color.RGBA
 }
 
 // TheSettings is the instance of settings

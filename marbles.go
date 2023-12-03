@@ -158,7 +158,7 @@ func (gr *Graph) UpdateMarblesData() {
 
 		m.Vel.Y += float32(gr.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
 		m.Vel.X += float32(gr.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
-		updtrate := float32(gr.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
+		updtrate := float32(gr.Params.UpdateRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
 		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
 		ppos := m.Pos
 		setColor := colors.White
@@ -183,7 +183,7 @@ func (gr *Graph) UpdateMarblesData() {
 		}
 
 		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(gr.Params.UpdtRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
+		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(gr.Params.UpdateRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
 		if setColor != colors.White {
 			m.Color = setColor
 		}
