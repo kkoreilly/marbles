@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"strings"
 
 	"github.com/Knetic/govaluate"
@@ -24,6 +25,17 @@ func NewFuncV[I, O any](f func(...I) O) govaluate.ExpressionFunction {
 			newArgs = append(newArgs, a)
 		}
 		res := f(newArgs...)
+		return res, nil
+	}
+}
+
+// NewFunc0 makes a function that can be used in expressions from a function that takes no arguments and returns a single value.
+func NewFunc0[O any](f func() O) govaluate.ExpressionFunction {
+	return func(args ...any) (any, error) {
+		if len(args) != 0 {
+			return nil, fmt.Errorf("evaluation error: function of type %T wants 0 arguments, not %v arguments", f, len(args))
+		}
+		res := f()
 		return res, nil
 	}
 }
@@ -196,6 +208,15 @@ var DefaultFunctions = Functions{
 			return val1
 		}
 		return val2
+	}),
+	"rand": NewFunc1(func(x float64) float64 {
+		return x * rand.Float64()
+	}),
+	"nmarbles": NewFunc0(func() float64 {
+		return float64(TheGraph.Params.NMarbles)
+	}),
+	"inf": NewFunc0(func() float64 {
+		return math.Inf(1)
 	}),
 }
 
