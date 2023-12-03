@@ -118,30 +118,79 @@ var DefaultFunctions = Functions{
 	"sinh": NewFunc1(math.Sinh),
 	"cosh": NewFunc1(math.Cosh),
 	"tanh": NewFunc1(math.Tanh),
-	// "sech":    NewFunc1(math.Sech),
-	// "csch":    NewFunc1(math.Csch),
-	// "coth":    NewFunc1(math.Coth),
+	"sech": NewFunc1(func(x float64) float64 {
+		return 1 / math.Cosh(x)
+	}),
+	"csch": NewFunc1(func(x float64) float64 {
+		return 1 / math.Sinh(x)
+	}),
+	"coth": NewFunc1(func(x float64) float64 {
+		return 1 / math.Tanh(x)
+	}),
 	"arcsinh": NewFunc1(math.Asinh),
 	"arccosh": NewFunc1(math.Acosh),
 	"arctanh": NewFunc1(math.Atanh),
-	// "arcsech": NewFunc1(math.Asech),
-	// "arccsch": NewFunc1(math.Acsch),
-	// "arccoth": NewFunc1(math.Acoth),
+	"arcsech": NewFunc1(func(x float64) float64 {
+		return math.Acosh(1 / x)
+	}),
+	"arccsch": NewFunc1(func(x float64) float64 {
+		return math.Asinh(1 / x)
+	}),
+	"arccoth": NewFunc1(func(x float64) float64 {
+		return math.Atanh(1 / x)
+	}),
 	"ln": NewFunc1(math.Log),
-	// "log": NewFunc2(math.Log),
+	"log": NewFunc2(func(x, base float64) float64 {
+		return math.Log(x) / math.Log(base)
+	}),
 	"abs": NewFunc1(math.Abs),
 	"pow": NewFunc2(math.Pow),
 	"exp": NewFunc1(math.Exp),
 	"mod": NewFunc2(math.Mod),
-	// "fact":  NewFunc1(math.Fact),
+	"fact": NewFunc1(func(x float64) float64 {
+		return math.Gamma(x + 1)
+	}),
 	"floor": NewFunc1(math.Floor),
 	"ceil":  NewFunc1(math.Ceil),
 	"round": NewFunc1(math.Round),
 	"sqrt":  NewFunc1(math.Sqrt),
 	"cbrt":  NewFunc1(math.Cbrt),
-	// "min":   NewFuncV(math.Min),
-	// "max":   NewFuncV(math.Max),
-	// "avg":   NewFuncV(math.Avg),
+	"min": NewFuncV(func(v ...float64) any {
+		if len(v) == 0 {
+			return 0
+		}
+		min := v[0]
+		for i := 1; i < len(v); i++ {
+			x := v[i]
+			if x < min {
+				min = x
+			}
+		}
+		return min
+	}),
+	"max": NewFuncV(func(v ...float64) any {
+		if len(v) == 0 {
+			return 0
+		}
+		max := v[0]
+		for i := 1; i < len(v); i++ {
+			x := v[i]
+			if x > max {
+				max = x
+			}
+		}
+		return max
+	}),
+	"avg": NewFuncV(func(v ...float64) any {
+		if len(v) == 0 {
+			return 0
+		}
+		var total float64
+		for _, x := range v {
+			total += x
+		}
+		return total / float64(len(v))
+	}),
 	"if": NewFunc3(func(condition bool, val1, val2 any) any {
 		if condition {
 			return val1
