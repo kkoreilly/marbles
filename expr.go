@@ -11,7 +11,7 @@ import (
 // Expr is an expression
 type Expr struct {
 	// Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)
-	Expr string `width:"40" label:""`
+	Expr string `width:"30" label:""`
 
 	Val *govaluate.EvaluableExpression `view:"-" json:"-"`
 

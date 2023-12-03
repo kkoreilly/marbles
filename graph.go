@@ -66,7 +66,7 @@ type Line struct {
 	Bounce Expr `min:"0" max:"2" step:".05"`
 
 	// Line color and colorswitch
-	Colors LineColors ` view:"no-inline"`
+	Colors LineColors
 
 	TimesHit int `view:"-" json:"-"`
 
