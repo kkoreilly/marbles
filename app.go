@@ -98,7 +98,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.Root = &gr.Objects.SVG.Root
 	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
 	gr.Objects.Root.ViewBox.Size = gr.Vectors.Size
-	gr.Objects.Root.SetProp("stroke-width", "0.1dot")
+	gr.Objects.Root.SetProp("stroke-width", "0.1dp")
 	gr.Objects.Root.SetProp("fill", colors.Scheme.Surface)
 
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
@@ -126,6 +126,9 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root, "marbles")
 	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root, "coords")
 	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root, "tracking-lines")
+
+	gr.Objects.Coords.SetProp("stroke-width", "0.05dp")
+	gr.Objects.TrackingLines.SetProp("stroke-width", "0.05dp")
 
 	// TheGraph.Objects.Graph.ViewBox.Min = TheGraph.Vectors.Min
 	// TheGraph.Objects.Graph.ViewBox.Size = TheGraph.Vectors.Size
