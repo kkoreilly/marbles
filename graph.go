@@ -20,7 +20,7 @@ import (
 )
 
 // Graph contains the lines and parameters of a graph
-type Graph struct {
+type Graph struct { //gti:add
 
 	// the parameters for updating the marbles
 	Params Params `view:"-"`
@@ -70,8 +70,8 @@ type Line struct {
 	Changes bool `view:"-" json:"-"`
 }
 
-// Params is the parameters of the graph
-type Params struct {
+// Params are the parameters of the graph
+type Params struct { //gti:add
 
 	// Number of marbles
 	NMarbles int `min:"1" max:"10000" step:"10" label:"Number of marbles"`
@@ -95,18 +95,18 @@ type Params struct {
 	TimeStep Param
 
 	// how fast it accelerates down
-	YForce Param `label:"Y Force (Gravity)"`
+	YForce Param `label:"Y force (Gravity)"`
 
 	// how fast the marbles move side to side without collisions, set to 0 for no movement
-	XForce Param `label:"X Force (Wind)"`
+	XForce Param `label:"X force (Wind)"`
 
 	// the center point of the graph, x
-	CenterX Param `label:"Graph Center X"`
+	CenterX Param `label:"Graph center x"`
 
 	// the center point of the graph, y
-	CenterY Param `label:"Graph Center Y"`
+	CenterY Param `label:"Graph center y"`
 
-	TrackingSettings TrackingSettings `view:"inline"`
+	TrackingSettings TrackingSettings
 }
 
 // Param is the type of certain parameters that can change over time and x
