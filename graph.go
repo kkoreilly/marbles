@@ -259,7 +259,6 @@ func (gr *Graph) Graph() { //gti:add
 	}
 	gr.ResetMarbles()
 	gr.State.Time = 0
-	SetRandNum()
 	if gr.State.Error != nil {
 		return
 	}

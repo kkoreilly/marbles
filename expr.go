@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/Knetic/govaluate"
 	"gonum.org/v1/gonum/integrate"
@@ -18,13 +17,6 @@ type Expr struct {
 
 	Params map[string]any `view:"-" json:"-"`
 }
-
-// factorial variables
-const lim = 100
-
-var randNum float64
-
-var facts [lim]float64
 
 // Integrate returns the integral of an expression
 func (ex *Expr) Integrate(min, max float64, h int) float64 {
@@ -119,25 +111,4 @@ func (ex *Expr) EvalBool(x, y, t float64, h int) bool {
 		HandleError(fmt.Errorf("expression %v is invalid, it is a %T value, should be a bool value", ex.Expr, ri))
 		return false
 	}
-}
-
-// FactorialMemoization is used to take the factorial for the fact() function
-func FactorialMemoization(n int) (res float64) {
-	if n < 0 {
-		return 1
-	}
-	if facts[n] != 0 {
-		res = facts[n]
-		return res
-	}
-	if n > 0 {
-		res = float64(n) * FactorialMemoization(n-1)
-		return res
-	}
-	return 1
-}
-
-// SetRandNum sets the random number used in the rand(v) function
-func SetRandNum() {
-	randNum = rand.Float64()
 }
