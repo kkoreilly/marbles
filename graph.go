@@ -86,28 +86,28 @@ type Params struct { //gti:add
 	MarbleStartY Expr
 
 	// Starting horizontal velocity of the marbles
-	StartVelY Param `label:"Starting velocity y"`
+	StartVelY Param `view:"inline" label:"Starting velocity y"`
 
 	// Starting vertical velocity of the marbles
-	StartVelX Param `label:"Starting velocity x"`
+	StartVelX Param `view:"inline" label:"Starting velocity x"`
 
 	// how fast to move along velocity vector -- lower = smoother, more slow-mo
-	UpdateRate Param
+	UpdateRate Param `view:"inline"`
 
 	// how fast time increases
-	TimeStep Param
+	TimeStep Param `view:"inline"`
 
 	// how fast it accelerates down
-	YForce Param `label:"Y force (Gravity)"`
+	YForce Param `view:"inline" label:"Y force (Gravity)"`
 
 	// how fast the marbles move side to side without collisions, set to 0 for no movement
-	XForce Param `label:"X force (Wind)"`
+	XForce Param `view:"inline" label:"X force (Wind)"`
 
 	// the center point of the graph, x
-	CenterX Param `label:"Graph center x"`
+	CenterX Param `view:"inline" label:"Graph center x"`
 
 	// the center point of the graph, y
-	CenterY Param `label:"Graph center y"`
+	CenterY Param `view:"inline" label:"Graph center y"`
 
 	TrackingSettings TrackingSettings
 }
