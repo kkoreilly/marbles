@@ -15,7 +15,7 @@ type Functions map[string]govaluate.ExpressionFunction
 
 // DefaultFunctions are the default functions that can be used in expressions
 var DefaultFunctions = Functions{
-	"cos": func(args ...interface{}) (interface{}, error) {
+	"cos": func(args ...any) (any, error) {
 		err := CheckArgs("cos", args, "float64")
 		if err != nil {
 			return 0, err
@@ -23,7 +23,7 @@ var DefaultFunctions = Functions{
 		y := math.Cos(args[0].(float64))
 		return y, nil
 	},
-	"sin": func(args ...interface{}) (interface{}, error) {
+	"sin": func(args ...any) (any, error) {
 		err := CheckArgs("sin", args, "float64")
 		if err != nil {
 			return 0, err
@@ -31,7 +31,7 @@ var DefaultFunctions = Functions{
 		y := math.Sin(args[0].(float64))
 		return y, nil
 	},
-	"tan": func(args ...interface{}) (interface{}, error) {
+	"tan": func(args ...any) (any, error) {
 		err := CheckArgs("tan", args, "float64")
 		if err != nil {
 			return 0, err
@@ -39,7 +39,7 @@ var DefaultFunctions = Functions{
 		y := math.Tan(args[0].(float64))
 		return y, nil
 	},
-	"pow": func(args ...interface{}) (interface{}, error) {
+	"pow": func(args ...any) (any, error) {
 		err := CheckArgs("pow", args, "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -47,7 +47,7 @@ var DefaultFunctions = Functions{
 		y := math.Pow(args[0].(float64), args[1].(float64))
 		return y, nil
 	},
-	"abs": func(args ...interface{}) (interface{}, error) {
+	"abs": func(args ...any) (any, error) {
 		err := CheckArgs("abs", args, "float64")
 		if err != nil {
 			return 0, err
@@ -55,7 +55,7 @@ var DefaultFunctions = Functions{
 		y := math.Abs(args[0].(float64))
 		return y, nil
 	},
-	"fact": func(args ...interface{}) (interface{}, error) {
+	"fact": func(args ...any) (any, error) {
 		err := CheckArgs("fact", args, "float64")
 		if err != nil {
 			return 0, err
@@ -63,7 +63,7 @@ var DefaultFunctions = Functions{
 		y := FactorialMemoization(int(args[0].(float64)))
 		return y, nil
 	},
-	"ceil": func(args ...interface{}) (interface{}, error) {
+	"ceil": func(args ...any) (any, error) {
 		err := CheckArgs("ceil", args, "float64")
 		if err != nil {
 			return 0, err
@@ -71,7 +71,7 @@ var DefaultFunctions = Functions{
 		y := math.Ceil(args[0].(float64))
 		return y, nil
 	},
-	"floor": func(args ...interface{}) (interface{}, error) {
+	"floor": func(args ...any) (any, error) {
 		err := CheckArgs("floor", args, "float64")
 		if err != nil {
 			return 0, err
@@ -79,7 +79,7 @@ var DefaultFunctions = Functions{
 		y := math.Floor(args[0].(float64))
 		return y, nil
 	},
-	"mod": func(args ...interface{}) (interface{}, error) {
+	"mod": func(args ...any) (any, error) {
 		err := CheckArgs("mod", args, "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -87,7 +87,7 @@ var DefaultFunctions = Functions{
 		y := math.Mod(args[0].(float64), args[1].(float64))
 		return y, nil
 	},
-	"rand": func(args ...interface{}) (interface{}, error) {
+	"rand": func(args ...any) (any, error) {
 		err := CheckArgs("rand", args, "float64")
 		if err != nil {
 			return 0, err
@@ -95,7 +95,7 @@ var DefaultFunctions = Functions{
 		y := randNum * args[0].(float64)
 		return y, nil
 	},
-	"sqrt": func(args ...interface{}) (interface{}, error) {
+	"sqrt": func(args ...any) (any, error) {
 		err := CheckArgs("sqrt", args, "float64")
 		if err != nil {
 			return 0, err
@@ -103,7 +103,7 @@ var DefaultFunctions = Functions{
 		y := math.Sqrt(args[0].(float64))
 		return y, nil
 	},
-	"ln": func(args ...interface{}) (interface{}, error) {
+	"ln": func(args ...any) (any, error) {
 		err := CheckArgs("ln", args, "float64")
 		if err != nil {
 			return 0, err
@@ -111,7 +111,7 @@ var DefaultFunctions = Functions{
 		y := math.Log(args[0].(float64))
 		return y, nil
 	},
-	"log": func(args ...interface{}) (interface{}, error) {
+	"log": func(args ...any) (any, error) {
 		err := CheckArgs("log", args, "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -119,7 +119,7 @@ var DefaultFunctions = Functions{
 		y := math.Log(args[0].(float64)) / math.Log(args[1].(float64)) // log(v, b) = ln(v) / ln(b)
 		return y, nil
 	},
-	"csc": func(args ...interface{}) (interface{}, error) {
+	"csc": func(args ...any) (any, error) {
 		err := CheckArgs("csc", args, "float64")
 		if err != nil {
 			return 0, err
@@ -127,7 +127,7 @@ var DefaultFunctions = Functions{
 		y := 1 / math.Sin(args[0].(float64))
 		return y, nil
 	},
-	"sec": func(args ...interface{}) (interface{}, error) {
+	"sec": func(args ...any) (any, error) {
 		err := CheckArgs("sec", args, "float64")
 		if err != nil {
 			return 0, err
@@ -135,7 +135,7 @@ var DefaultFunctions = Functions{
 		y := 1 / math.Cos(args[0].(float64))
 		return y, nil
 	},
-	"cot": func(args ...interface{}) (interface{}, error) {
+	"cot": func(args ...any) (any, error) {
 		err := CheckArgs("cot", args, "float64")
 		if err != nil {
 			return 0, err
@@ -143,7 +143,7 @@ var DefaultFunctions = Functions{
 		y := 1 / math.Tan(args[0].(float64))
 		return y, nil
 	},
-	"csch": func(args ...interface{}) (interface{}, error) {
+	"csch": func(args ...any) (any, error) {
 		err := CheckArgs("csch", args, "float64")
 		if err != nil {
 			return 0, err
@@ -151,7 +151,7 @@ var DefaultFunctions = Functions{
 		y := 1 / math.Sinh(args[0].(float64))
 		return y, nil
 	},
-	"sech": func(args ...interface{}) (interface{}, error) {
+	"sech": func(args ...any) (any, error) {
 		err := CheckArgs("sech", args, "float64")
 		if err != nil {
 			return 0, err
@@ -159,7 +159,7 @@ var DefaultFunctions = Functions{
 		y := 1 / math.Cosh(args[0].(float64))
 		return y, nil
 	},
-	"coth": func(args ...interface{}) (interface{}, error) {
+	"coth": func(args ...any) (any, error) {
 		err := CheckArgs("coth", args, "float64")
 		if err != nil {
 			return 0, err
@@ -167,7 +167,7 @@ var DefaultFunctions = Functions{
 		y := 1 / math.Tanh(args[0].(float64))
 		return y, nil
 	},
-	"if": func(args ...interface{}) (interface{}, error) {
+	"if": func(args ...any) (any, error) {
 		err := CheckArgs("if", args, "bool", "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -177,7 +177,7 @@ var DefaultFunctions = Functions{
 		}
 		return args[2].(float64), nil
 	},
-	"arcsin": func(args ...interface{}) (interface{}, error) {
+	"arcsin": func(args ...any) (any, error) {
 		err := CheckArgs("arcsin", args, "float64")
 		if err != nil {
 			return 0, err
@@ -185,7 +185,7 @@ var DefaultFunctions = Functions{
 		y := math.Asin(args[0].(float64))
 		return y, nil
 	},
-	"arccos": func(args ...interface{}) (interface{}, error) {
+	"arccos": func(args ...any) (any, error) {
 		err := CheckArgs("arccos", args, "float64")
 		if err != nil {
 			return 0, err
@@ -193,7 +193,7 @@ var DefaultFunctions = Functions{
 		y := math.Acos(args[0].(float64))
 		return y, nil
 	},
-	"arctan": func(args ...interface{}) (interface{}, error) {
+	"arctan": func(args ...any) (any, error) {
 		err := CheckArgs("arctan", args, "float64")
 		if err != nil {
 			return 0, err
@@ -201,7 +201,7 @@ var DefaultFunctions = Functions{
 		y := math.Atan(args[0].(float64))
 		return y, nil
 	},
-	"sinh": func(args ...interface{}) (interface{}, error) {
+	"sinh": func(args ...any) (any, error) {
 		err := CheckArgs("sinh", args, "float64")
 		if err != nil {
 			return 0, err
@@ -209,7 +209,7 @@ var DefaultFunctions = Functions{
 		y := math.Sinh(args[0].(float64))
 		return y, nil
 	},
-	"cosh": func(args ...interface{}) (interface{}, error) {
+	"cosh": func(args ...any) (any, error) {
 		err := CheckArgs("cosh", args, "float64")
 		if err != nil {
 			return 0, err
@@ -217,7 +217,7 @@ var DefaultFunctions = Functions{
 		y := math.Cosh(args[0].(float64))
 		return y, nil
 	},
-	"tanh": func(args ...interface{}) (interface{}, error) {
+	"tanh": func(args ...any) (any, error) {
 		err := CheckArgs("tanh", args, "float64")
 		if err != nil {
 			return 0, err
@@ -225,7 +225,7 @@ var DefaultFunctions = Functions{
 		y := math.Tanh(args[0].(float64))
 		return y, nil
 	},
-	"arcsinh": func(args ...interface{}) (interface{}, error) {
+	"arcsinh": func(args ...any) (any, error) {
 		err := CheckArgs("arcsinh", args, "float64")
 		if err != nil {
 			return 0, err
@@ -233,7 +233,7 @@ var DefaultFunctions = Functions{
 		y := math.Asinh(args[0].(float64))
 		return y, nil
 	},
-	"arccosh": func(args ...interface{}) (interface{}, error) {
+	"arccosh": func(args ...any) (any, error) {
 		err := CheckArgs("arccosh", args, "float64")
 		if err != nil {
 			return 0, err
@@ -241,7 +241,7 @@ var DefaultFunctions = Functions{
 		y := math.Acosh(args[0].(float64))
 		return y, nil
 	},
-	"arctanh": func(args ...interface{}) (interface{}, error) {
+	"arctanh": func(args ...any) (any, error) {
 		err := CheckArgs("arctanh", args, "float64")
 		if err != nil {
 			return 0, err
@@ -249,7 +249,7 @@ var DefaultFunctions = Functions{
 		y := math.Atanh(args[0].(float64))
 		return y, nil
 	},
-	"arcsec": func(args ...interface{}) (interface{}, error) {
+	"arcsec": func(args ...any) (any, error) {
 		err := CheckArgs("arcsec", args, "float64")
 		if err != nil {
 			return 0, err
@@ -257,7 +257,7 @@ var DefaultFunctions = Functions{
 		y := math.Acos(1 / args[0].(float64))
 		return y, nil
 	},
-	"arccsc": func(args ...interface{}) (interface{}, error) {
+	"arccsc": func(args ...any) (any, error) {
 		err := CheckArgs("arccsc", args, "float64")
 		if err != nil {
 			return 0, err
@@ -265,7 +265,7 @@ var DefaultFunctions = Functions{
 		y := math.Asin(1 / args[0].(float64))
 		return y, nil
 	},
-	"arccot": func(args ...interface{}) (interface{}, error) {
+	"arccot": func(args ...any) (any, error) {
 		err := CheckArgs("arccot", args, "float64")
 		if err != nil {
 			return 0, err
@@ -277,7 +277,7 @@ var DefaultFunctions = Functions{
 
 		return y, nil
 	},
-	"arcsech": func(args ...interface{}) (interface{}, error) {
+	"arcsech": func(args ...any) (any, error) {
 		err := CheckArgs("arcsech", args, "float64")
 		if err != nil {
 			return 0, err
@@ -285,7 +285,7 @@ var DefaultFunctions = Functions{
 		y := math.Acosh(1 / args[0].(float64))
 		return y, nil
 	},
-	"arccsch": func(args ...interface{}) (interface{}, error) {
+	"arccsch": func(args ...any) (any, error) {
 		err := CheckArgs("arccsch", args, "float64")
 		if err != nil {
 			return 0, err
@@ -293,7 +293,7 @@ var DefaultFunctions = Functions{
 		y := math.Asinh(1 / args[0].(float64))
 		return y, nil
 	},
-	"arccoth": func(args ...interface{}) (interface{}, error) {
+	"arccoth": func(args ...any) (any, error) {
 		err := CheckArgs("arccoth", args, "float64")
 		if err != nil {
 			return 0, err
@@ -301,7 +301,7 @@ var DefaultFunctions = Functions{
 		y := math.Atanh(1 / args[0].(float64))
 		return y, nil
 	},
-	"max": func(args ...interface{}) (interface{}, error) {
+	"max": func(args ...any) (any, error) {
 		num := math.Inf(-1)
 		for _, d := range args {
 			switch d := d.(type) {
@@ -315,7 +315,7 @@ var DefaultFunctions = Functions{
 		}
 		return num, nil
 	},
-	"min": func(args ...interface{}) (interface{}, error) {
+	"min": func(args ...any) (any, error) {
 		num := math.Inf(1)
 		for _, d := range args {
 			switch d := d.(type) {
@@ -329,7 +329,7 @@ var DefaultFunctions = Functions{
 		}
 		return num, nil
 	},
-	"avg": func(args ...interface{}) (interface{}, error) {
+	"avg": func(args ...any) (any, error) {
 		var sum float64
 		for _, d := range args {
 			switch d := d.(type) {
@@ -341,7 +341,7 @@ var DefaultFunctions = Functions{
 		}
 		return sum / float64(len(args)), nil
 	},
-	"nmarbles": func(args ...interface{}) (interface{}, error) {
+	"nmarbles": func(args ...any) (any, error) {
 		err := CheckArgs("nmarbles", args)
 		if err != nil {
 			return 0, err
@@ -349,7 +349,7 @@ var DefaultFunctions = Functions{
 		y := float64(TheGraph.Params.NMarbles)
 		return y, nil
 	},
-	"inf": func(args ...interface{}) (interface{}, error) {
+	"inf": func(args ...any) (any, error) {
 		err := CheckArgs("inf", args)
 		if err != nil {
 			return 0, err
@@ -359,7 +359,7 @@ var DefaultFunctions = Functions{
 }
 
 // CheckArgs checks if a function is passed the right number of arguments, and the right type of arguments.
-func CheckArgs(name string, have []interface{}, want ...string) error {
+func CheckArgs(name string, have []any, want ...string) error {
 	if len(have) != len(want) {
 		return fmt.Errorf("function %v needs %v arguments, not %v arguments", name, len(want), len(have))
 	}
@@ -394,7 +394,7 @@ func (ln *Line) SetFunctionName(k int) {
 	}
 	functionName := functionNames[k]
 	// ln.FuncName = functionName + "(x)="
-	TheGraph.Functions[functionName] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName, args, "float64")
 		if err != nil {
 			return 0, err
@@ -402,7 +402,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := float64(ln.Expr.Eval(args[0].(float64), TheGraph.State.Time, ln.TimesHit))
 		return val, nil
 	}
-	TheGraph.Functions[functionName+"'"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"'"] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName+"'", args, "float64")
 		if err != nil {
 			return 0, err
@@ -414,7 +414,7 @@ func (ln *Line) SetFunctionName(k int) {
 		})
 		return val, nil
 	}
-	TheGraph.Functions[functionName+`"`] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+`"`] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName+`"`, args, "float64")
 		if err != nil {
 			return 0, err
@@ -427,7 +427,7 @@ func (ln *Line) SetFunctionName(k int) {
 		return val, nil
 	}
 	capitalName := strings.ToUpper(functionName)
-	TheGraph.Functions[capitalName] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[capitalName] = func(args ...any) (any, error) {
 		err := CheckArgs(capitalName, args, "float64")
 		if err != nil {
 			return 0, err
@@ -435,7 +435,7 @@ func (ln *Line) SetFunctionName(k int) {
 		val := ln.Expr.Integrate(0, args[0].(float64), ln.TimesHit)
 		return val, nil
 	}
-	TheGraph.Functions[functionName+"int"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"int"] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName+"int", args, "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -445,14 +445,14 @@ func (ln *Line) SetFunctionName(k int) {
 		val := ln.Expr.Integrate(min, max, ln.TimesHit)
 		return val, nil
 	}
-	TheGraph.Functions[functionName+"h"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"h"] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName+"h", args, "float64")
 		if err != nil {
 			return 0, err
 		}
 		return float64(ln.TimesHit) * args[0].(float64), nil
 	}
-	TheGraph.Functions[functionName+"sum"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"sum"] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName+"sum", args, "float64", "float64")
 		if err != nil {
 			return 0, err
@@ -463,7 +463,7 @@ func (ln *Line) SetFunctionName(k int) {
 		}
 		return total, nil
 	}
-	TheGraph.Functions[functionName+"psum"] = func(args ...interface{}) (interface{}, error) {
+	TheGraph.Functions[functionName+"psum"] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName+"psum", args, "float64", "float64")
 		if err != nil {
 			return 0, err

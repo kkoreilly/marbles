@@ -30,7 +30,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 
 	lns := giv.NewTableView(lsp).SetSlice(&gr.Lines)
 	/*
-		lns.StyleFunc = func(tv *giv.TableView, slice interface{}, widg gi.Node2D, row, col int, vv giv.ValueView) {
+		lns.StyleFunc = func(tv *giv.TableView, slice any, widg gi.Node2D, row, col int, vv giv.ValueView) {
 			if col == 0 {
 				newLabel := "<i><b>y=</b></i>"
 				if row < len(functionNames) {
@@ -48,7 +48,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 			}
 			if col < 3 {
 				edit := widg.(*giv.StructViewInline).Parts.Child(1).(*gi.TextField)
-				edit.TextFieldSig.Connect(edit.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+				edit.TextFieldSig.Connect(edit.This(), func(recv, send ki.Ki, sig int64, data any) {
 					if col == 0 {
 						TheGraph.Lines[row].Expr.Expr = string(edit.EditTxt)
 					}
@@ -108,7 +108,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	/*
 		params = giv.AddNewStructView(sidesplit, "params")
 		params.SetStruct(&TheGraph.Params)
-		params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		params.ViewSig.Connect(params.This(), func(recv, send ki.Ki, sig int64, data any) {
 			TheGraph.AutoGraph()
 		})
 
@@ -173,38 +173,38 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 /*
 func makeToolbar() {
 	graphToolbar = gi.AddNewToolBar(mfr, "graphToolbar")
-	graphToolbar.AddAction(gi.ActOpts{Name: "Graph", Label: "Graph", Icon: "file-image", Tooltip: "graph the equations and reset the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "Graph", Label: "Graph", Icon: "file-image", Tooltip: "graph the equations and reset the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.Graph()
 		vp.SetNeedsFullRender()
 	})
 
-	graphToolbar.AddAction(gi.ActOpts{Name: "Run", Label: "Run", Icon: "run", Tooltip: "runs the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "Run", Label: "Run", Icon: "run", Tooltip: "runs the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.Run()
 	})
 
-	graphToolbar.AddAction(gi.ActOpts{Name: "Stop", Label: "Stop", Icon: "stop", Tooltip: "stop the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "Stop", Label: "Stop", Icon: "stop", Tooltip: "stop the marbles"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.Stop()
 	})
 
-	graphToolbar.AddAction(gi.ActOpts{Name: "Step", Label: "Step", Icon: "step-fwd", Tooltip: "steps the marbles for one step"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "Step", Label: "Step", Icon: "step-fwd", Tooltip: "steps the marbles for one step"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.Step()
 	})
 
 	graphToolbar.AddSeparator("sep1")
 
-	graphToolbar.AddAction(gi.ActOpts{Name: "NextMarble", Label: "Next Marble", Icon: "forward", ShortcutKey: gi.KeyFunFocusNext, Tooltip: "selects the next marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "NextMarble", Label: "Next Marble", Icon: "forward", ShortcutKey: gi.KeyFunFocusNext, Tooltip: "selects the next marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.SelectNextMarble()
 	})
-	graphToolbar.AddAction(gi.ActOpts{Name: "Unselect", Label: "Unselect", Icon: "stop", Tooltip: "stops selecting the marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "Unselect", Label: "Unselect", Icon: "stop", Tooltip: "stops selecting the marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.StopSelecting()
 	})
-	graphToolbar.AddAction(gi.ActOpts{Name: "Track", Label: "Track", Icon: "edit", ShortcutKey: gi.KeyFunTranspose, Tooltip: "toggles track for the currently selected marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "Track", Label: "Track", Icon: "edit", ShortcutKey: gi.KeyFunTranspose, Tooltip: "toggles track for the currently selected marble"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.TrackSelectedMarble()
 	})
 
 	graphToolbar.AddSeparator("sep2")
 
-	graphToolbar.AddAction(gi.ActOpts{Name: "NewLine", Label: "New Line", Icon: "plus", Shortcut: "Command+M", Tooltip: "adds a new blank line"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	graphToolbar.AddAction(gi.ActOpts{Name: "NewLine", Label: "New Line", Icon: "plus", Shortcut: "Command+M", Tooltip: "adds a new blank line"}, graphToolbar.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.AddLine()
 		vp.SetNeedsFullRender()
 	})
@@ -221,27 +221,27 @@ func makeMainMenu() {
 
 	fmen := win.MainMenu.ChildByName("File", 0).(*gi.Action)
 	fmen.Menu = make(gi.Menu, 0, 10)
-	fmen.Menu.AddAction(gi.ActOpts{Label: "New", ShortcutKey: gi.KeyFunMenuNew}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "New", ShortcutKey: gi.KeyFunMenuNew}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.Reset()
 	})
 	fmen.Menu.AddSeparator("sep0")
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Open", ShortcutKey: gi.KeyFunMenuOpen}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Open", ShortcutKey: gi.KeyFunMenuOpen}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
+		giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 				TheGraph.OpenJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
 			}
 		})
 	})
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Open Autosave", ShortcutKey: gi.KeyFunMenuOpenAlt1}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Open Autosave", ShortcutKey: gi.KeyFunMenuOpenAlt1}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.OpenAutoSave()
 	})
 	fmen.Menu.AddSeparator("sep1")
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Save", ShortcutKey: gi.KeyFunMenuSave}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Save", ShortcutKey: gi.KeyFunMenuSave}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		if TheGraph.State.File != "" {
 			TheGraph.SaveLast()
 		} else {
-			giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+			giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 				if sig == int64(gi.DialogAccepted) {
 					dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 					TheGraph.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
@@ -249,8 +249,8 @@ func makeMainMenu() {
 			})
 		}
 	})
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as", ShortcutKey: gi.KeyFunMenuSaveAs}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as", ShortcutKey: gi.KeyFunMenuSaveAs}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
+		giv.FileViewDialog(vp, filepath.Join(GetMarblesFolder(), "savedGraphs")+"/", ".json", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 				TheGraph.SaveJSON(gi.FileName(giv.FileViewDialogValue(dlg)))
@@ -258,35 +258,35 @@ func makeMainMenu() {
 		})
 	})
 	fmen.Menu.AddSeparator("sep2")
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as PNG", Shortcut: "Command+Alt+C"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Save as PNG", Shortcut: "Command+Alt+C"}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		img := TheGraph.Capture()
-		giv.FileViewDialog(vp, "", ".png", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.FileViewDialog(vp, "", ".png", giv.DlgOpts{}, nil, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 				SaveImageToFile(img, giv.FileViewDialogValue(dlg))
 			}
 		})
 	})
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Copy PNG", Shortcut: "Shift+Command+C"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Copy PNG", Shortcut: "Shift+Command+C"}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.CopyGraphImage()
 	})
 
 	fmen.Menu.AddSeparator("sep3")
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Upload Graph", Shortcut: "Command+U"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		gi.StringPromptDialog(vp, "", "", gi.DlgOpts{Title: "Upload Graph", Prompt: "Upload your graph for anyone else to see. Enter a name for your graph:"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Upload Graph", Shortcut: "Command+U"}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
+		gi.StringPromptDialog(vp, "", "", gi.DlgOpts{Title: "Upload Graph", Prompt: "Upload your graph for anyone else to see. Enter a name for your graph:"}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 			if sig == int64(gi.DialogAccepted) {
 				dlg := send.Embed(gi.KiT_Dialog).(*gi.Dialog)
 				TheGraph.Upload(gi.StringPromptDialogValue(dlg))
 			}
 		})
 	})
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Download Graph", Shortcut: "Command+D"}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Download Graph", Shortcut: "Command+D"}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		TheGraph.Download()
 	})
 	fmen.Menu.AddSeparator("sep4")
-	fmen.Menu.AddAction(gi.ActOpts{Label: "Settings", ShortcutKey: gi.KeyFunMenuSaveAlt}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+	fmen.Menu.AddAction(gi.ActOpts{Label: "Settings", ShortcutKey: gi.KeyFunMenuSaveAlt}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 		pSettings := TheSettings
-		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, win.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
+		giv.StructViewDialog(vp, &TheSettings, giv.DlgOpts{Title: "Settings", Ok: true, Cancel: true}, win.This(), func(recv, send ki.Ki, sig int64, data any) {
 			if sig == int64(gi.DialogAccepted) {
 				TheSettings.Save()
 				TheGraph.Objects.Graph.SetProp("min-width", TheSettings.GraphSize)

@@ -615,7 +615,7 @@ func (pr *Param) Compile() {
 }
 
 // ExprComplete finds the possible completions for the expr in text field
-func ExprComplete(data interface{}, text string, posLn, posCh int) (md complete.Matches) {
+func ExprComplete(data any, text string, posLn, posCh int) (md complete.Matches) {
 	seedStart := 0
 	for i := len(text) - 1; i >= 0; i-- {
 		r := rune(text[i])
@@ -634,7 +634,7 @@ func ExprComplete(data interface{}, text string, posLn, posCh int) (md complete.
 }
 
 // ExprCompleteEdit is the editing function called when using complete
-func ExprCompleteEdit(data interface{}, text string, cursorPos int, completion complete.Completion, seed string) (ed complete.Edit) {
+func ExprCompleteEdit(data any, text string, cursorPos int, completion complete.Completion, seed string) (ed complete.Edit) {
 	ed = complete.EditWord(text, cursorPos, completion.Text, seed)
 	return ed
 }

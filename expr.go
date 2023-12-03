@@ -16,7 +16,7 @@ type Expr struct {
 
 	Val *govaluate.EvaluableExpression `view:"-" json:"-"`
 
-	Params map[string]interface{} `view:"-" json:"-"`
+	Params map[string]any `view:"-" json:"-"`
 }
 
 // factorial variables
@@ -61,7 +61,7 @@ func (ex *Expr) Compile() error {
 		return err
 	}
 	if ex.Params == nil {
-		ex.Params = make(map[string]interface{}, 2)
+		ex.Params = make(map[string]any, 2)
 	}
 	ex.Params["π"] = math.Pi
 	ex.Params["e"] = math.E
