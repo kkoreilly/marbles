@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -13,349 +12,142 @@ import (
 // Functions are a map of named expression functions
 type Functions map[string]govaluate.ExpressionFunction
 
+// NewFuncV makes a function that can be used in expressions from a function that takes a variadic input and returns a single value.
+func NewFuncV[I, O any](f func(...I) O) govaluate.ExpressionFunction {
+	return func(args ...any) (any, error) {
+		newArgs := []I{}
+		for i, arg := range args {
+			a, ok := arg.(I)
+			if !ok {
+				return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T for argument %v", f, arg, i)
+			}
+			newArgs = append(newArgs, a)
+		}
+		res := f(newArgs...)
+		return res, nil
+	}
+}
+
+// NewFunc1 makes a function that can be used in expressions from a function that takes a single argument and returns a single value.
+func NewFunc1[I, O any](f func(I) O) govaluate.ExpressionFunction {
+	return func(args ...any) (any, error) {
+		if len(args) != 1 {
+			return nil, fmt.Errorf("evaluation error: function of type %T wants 1 argument, not %v arguments", f, len(args))
+		}
+		arg0, ok := args[0].(I)
+		if !ok {
+			return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T", f, args[0])
+		}
+		res := f(arg0)
+		return res, nil
+	}
+}
+
+// NewFunc2 makes a function that can be used in expressions from a function that takes two arguments and returns a single value.
+func NewFunc2[I1, I2, O any](f func(I1, I2) O) govaluate.ExpressionFunction {
+	return func(args ...any) (any, error) {
+		if len(args) != 2 {
+			return nil, fmt.Errorf("evaluation error: function of type %T wants 2 arguments, not %v arguments", f, len(args))
+		}
+		arg0, ok := args[0].(I1)
+		if !ok {
+			return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T for argument 0", f, args[0])
+		}
+		arg1, ok := args[1].(I2)
+		if !ok {
+			return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T for argument 1", f, args[1])
+		}
+		res := f(arg0, arg1)
+		return res, nil
+	}
+}
+
+// NewFunc3 makes a function that can be used in expressions from a function that takes three arguments and returns a single value.
+func NewFunc3[I1, I2, I3, O any](f func(I1, I2, I3) O) govaluate.ExpressionFunction {
+	return func(args ...any) (any, error) {
+		if len(args) != 3 {
+			return nil, fmt.Errorf("evaluation error: function of type %T wants 3 arguments, not %v arguments", f, len(args))
+		}
+		arg0, ok := args[0].(I1)
+		if !ok {
+			return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T for argument 0", f, args[0])
+		}
+		arg1, ok := args[1].(I2)
+		if !ok {
+			return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T for argument 1", f, args[1])
+		}
+		arg2, ok := args[2].(I3)
+		if !ok {
+			return nil, fmt.Errorf("evaluation error: function of type %T does not accept input type %T for argument 2", f, args[2])
+		}
+		res := f(arg0, arg1, arg2)
+		return res, nil
+	}
+}
+
 // DefaultFunctions are the default functions that can be used in expressions
 var DefaultFunctions = Functions{
-	"cos": func(args ...any) (any, error) {
-		err := CheckArgs("cos", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Cos(args[0].(float64))
-		return y, nil
-	},
-	"sin": func(args ...any) (any, error) {
-		err := CheckArgs("sin", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Sin(args[0].(float64))
-		return y, nil
-	},
-	"tan": func(args ...any) (any, error) {
-		err := CheckArgs("tan", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Tan(args[0].(float64))
-		return y, nil
-	},
-	"pow": func(args ...any) (any, error) {
-		err := CheckArgs("pow", args, "float64", "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Pow(args[0].(float64), args[1].(float64))
-		return y, nil
-	},
-	"abs": func(args ...any) (any, error) {
-		err := CheckArgs("abs", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Abs(args[0].(float64))
-		return y, nil
-	},
-	"fact": func(args ...any) (any, error) {
-		err := CheckArgs("fact", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := FactorialMemoization(int(args[0].(float64)))
-		return y, nil
-	},
-	"ceil": func(args ...any) (any, error) {
-		err := CheckArgs("ceil", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Ceil(args[0].(float64))
-		return y, nil
-	},
-	"floor": func(args ...any) (any, error) {
-		err := CheckArgs("floor", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Floor(args[0].(float64))
-		return y, nil
-	},
-	"mod": func(args ...any) (any, error) {
-		err := CheckArgs("mod", args, "float64", "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Mod(args[0].(float64), args[1].(float64))
-		return y, nil
-	},
-	"rand": func(args ...any) (any, error) {
-		err := CheckArgs("rand", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := randNum * args[0].(float64)
-		return y, nil
-	},
-	"sqrt": func(args ...any) (any, error) {
-		err := CheckArgs("sqrt", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Sqrt(args[0].(float64))
-		return y, nil
-	},
-	"ln": func(args ...any) (any, error) {
-		err := CheckArgs("ln", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Log(args[0].(float64))
-		return y, nil
-	},
-	"log": func(args ...any) (any, error) {
-		err := CheckArgs("log", args, "float64", "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Log(args[0].(float64)) / math.Log(args[1].(float64)) // log(v, b) = ln(v) / ln(b)
-		return y, nil
-	},
-	"csc": func(args ...any) (any, error) {
-		err := CheckArgs("csc", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := 1 / math.Sin(args[0].(float64))
-		return y, nil
-	},
-	"sec": func(args ...any) (any, error) {
-		err := CheckArgs("sec", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := 1 / math.Cos(args[0].(float64))
-		return y, nil
-	},
-	"cot": func(args ...any) (any, error) {
-		err := CheckArgs("cot", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := 1 / math.Tan(args[0].(float64))
-		return y, nil
-	},
-	"csch": func(args ...any) (any, error) {
-		err := CheckArgs("csch", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := 1 / math.Sinh(args[0].(float64))
-		return y, nil
-	},
-	"sech": func(args ...any) (any, error) {
-		err := CheckArgs("sech", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := 1 / math.Cosh(args[0].(float64))
-		return y, nil
-	},
-	"coth": func(args ...any) (any, error) {
-		err := CheckArgs("coth", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := 1 / math.Tanh(args[0].(float64))
-		return y, nil
-	},
-	"if": func(args ...any) (any, error) {
-		err := CheckArgs("if", args, "bool", "float64", "float64")
-		if err != nil {
-			return 0, err
-		}
-		if args[0].(bool) {
-			return args[1].(float64), nil
-		}
-		return args[2].(float64), nil
-	},
-	"arcsin": func(args ...any) (any, error) {
-		err := CheckArgs("arcsin", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Asin(args[0].(float64))
-		return y, nil
-	},
-	"arccos": func(args ...any) (any, error) {
-		err := CheckArgs("arccos", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Acos(args[0].(float64))
-		return y, nil
-	},
-	"arctan": func(args ...any) (any, error) {
-		err := CheckArgs("arctan", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Atan(args[0].(float64))
-		return y, nil
-	},
-	"sinh": func(args ...any) (any, error) {
-		err := CheckArgs("sinh", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Sinh(args[0].(float64))
-		return y, nil
-	},
-	"cosh": func(args ...any) (any, error) {
-		err := CheckArgs("cosh", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Cosh(args[0].(float64))
-		return y, nil
-	},
-	"tanh": func(args ...any) (any, error) {
-		err := CheckArgs("tanh", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Tanh(args[0].(float64))
-		return y, nil
-	},
-	"arcsinh": func(args ...any) (any, error) {
-		err := CheckArgs("arcsinh", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Asinh(args[0].(float64))
-		return y, nil
-	},
-	"arccosh": func(args ...any) (any, error) {
-		err := CheckArgs("arccosh", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Acosh(args[0].(float64))
-		return y, nil
-	},
-	"arctanh": func(args ...any) (any, error) {
-		err := CheckArgs("arctanh", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Atanh(args[0].(float64))
-		return y, nil
-	},
-	"arcsec": func(args ...any) (any, error) {
-		err := CheckArgs("arcsec", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Acos(1 / args[0].(float64))
-		return y, nil
-	},
-	"arccsc": func(args ...any) (any, error) {
-		err := CheckArgs("arccsc", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Asin(1 / args[0].(float64))
-		return y, nil
-	},
-	"arccot": func(args ...any) (any, error) {
-		err := CheckArgs("arccot", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Atan(1 / args[0].(float64))
-		if args[0].(float64) < 0 {
+	"sin": NewFunc1(math.Sin),
+	"cos": NewFunc1(math.Cos),
+	"tan": NewFunc1(math.Tan),
+	"sec": NewFunc1(func(x float64) float64 {
+		return 1 / math.Cos(x)
+	}),
+	"csc": NewFunc1(func(x float64) float64 {
+		return 1 / math.Sin(x)
+	}),
+	"cot": NewFunc1(func(x float64) float64 {
+		return 1 / math.Tan(x)
+	}),
+	"arcsin": NewFunc1(math.Asin),
+	"arccos": NewFunc1(math.Acos),
+	"arctan": NewFunc1(math.Atan),
+	"arcsec": NewFunc1(func(x float64) float64 {
+		return math.Acos(1 / x)
+	}),
+	"arccsc": NewFunc1(func(x float64) float64 {
+		return math.Asin(1 / x)
+	}),
+	"arccot": NewFunc1(func(x float64) float64 {
+		y := math.Atan(1 / x)
+		if x < 0 {
 			y += math.Pi
 		}
-
-		return y, nil
-	},
-	"arcsech": func(args ...any) (any, error) {
-		err := CheckArgs("arcsech", args, "float64")
-		if err != nil {
-			return 0, err
+		return y
+	}),
+	"sinh": NewFunc1(math.Sinh),
+	"cosh": NewFunc1(math.Cosh),
+	"tanh": NewFunc1(math.Tanh),
+	// "sech":    NewFunc1(math.Sech),
+	// "csch":    NewFunc1(math.Csch),
+	// "coth":    NewFunc1(math.Coth),
+	"arcsinh": NewFunc1(math.Asinh),
+	"arccosh": NewFunc1(math.Acosh),
+	"arctanh": NewFunc1(math.Atanh),
+	// "arcsech": NewFunc1(math.Asech),
+	// "arccsch": NewFunc1(math.Acsch),
+	// "arccoth": NewFunc1(math.Acoth),
+	"ln": NewFunc1(math.Log),
+	// "log": NewFunc2(math.Log),
+	"abs": NewFunc1(math.Abs),
+	"pow": NewFunc2(math.Pow),
+	"exp": NewFunc1(math.Exp),
+	"mod": NewFunc2(math.Mod),
+	// "fact":  NewFunc1(math.Fact),
+	"floor": NewFunc1(math.Floor),
+	"ceil":  NewFunc1(math.Ceil),
+	"round": NewFunc1(math.Round),
+	"sqrt":  NewFunc1(math.Sqrt),
+	"cbrt":  NewFunc1(math.Cbrt),
+	// "min":   NewFuncV(math.Min),
+	// "max":   NewFuncV(math.Max),
+	// "avg":   NewFuncV(math.Avg),
+	"if": NewFunc3(func(condition bool, val1, val2 any) any {
+		if condition {
+			return val1
 		}
-		y := math.Acosh(1 / args[0].(float64))
-		return y, nil
-	},
-	"arccsch": func(args ...any) (any, error) {
-		err := CheckArgs("arccsch", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Asinh(1 / args[0].(float64))
-		return y, nil
-	},
-	"arccoth": func(args ...any) (any, error) {
-		err := CheckArgs("arccoth", args, "float64")
-		if err != nil {
-			return 0, err
-		}
-		y := math.Atanh(1 / args[0].(float64))
-		return y, nil
-	},
-	"max": func(args ...any) (any, error) {
-		num := math.Inf(-1)
-		for _, d := range args {
-			switch d := d.(type) {
-			case float64:
-				if d > num {
-					num = d
-				}
-			default:
-				return 0, errors.New("function max requires all number values")
-			}
-		}
-		return num, nil
-	},
-	"min": func(args ...any) (any, error) {
-		num := math.Inf(1)
-		for _, d := range args {
-			switch d := d.(type) {
-			case float64:
-				if d < num {
-					num = d
-				}
-			default:
-				return 0, errors.New("function min requires all number values")
-			}
-		}
-		return num, nil
-	},
-	"avg": func(args ...any) (any, error) {
-		var sum float64
-		for _, d := range args {
-			switch d := d.(type) {
-			case float64:
-				sum += d
-			default:
-				return 0, errors.New("function avg requires all number values")
-			}
-		}
-		return sum / float64(len(args)), nil
-	},
-	"nmarbles": func(args ...any) (any, error) {
-		err := CheckArgs("nmarbles", args)
-		if err != nil {
-			return 0, err
-		}
-		y := float64(TheGraph.Params.NMarbles)
-		return y, nil
-	},
-	"inf": func(args ...any) (any, error) {
-		err := CheckArgs("inf", args)
-		if err != nil {
-			return 0, err
-		}
-		return math.Inf(1), nil
-	},
+		return val2
+	}),
 }
 
 // CheckArgs checks if a function is passed the right number of arguments, and the right type of arguments.
