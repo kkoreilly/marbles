@@ -300,7 +300,7 @@ func (m *Marble) ToggleTrack(idx int) {
 }
 
 // SelectNextMarble selects the next marble in the viewbox
-func (gr *Graph) SelectNextMarble() {
+func (gr *Graph) SelectNextMarble() { //gti:add
 	if !gr.State.Running {
 		updt := gr.Objects.Graph.UpdateStart()
 		defer gr.Objects.Graph.UpdateEndRender(updt)

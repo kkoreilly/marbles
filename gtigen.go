@@ -38,6 +38,15 @@ var _ = gti.AddType(&gti.Type{
 		{"Step", &gti.Method{Name: "Step", Doc: "Step does one step update of marbles", Directives: gti.Directives{
 			&gti.Directive{Tool: "gti", Directive: "add", Args: []string{}},
 		}, Args: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{}), Returns: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{})}},
+		{"StopSelecting", &gti.Method{Name: "StopSelecting", Doc: "StopSelecting stops selecting current marble", Directives: gti.Directives{
+			&gti.Directive{Tool: "gti", Directive: "add", Args: []string{}},
+		}, Args: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{}), Returns: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{})}},
+		{"TrackSelectedMarble", &gti.Method{Name: "TrackSelectedMarble", Doc: "TrackSelectedMarble toggles track for the currently selected marble", Directives: gti.Directives{
+			&gti.Directive{Tool: "gti", Directive: "add", Args: []string{}},
+		}, Args: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{}), Returns: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{})}},
+		{"SelectNextMarble", &gti.Method{Name: "SelectNextMarble", Doc: "SelectNextMarble selects the next marble in the viewbox", Directives: gti.Directives{
+			&gti.Directive{Tool: "gti", Directive: "add", Args: []string{}},
+		}, Args: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{}), Returns: ordmap.Make([]ordmap.KeyVal[string, *gti.Field]{})}},
 	}),
 })
 

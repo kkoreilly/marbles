@@ -16,6 +16,11 @@ func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
 	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
 	giv.NewFuncButton(tb, gr.Stop)
 	giv.NewFuncButton(tb, gr.Step)
+
+	gi.NewSeparator(tb)
+	giv.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
+	giv.NewFuncButton(tb, gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
+	giv.NewFuncButton(tb, gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
 }
 
 func (gr *Graph) MakeBasicElements(b *gi.Body) {

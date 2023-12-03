@@ -289,7 +289,7 @@ func (gr *Graph) Step() { //gti:add
 }
 
 // StopSelecting stops selecting current marble
-func (gr *Graph) StopSelecting() {
+func (gr *Graph) StopSelecting() { //gti:add
 	var updt bool
 	if !gr.State.Running {
 		updt = gr.Objects.Graph.UpdateStart()
@@ -304,7 +304,7 @@ func (gr *Graph) StopSelecting() {
 }
 
 // TrackSelectedMarble toggles track for the currently selected marble
-func (gr *Graph) TrackSelectedMarble() {
+func (gr *Graph) TrackSelectedMarble() { //gti:add
 	if gr.State.SelectedMarble == -1 {
 		return
 	}
