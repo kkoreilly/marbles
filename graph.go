@@ -10,6 +10,7 @@ import (
 	"image/color"
 	"sort"
 	"strings"
+	"sync"
 	"unicode"
 
 	"goki.dev/colors"
@@ -23,20 +24,22 @@ import (
 type Graph struct { //gti:add
 
 	// the parameters for updating the marbles
-	Params Params `view:"-"`
+	Params Params
 
 	// the lines of the graph -- can have any number
-	Lines Lines `view:"-"`
+	Lines Lines
 
-	Marbles []*Marble `view:"-" json:"-"`
+	Marbles []*Marble `json:"-"`
 
-	State State `view:"-" json:"-"`
+	State State `json:"-"`
 
-	Functions Functions `view:"-" json:"-"`
+	Functions Functions `json:"-"`
 
-	Vectors Vectors `view:"-" json:"-"`
+	Vectors Vectors `json:"-"`
 
-	Objects Objects `view:"-" json:"-"`
+	Objects Objects `json:"-"`
+
+	EvalMu sync.Mutex `json:"-"`
 }
 
 // State has the state of the graph
@@ -242,6 +245,8 @@ func (gr *Graph) Defaults() {
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() { //gti:add
 	updt := gr.Objects.Graph.UpdateStart()
+	defer gr.Objects.Graph.UpdateEndRender(updt)
+
 	if gr.State.Running {
 		gr.Stop()
 	}
@@ -250,14 +255,12 @@ func (gr *Graph) Graph() { //gti:add
 	gr.AddLineFunctions()
 	gr.CompileExprs()
 	if gr.State.Error != nil {
-		gr.Objects.Graph.UpdateEndRender(updt)
 		return
 	}
 	gr.ResetMarbles()
 	gr.State.Time = 0
 	SetRandNum()
 	if gr.State.Error != nil {
-		gr.Objects.Graph.UpdateEndRender(updt)
 		return
 	}
 	gr.Lines.Graph()
@@ -265,7 +268,6 @@ func (gr *Graph) Graph() { //gti:add
 	// if gr.State.Error == nil {
 	// 	errorText.SetText("Graphed successfully")
 	// }
-	gr.Objects.Graph.UpdateEndRender(updt)
 }
 
 // Run runs the marbles for NSteps
@@ -468,6 +470,9 @@ func (ls *Lines) Defaults() {
 
 // Graph graphs the lines
 func (ls *Lines) Graph() {
+	TheGraph.EvalMu.Lock()
+	defer TheGraph.EvalMu.Unlock()
+
 	if !TheGraph.State.Running {
 		updt := TheGraph.Objects.Graph.UpdateStart()
 		defer TheGraph.Objects.Graph.UpdateEnd(updt)

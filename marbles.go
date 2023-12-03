@@ -154,6 +154,9 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 
 // UpdateMarblesData updates marbles data
 func (gr *Graph) UpdateMarblesData() {
+	gr.EvalMu.Lock()
+	defer gr.EvalMu.Unlock()
+
 	for _, m := range gr.Marbles {
 
 		m.Vel.Y += float32(gr.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
@@ -187,7 +190,6 @@ func (gr *Graph) UpdateMarblesData() {
 		if setColor != colors.White {
 			m.Color = setColor
 		}
-
 	}
 }
 
