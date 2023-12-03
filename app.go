@@ -16,29 +16,15 @@ func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
 	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
 	giv.NewFuncButton(tb, gr.Stop)
 	giv.NewFuncButton(tb, gr.Step)
-
-	gi.NewSeparator(tb)
-	giv.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
-	giv.NewFuncButton(tb, gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
-	giv.NewFuncButton(tb, gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
 }
 
 func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	sp := gi.NewSplits(b)
 
-	lsp := gi.NewSplits(sp).SetDim(mat32.Y)
-
-	lns := giv.NewTableView(lsp).SetSlice(&gr.Lines)
+	lns := giv.NewTableView(sp).SetSlice(&gr.Lines)
 	lns.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
-
-	params := giv.NewStructView(lsp).SetStruct(&gr.Params)
-	params.OnChange(func(e events.Event) {
-		gr.Graph()
-	})
-
-	lsp.SetSplits(0.7, 0.3)
 
 	gr.Objects.Graph = gi.NewSVG(sp)
 
