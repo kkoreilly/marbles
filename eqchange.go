@@ -1,8 +1,9 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,9 @@ var EquationChangeSlice = []EquationChange{
 	{`\`, ""},
 }
 
+// ZeroArgFunctions are the functions that do not take any arguments.
+var ZeroArgFunctions = []string{"rand", "nmarbles", "inf"}
+
 // PrepareExpr prepares an expression by looping both equation change slices
 func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction) (string, map[string]govaluate.ExpressionFunction) {
 	functions := make(map[string]govaluate.ExpressionFunction)
@@ -61,13 +65,13 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	i := 0
 	functionsToDelete := []string{}
 	functionsToAdd := make(map[string]govaluate.ExpressionFunction)
-	// sort functions by length so that functions that contain other functions dont cause problems
+	// sort functions by length so that functions that contain other functions don't cause problems
 	functionKeys := []string{}
 	for k := range functions {
 		functionKeys = append(functionKeys, k)
 	}
-	sort.Slice(functionKeys, func(i, j int) bool {
-		return len(functionKeys[i]) > len(functionKeys[j])
+	slices.SortFunc(functionKeys, func(a, b string) int {
+		return cmp.Compare(len(a), len(b))
 	})
 	for _, name := range functionKeys { // to prevent issues with the equation, all functions are turned into zfunctionindexz. z is just a letter that isn't used in anything else.
 		function := functions[name]
@@ -83,7 +87,11 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 	for _, name := range functionsToDelete {
 		delete(functions, name)
 	}
-	for fname := range functions { // if there is a function name and no parentheses after, put parentheses around the next character
+	for fname := range functions { // if there is a function name and no parentheses after, put parentheses around the next character, or directly after it if it is a zero-arg function
+		if slices.Contains(ZeroArgFunctions, fname) {
+			expr = strings.ReplaceAll(expr, fname, fname+"()")
+			expr = strings.ReplaceAll(expr, fname+"()()", fname+"()")
+		}
 		for _, pname := range params {
 			expr = strings.ReplaceAll(expr, fname+pname, fname+"("+pname+")")
 		}

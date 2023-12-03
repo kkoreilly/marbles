@@ -30,6 +30,7 @@ func NewFuncV[I, O any](f func(...I) O) govaluate.ExpressionFunction {
 }
 
 // NewFunc0 makes a function that can be used in expressions from a function that takes no arguments and returns a single value.
+// IMPORTANT: zero arg functions must be added to [ZeroArgFunctions].
 func NewFunc0[O any](f func() O) govaluate.ExpressionFunction {
 	return func(args ...any) (any, error) {
 		if len(args) != 0 {
@@ -209,9 +210,8 @@ var DefaultFunctions = Functions{
 		}
 		return val2
 	}),
-	"rand": NewFunc1(func(x float64) float64 {
-		return x * rand.Float64()
-	}),
+	// IMPORTANT: zero arg functions must be added to [ZeroArgFunctions].
+	"rand": NewFunc0(rand.Float64),
 	"nmarbles": NewFunc0(func() float64 {
 		return float64(TheGraph.Params.NMarbles)
 	}),
