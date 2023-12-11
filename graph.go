@@ -15,6 +15,7 @@ import (
 
 	"goki.dev/colors"
 	"goki.dev/gi/v2/gi"
+	"goki.dev/gi/v2/giv"
 	"goki.dev/mat32/v2"
 	"goki.dev/pi/v2/complete"
 	"goki.dev/svg"
@@ -150,6 +151,8 @@ type Objects struct {
 	TrackingLines *svg.Group
 	XAxis         *svg.Line
 	YAxis         *svg.Line
+
+	LinesView *giv.TableView
 }
 
 // Lines is a collection of lines
@@ -264,6 +267,7 @@ func (gr *Graph) AddLine() { //gti:add
 	}
 	newLine := &Line{Colors: LineColors{color, TheSettings.LineDefaults.LineColors.ColorSwitch}}
 	gr.Lines = append(gr.Lines, newLine)
+	gr.Objects.LinesView.Update()
 }
 
 // Reset resets the graph to its starting position (one default line and default params)

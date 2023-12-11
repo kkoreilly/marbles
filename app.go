@@ -30,8 +30,8 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 
 	lsp := gi.NewSplits(sp).SetDim(mat32.Y)
 
-	lns := giv.NewTableView(lsp).SetSlice(&gr.Lines)
-	lns.OnChange(func(e events.Event) {
+	gr.Objects.LinesView = giv.NewTableView(lsp).SetSlice(&gr.Lines)
+	gr.Objects.LinesView.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
 
