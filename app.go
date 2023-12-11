@@ -10,11 +10,14 @@ import (
 	"goki.dev/svg"
 )
 
-func (gr *Graph) TopAppBar(tb *gi.Toolbar) {
+func (gr *Graph) AppBar(tb *gi.Toolbar) {
 	giv.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
 	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
 	giv.NewFuncButton(tb, gr.Stop)
 	giv.NewFuncButton(tb, gr.Step)
+
+	gi.NewSeparator(tb)
+	giv.NewFuncButton(tb, gr.AddLine).SetIcon(icons.Add)
 
 	gi.NewSeparator(tb)
 	giv.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
@@ -44,8 +47,8 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 	gr.Objects.SVG = gr.Objects.Graph.SVG
 	gr.Objects.SVG.InvertY = true
 
-	gr.Vectors.Min = mat32.Vec2{X: -graphViewBoxSize, Y: -graphViewBoxSize}
-	gr.Vectors.Max = mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
+	gr.Vectors.Min = mat32.Vec2{X: -GraphViewBoxSize, Y: -GraphViewBoxSize}
+	gr.Vectors.Max = mat32.Vec2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
 	gr.Vectors.Size = gr.Vectors.Max.Sub(gr.Vectors.Min)
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
 	gr.Vectors.Inc = mat32.Vec2{X: n, Y: n}

@@ -155,75 +155,17 @@ type Objects struct {
 // Lines is a collection of lines
 type Lines []*Line
 
-const graphViewBoxSize = 10
+const GraphViewBoxSize = 10
 
-var basicFunctionList = []string{}
+var BasicFunctionList = []string{}
 
-var completeWords = []string{}
+var CompleteWords = []string{}
 
-// functionNames has all of the supported function names, in order
-var functionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "q", "r", "s", "u", "v", "w"}
+// FunctionNames has all of the supported function names, in order
+var FunctionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "q", "r", "s", "u", "v", "w"}
 
 // TheGraph is current graph
 var TheGraph Graph
-
-/*
-// KiTGraph is there to have the toolbar
-// var KiTGraph = kit.Types.AddType(&Graph{}, GraphProps)
-
-// // GraphProps define the ToolBar for overall app
-// var GraphProps = ki.Props{
-// 	"ToolBar": ki.PropSlice{
-// 		{Name: "Graph", Value: ki.Props{
-// 			"desc": "updates graph for current equations",
-// 			"icon": "file-image",
-// 		}},
-// 		{Name: "Run", Value: ki.Props{
-// 			"desc":            "runs the marbles for NSteps",
-// 			"icon":            "run",
-// 			"no-update-after": true,
-// 		}},
-// 		{Name: "Stop", Value: ki.Props{
-// 			"desc":            "runs the marbles for NSteps",
-// 			"icon":            "stop",
-// 			"no-update-after": true,
-// 		}},
-// 		{Name: "Step", Value: ki.Props{
-// 			"desc":            "steps the marbles for one step",
-// 			"icon":            "step-fwd",
-// 			"no-update-after": true,
-// 		}},
-// 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
-// 		{Name: "SelectNextMarble", Value: ki.Props{
-// 			"label":           "Next Marble",
-// 			"desc":            "selects the next marble",
-// 			"icon":            "forward",
-// 			"no-update-after": true,
-// 			"shortcut":        gi.KeyFunFocusNext,
-// 		}},
-// 		{Name: "StopSelecting", Value: ki.Props{
-// 			"label":           "Unselect",
-// 			"desc":            "stops selecting the marble",
-// 			"icon":            "stop",
-// 			"no-update-after": true,
-// 		}},
-// 		{Name: "TrackSelectedMarble", Value: ki.Props{
-// 			"label":           "Track",
-// 			"desc":            "toggles track for the currently selected marble",
-// 			"icon":            "edit",
-// 			"no-update-after": true,
-// 			"shortcut":        gi.KeyFunTranspose,
-// 		}},
-// 		{Name: "sep-ctrl", Value: ki.BlankProp{}},
-// 		{Name: "AddLine", Value: ki.Props{
-// 			"label":    "Add New Line",
-// 			"desc":     "Adds a new line",
-// 			"icon":     "plus",
-// 			"shortcut": "Command+M",
-// 		}},
-// 	},
-// }
-*/
 
 // Init sets up the graph for the given body. It should only be called once.
 func (gr *Graph) Init(b *gi.Body) {
@@ -313,14 +255,14 @@ func (gr *Graph) TrackSelectedMarble() { //gti:add
 }
 
 // AddLine adds a new blank line
-func (gr *Graph) AddLine() {
+func (gr *Graph) AddLine() { //gti:add
 	var color color.RGBA
 	if TheSettings.LineDefaults.LineColors.Color == colors.White {
 		color = colors.BinarySpacedAccentVariant(len(gr.Lines) - 1)
 	} else {
 		color = TheSettings.LineDefaults.LineColors.Color
 	}
-	newLine := &Line{Expr{"", nil, nil}, Expr{"", nil, nil}, Expr{"", nil, nil}, LineColors{color, TheSettings.LineDefaults.LineColors.ColorSwitch}, 0, false}
+	newLine := &Line{Colors: LineColors{color, TheSettings.LineDefaults.LineColors.ColorSwitch}}
 	gr.Lines = append(gr.Lines, newLine)
 }
 
@@ -387,7 +329,7 @@ func CheckCircular(expr string, k int) bool {
 	if CheckIfReferences(expr, k) {
 		return true
 	}
-	for i := range functionNames {
+	for i := range FunctionNames {
 		if CheckIfReferences(expr, i) {
 			return CheckCircular(TheGraph.Lines[i].Expr.Expr, k)
 		}
@@ -397,16 +339,16 @@ func CheckCircular(expr string, k int) bool {
 
 // CheckIfReferences checks if an expr references a given function
 func CheckIfReferences(expr string, k int) bool {
-	sort.Slice(basicFunctionList, func(i, j int) bool {
-		return len(basicFunctionList[i]) > len(basicFunctionList[j])
+	sort.Slice(BasicFunctionList, func(i, j int) bool {
+		return len(BasicFunctionList[i]) > len(BasicFunctionList[j])
 	})
-	for _, d := range basicFunctionList {
+	for _, d := range BasicFunctionList {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
-	if k >= len(functionNames) || k >= len(TheGraph.Lines) {
+	if k >= len(FunctionNames) || k >= len(TheGraph.Lines) {
 		return false
 	}
-	funcName := functionNames[k]
+	funcName := FunctionNames[k]
 	if strings.Contains(expr, funcName) || strings.Contains(expr, strings.ToUpper(funcName)) {
 		return true
 	}
@@ -415,13 +357,13 @@ func CheckIfReferences(expr string, k int) bool {
 
 // CheckIfChanges checks if an equation changes over time
 func CheckIfChanges(expr string) bool {
-	for _, d := range basicFunctionList {
+	for _, d := range BasicFunctionList {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
 	if strings.Contains(expr, "a") || strings.Contains(expr, "h") || strings.Contains(expr, "t") {
 		return true
 	}
-	for k := range functionNames {
+	for k := range FunctionNames {
 		if CheckIfReferences(expr, k) {
 			return CheckIfChanges(TheGraph.Lines[k].Expr.Expr)
 		}
@@ -432,9 +374,9 @@ func CheckIfChanges(expr string) bool {
 // InitBasicFunctionList adds all of the basic functions to a list
 func InitBasicFunctionList() {
 	for k := range DefaultFunctions {
-		basicFunctionList = append(basicFunctionList, k)
+		BasicFunctionList = append(BasicFunctionList, k)
 	}
-	basicFunctionList = append(basicFunctionList, "true", "false")
+	BasicFunctionList = append(BasicFunctionList, "true", "false")
 }
 
 // Compile compiles all of the expressions in a line
@@ -480,12 +422,12 @@ func (ls *Lines) Graph() {
 		}
 	}
 	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
-		sizeFromCenter := mat32.Vec2{X: graphViewBoxSize, Y: graphViewBoxSize}
+		sizeFromCenter := mat32.Vec2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
 		center := mat32.Vec2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
 		TheGraph.Vectors.Min = center.Sub(sizeFromCenter)
 		TheGraph.Vectors.Max = center.Add(sizeFromCenter)
 		TheGraph.Vectors.Size = sizeFromCenter.MulScalar(2)
-		TheGraph.Objects.Root.ViewBox.Min = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*graphViewBoxSize}
+		TheGraph.Objects.Root.ViewBox.Min = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*GraphViewBoxSize}
 		TheGraph.Objects.Root.ViewBox.Size = TheGraph.Vectors.Size
 		TheGraph.UpdateCoords()
 	}
@@ -602,7 +544,7 @@ func (pr *Param) Eval(x, y float64) float64 {
 func (pr *Param) Compile() {
 	pr.Expr.Compile()
 	expr := pr.Expr.Expr
-	for _, d := range basicFunctionList {
+	for _, d := range BasicFunctionList {
 		expr = strings.ReplaceAll(expr, d, "")
 	}
 	if CheckIfChanges(expr) || strings.Contains(expr, "x") || strings.Contains(expr, "y") {
@@ -623,7 +565,7 @@ func ExprComplete(data any, text string, posLn, posCh int) (md complete.Matches)
 		}
 	}
 	md.Seed = text[seedStart:]
-	possibles := complete.MatchSeedString(completeWords, md.Seed)
+	possibles := complete.MatchSeedString(CompleteWords, md.Seed)
 	for _, p := range possibles {
 		m := complete.Completion{Text: p, Icon: ""}
 		md.Matches = append(md.Matches, m)
@@ -639,9 +581,9 @@ func ExprCompleteEdit(data any, text string, cursorPos int, completion complete.
 
 // SetCompleteWords sets the words used for complete in the expressions
 func SetCompleteWords(functions Functions) {
-	completeWords = []string{}
+	CompleteWords = []string{}
 	for k := range functions {
-		completeWords = append(completeWords, k)
+		CompleteWords = append(CompleteWords, k)
 	}
-	completeWords = append(completeWords, "true", "false", "pi", "a", "t")
+	CompleteWords = append(CompleteWords, "true", "false", "pi", "a", "t")
 }

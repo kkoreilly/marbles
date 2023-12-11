@@ -250,11 +250,11 @@ func (gr *Graph) AddLineFunctions() {
 
 // SetFunctionName sets the function name for a line and adds the function to the functions
 func (ln *Line) SetFunctionName(k int) {
-	if k >= len(functionNames) {
+	if k >= len(FunctionNames) {
 		// ln.FuncName = "unassigned"
 		return
 	}
-	functionName := functionNames[k]
+	functionName := FunctionNames[k]
 	// ln.FuncName = functionName + "(x)="
 	TheGraph.Functions[functionName] = func(args ...any) (any, error) {
 		err := CheckArgs(functionName, args, "float64")
