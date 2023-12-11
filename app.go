@@ -10,8 +10,7 @@ import (
 	"goki.dev/svg"
 )
 
-func (gr *Graph) TopAppBar(tb *gi.TopAppBar) {
-	gi.DefaultTopAppBar(tb)
+func (gr *Graph) TopAppBar(tb *gi.Toolbar) {
 	giv.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
 	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
 	giv.NewFuncButton(tb, gr.Stop)

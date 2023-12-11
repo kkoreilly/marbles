@@ -15,13 +15,11 @@ import (
 func main() { gimain.Run(app) }
 
 func app() {
-	gi.SetAppName("marbles")
-	gi.SetAppAbout("marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!")
-
 	TheSettings.Defaults()
 
-	b := gi.NewBody()
-	b.AddTopAppBar(TheGraph.TopAppBar)
+	b := gi.NewAppBody("marbles")
+	b.App().About = "Marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!"
+	b.AddAppBar(TheGraph.TopAppBar)
 
 	TheGraph.Init(b)
 

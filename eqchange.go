@@ -71,7 +71,7 @@ func (ex *Expr) PrepareExpr(functionsArg map[string]govaluate.ExpressionFunction
 		functionKeys = append(functionKeys, k)
 	}
 	slices.SortFunc(functionKeys, func(a, b string) int {
-		return cmp.Compare(len(a), len(b))
+		return cmp.Compare(len(b), len(a))
 	})
 	isZeroArg := map[string]bool{}
 	for _, name := range functionKeys { // to prevent issues with the equation, all functions are turned into zfunctionindexz. z is just a letter that isn't used in anything else.
