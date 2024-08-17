@@ -13,8 +13,8 @@ import (
 	"sync"
 	"unicode"
 
+	"cogentcore.org/core/core"
 	"goki.dev/colors"
-	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/giv"
 	"goki.dev/mat32/v2"
 	"goki.dev/pi/v2/complete"
@@ -142,7 +142,7 @@ type Vectors struct {
 
 // Objects contains the svg graph and the svg groups, plus the axes
 type Objects struct {
-	Graph         *gi.SVG
+	Graph         *core.SVG
 	SVG           *svg.SVG
 	Root          *svg.SVGNode
 	Lines         *svg.Group
@@ -171,7 +171,7 @@ var FunctionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "
 var TheGraph Graph
 
 // Init sets up the graph for the given body. It should only be called once.
-func (gr *Graph) Init(b *gi.Body) {
+func (gr *Graph) Init(b *core.Body) {
 	gr.Defaults()
 	gr.MakeBasicElements(b)
 	gr.SetFunctionsTo(DefaultFunctions)

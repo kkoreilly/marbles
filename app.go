@@ -1,8 +1,8 @@
 package main
 
 import (
+	"cogentcore.org/core/core"
 	"goki.dev/colors"
-	"goki.dev/gi/v2/gi"
 	"goki.dev/gi/v2/giv"
 	"goki.dev/goosi/events"
 	"goki.dev/icons"
@@ -10,25 +10,25 @@ import (
 	"goki.dev/svg"
 )
 
-func (gr *Graph) AppBar(tb *gi.Toolbar) {
+func (gr *Graph) AppBar(tb *core.Toolbar) {
 	giv.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
 	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
 	giv.NewFuncButton(tb, gr.Stop)
 	giv.NewFuncButton(tb, gr.Step)
 
-	gi.NewSeparator(tb)
+	core.NewSeparator(tb)
 	giv.NewFuncButton(tb, gr.AddLine).SetIcon(icons.Add)
 
-	gi.NewSeparator(tb)
+	core.NewSeparator(tb)
 	giv.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
 	giv.NewFuncButton(tb, gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
 	giv.NewFuncButton(tb, gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
 }
 
-func (gr *Graph) MakeBasicElements(b *gi.Body) {
-	sp := gi.NewSplits(b)
+func (gr *Graph) MakeBasicElements(b *core.Body) {
+	sp := core.NewSplits(b)
 
-	lsp := gi.NewSplits(sp).SetDim(mat32.Y)
+	lsp := core.NewSplits(sp).SetDim(mat32.Y)
 
 	gr.Objects.LinesView = giv.NewTableView(lsp).SetSlice(&gr.Lines)
 	gr.Objects.LinesView.OnChange(func(e events.Event) {
@@ -42,7 +42,7 @@ func (gr *Graph) MakeBasicElements(b *gi.Body) {
 
 	lsp.SetSplits(0.7, 0.3)
 
-	gr.Objects.Graph = gi.NewSVG(sp)
+	gr.Objects.Graph = core.NewSVG(sp)
 
 	gr.Objects.SVG = gr.Objects.Graph.SVG
 	gr.Objects.SVG.InvertY = true

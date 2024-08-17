@@ -4,29 +4,25 @@
 
 package main
 
-//go:generate goki generate
+//go:generate core generate
 
 import (
-	"goki.dev/gi/v2/gi"
-	"goki.dev/gi/v2/gimain"
-	"goki.dev/grr"
+	"cogentcore.org/core/base/errors"
+	"cogentcore.org/core/core"
 )
-
-func main() { gimain.Run(app) }
 
 func app() {
 	TheSettings.Defaults()
 
-	b := gi.NewAppBody("marbles")
-	b.App().About = "Marbles allows you to enter equations, which are graphed, and then marbles are dropped down on the resulting lines, and bounce around in very entertaining ways!"
+	b := core.NewBody("Marbles")
 	b.AddAppBar(TheGraph.AppBar)
 
 	TheGraph.Init(b)
 
-	b.NewWindow().Run().Wait()
+	b.RunMainWindow()
 }
 
 // TODO(kai/marbles): better error handling
 func HandleError(err error) bool {
-	return grr.Log(err) != nil
+	return errors.Log(err) != nil
 }
