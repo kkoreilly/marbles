@@ -13,12 +13,11 @@ import (
 	"sync"
 	"unicode"
 
+	"cogentcore.org/core/colors"
 	"cogentcore.org/core/core"
-	"goki.dev/colors"
-	"goki.dev/gi/v2/giv"
-	"goki.dev/mat32/v2"
+	"cogentcore.org/core/math32"
+	"cogentcore.org/core/svg"
 	"goki.dev/pi/v2/complete"
-	"goki.dev/svg"
 )
 
 // Graph contains the lines and parameters of a graph
@@ -134,10 +133,10 @@ type LineColors struct {
 
 // Vectors contains the size and increment of the graph
 type Vectors struct {
-	Min  mat32.Vec2
-	Max  mat32.Vec2
-	Size mat32.Vec2
-	Inc  mat32.Vec2
+	Min  math32.Vector2
+	Max  math32.Vector2
+	Size math32.Vector2
+	Inc  math32.Vector2
 }
 
 // Objects contains the svg graph and the svg groups, plus the axes
@@ -152,7 +151,7 @@ type Objects struct {
 	XAxis         *svg.Line
 	YAxis         *svg.Line
 
-	LinesView *giv.TableView
+	LinesView *core.TableView
 }
 
 // Lines is a collection of lines
@@ -170,7 +169,7 @@ var FunctionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "
 // TheGraph is current graph
 var TheGraph Graph
 
-// Init sets up the graph for the given body. It should only be called once.
+// Init sets up the graph for the coreen body. It should only be called once.
 func (gr *Graph) Init(b *core.Body) {
 	gr.Defaults()
 	gr.MakeBasicElements(b)
@@ -341,7 +340,7 @@ func CheckCircular(expr string, k int) bool {
 	return false
 }
 
-// CheckIfReferences checks if an expr references a given function
+// CheckIfReferences checks if an expr references a coreen function
 func CheckIfReferences(expr string, k int) bool {
 	sort.Slice(BasicFunctionList, func(i, j int) bool {
 		return len(BasicFunctionList[i]) > len(BasicFunctionList[j])
@@ -426,12 +425,12 @@ func (ls *Lines) Graph() {
 		}
 	}
 	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
-		sizeFromCenter := mat32.Vec2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
-		center := mat32.Vec2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
+		sizeFromCenter := math32.Vector2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
+		center := math32.Vector2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
 		TheGraph.Vectors.Min = center.Sub(sizeFromCenter)
 		TheGraph.Vectors.Max = center.Add(sizeFromCenter)
 		TheGraph.Vectors.Size = sizeFromCenter.MulScalar(2)
-		TheGraph.Objects.Root.ViewBox.Min = mat32.Vec2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*GraphViewBoxSize}
+		TheGraph.Objects.Root.ViewBox.Min = math32.Vector2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*GraphViewBoxSize}
 		TheGraph.Objects.Root.ViewBox.Size = TheGraph.Vectors.Size
 		TheGraph.UpdateCoords()
 	}
@@ -496,10 +495,10 @@ func (gr *Graph) UpdateCoords() {
 	updt := gr.Objects.Graph.UpdateStart()
 
 	gr.Objects.XAxis.SetProp("stroke", colors.Scheme.Outline)
-	gr.Objects.XAxis.Start, gr.Objects.XAxis.End = mat32.Vec2{X: gr.Vectors.Min.X, Y: 0}, mat32.Vec2{X: gr.Vectors.Max.X, Y: 0}
+	gr.Objects.XAxis.Start, gr.Objects.XAxis.End = math32.Vector2{X: gr.Vectors.Min.X, Y: 0}, math32.Vector2{X: gr.Vectors.Max.X, Y: 0}
 
 	gr.Objects.YAxis.SetProp("stroke", colors.Scheme.Outline)
-	gr.Objects.YAxis.Start, gr.Objects.YAxis.End = mat32.Vec2{X: 0, Y: gr.Vectors.Min.Y}, mat32.Vec2{X: 0, Y: gr.Vectors.Max.Y}
+	gr.Objects.YAxis.Start, gr.Objects.YAxis.End = math32.Vector2{X: 0, Y: gr.Vectors.Min.Y}, math32.Vector2{X: 0, Y: gr.Vectors.Max.Y}
 
 	gr.Objects.Graph.UpdateEnd(updt)
 }

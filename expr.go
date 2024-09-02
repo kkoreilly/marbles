@@ -60,7 +60,7 @@ func (ex *Expr) Compile() error {
 	return err
 }
 
-// Eval gives the y value of the function for given x, t and h value
+// Eval corees the y value of the function for coreen x, t and h value
 func (ex *Expr) Eval(x, t float64, h int) float64 {
 	if ex.Expr == "" {
 		return 0

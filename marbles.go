@@ -6,17 +6,17 @@ import (
 	"strconv"
 	"time"
 
-	"goki.dev/colors"
-	"goki.dev/grr"
-	"goki.dev/mat32/v2"
-	"goki.dev/svg"
+	"cogentcore.org/core/base/errors"
+	"cogentcore.org/core/colors"
+	"cogentcore.org/core/math32"
+	"cogentcore.org/core/svg"
 )
 
 // Marble contains the information of a marble
 type Marble struct {
-	Pos          mat32.Vec2
-	Vel          mat32.Vec2
-	PrvPos       mat32.Vec2
+	Pos          math32.Vector2
+	Vel          math32.Vector2
+	PrvPos       math32.Vector2
 	Color        color.RGBA
 	TrackingInfo TrackingInfo
 }
@@ -24,7 +24,7 @@ type Marble struct {
 // TrackingInfo contains all of the tracking info for a marbles
 type TrackingInfo struct {
 	Track                 bool
-	LastPos               mat32.Vec2
+	LastPos               math32.Vector2
 	FramesSinceLastUpdate int
 	StartedTrackingAt     int
 }
@@ -46,10 +46,10 @@ func (gr *Graph) GraphMarblesInit() {
 			m.Color = colors.BinarySpacedAccentVariant(i)
 			circle.SetProp("fill", m.Color)
 		} else {
-			m.Color = grr.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
+			m.Color = errors.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
 			circle.SetProp("fill", TheSettings.MarbleSettings.MarbleColor)
 		}
-		m.TrackingInfo.LastPos = mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y}
+		m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
 		m.TrackingInfo.StartedTrackingAt = 0
 	}
 	gr.Objects.Graph.UpdateEnd(updt)
@@ -70,11 +70,11 @@ func (m *Marble) Init(n int) {
 	TheGraph.Params.MarbleStartY.Params["n"] = n
 	yPos := TheGraph.Params.MarbleStartY.Eval(xPos, 0, 0)
 
-	m.Pos = mat32.Vec2{X: float32(xPos), Y: float32(yPos)}
+	m.Pos = math32.Vector2{X: float32(xPos), Y: float32(yPos)}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
 	startY := TheGraph.Params.StartVelY.Eval(float64(m.Pos.X), float64(m.Pos.Y))
 	startX := TheGraph.Params.StartVelX.Eval(float64(m.Pos.X), float64(m.Pos.Y))
-	m.Vel = mat32.Vec2{X: float32(startX), Y: float32(startY)}
+	m.Vel = math32.Vector2{X: float32(startX), Y: float32(startY)}
 	m.PrvPos = m.Pos
 	tls := TheGraph.Params.TrackingSettings
 	m.TrackingInfo.Track = tls.TrackByDefault
@@ -144,7 +144,7 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 			line := svg.NewLine(svgGroup, "line").SetStart(lpos).SetEnd(m.Pos)
 			clr := tls.LineColor
 			if clr == colors.White {
-				clr = grr.Log1(colors.FromAny(circle.Prop("fill"), colors.White))
+				clr = errors.Log1(colors.FromAny(circle.Prop("fill"), colors.White))
 			}
 			line.SetProp("stroke", clr)
 		}
@@ -193,7 +193,7 @@ func (gr *Graph) UpdateMarblesData() {
 }
 
 // Collided returns true if the marble has collided with the line, and false if the marble has not.
-func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
+func (m *Marble) Collided(ln *Line, npos math32.Vector2, yp, yn float64) bool {
 	graphIf := ln.GraphIf.EvalBool(float64(npos.X), yn, TheGraph.State.Time, ln.TimesHit)
 	inBounds := TheGraph.InBounds(npos)
 	collided := (float64(npos.Y) < yn && float64(m.Pos.Y) >= yp) || (float64(npos.Y) > yn && float64(m.Pos.Y) <= yp)
@@ -203,9 +203,9 @@ func (m *Marble) Collided(ln *Line, npos mat32.Vec2, yp, yn float64) bool {
 	return false
 }
 
-// CalcCollide calculates the new position and velocity of a marble after a collision with the given
-// line, given the previous line y, new line y, and new line y with old time
-func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn, yno float64) (mat32.Vec2, mat32.Vec2) {
+// CalcCollide calculates the new position and velocity of a marble after a collision with the coreen
+// line, coreen the previous line y, new line y, and new line y with old time
+func (m *Marble) CalcCollide(ln *Line, npos math32.Vector2, yp, yn, yno float64) (math32.Vector2, math32.Vector2) {
 	dly := yn - yp // change in the lines y
 	dx := npos.X - m.Pos.X
 
@@ -231,10 +231,10 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn, yno float64) (ma
 	yr := ln.Expr.Eval(float64(xi)+.01, TheGraph.State.Time, ln.TimesHit) // point to the right of x
 
 	//slp := (yr - yl) / .02
-	angLn := mat32.Atan2(float32(yr-yl), 0.02)
+	angLn := math32.Atan2(float32(yr-yl), 0.02)
 	angN := angLn + math.Pi/2 // + 90 deg
 
-	angI := mat32.Atan2(m.Vel.Y, m.Vel.X)
+	angI := math32.Atan2(m.Vel.Y, m.Vel.X)
 	angII := angI + math.Pi
 
 	angNII := angN - angII
@@ -242,17 +242,17 @@ func (m *Marble) CalcCollide(ln *Line, npos mat32.Vec2, yp, yn, yno float64) (ma
 
 	Bounce := ln.Bounce.EvalWithY(float64(npos.X), TheGraph.State.Time, ln.TimesHit, float64(yi))
 
-	nvx := float32(Bounce) * (m.Vel.X*mat32.Cos(angR) - m.Vel.Y*mat32.Sin(angR))
-	nvy := float32(Bounce) * (m.Vel.X*mat32.Sin(angR) + m.Vel.Y*mat32.Cos(angR))
+	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
+	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
 
-	vel := mat32.Vec2{X: nvx, Y: nvy}
-	pos := mat32.Vec2{X: xi, Y: yi + float32(yn-yno)} // adding change from prev time to current time in same pos fixes collisions with moving lines
+	vel := math32.Vector2{X: nvx, Y: nvy}
+	pos := math32.Vector2{X: xi, Y: yi + float32(yn-yno)} // adding change from prev time to current time in same pos fixes collisions with moving lines
 
 	return pos, vel
 }
 
 // InBounds checks whether a point is in the bounds of the graph
-func (gr *Graph) InBounds(pos mat32.Vec2) bool {
+func (gr *Graph) InBounds(pos math32.Vector2) bool {
 	if pos.Y > gr.Vectors.Min.Y && pos.Y < gr.Vectors.Max.Y && pos.X > gr.Vectors.Min.X && pos.X < gr.Vectors.Max.X {
 		return true
 	}
@@ -296,7 +296,7 @@ func (m *Marble) ToggleTrack(idx int) {
 	m.TrackingInfo.Track = !m.TrackingInfo.Track
 	TheGraph.Objects.TrackingLines.Child(idx).DeleteChildren(true)
 	m.TrackingInfo.FramesSinceLastUpdate = 0
-	m.TrackingInfo.LastPos = mat32.Vec2{X: m.Pos.X, Y: m.Pos.Y}
+	m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
 	m.TrackingInfo.StartedTrackingAt = TheGraph.State.Step
 }
 

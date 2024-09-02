@@ -10,7 +10,7 @@ require (
 	goki.dev/grr v0.0.9
 	goki.dev/gti v0.1.28
 	goki.dev/icons v0.0.14
-	goki.dev/mat32/v2 v2.0.0-dev0.0.24
+	goki.dev/math32/v2 v2.0.0-dev0.0.24
 	goki.dev/ordmap v0.5.8
 	goki.dev/pi/v2 v2.0.0-dev0.0.23
 	goki.dev/svg v0.1.25

@@ -3,7 +3,7 @@ package main
 import (
 	"image/color"
 
-	"goki.dev/colors"
+	"cogentcore.org/core/colors"
 )
 
 // Settings are the settings the app has

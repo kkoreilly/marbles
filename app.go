@@ -1,41 +1,41 @@
 package main
 
 import (
+	"cogentcore.org/core/colors"
 	"cogentcore.org/core/core"
-	"goki.dev/colors"
-	"goki.dev/gi/v2/giv"
-	"goki.dev/goosi/events"
-	"goki.dev/icons"
-	"goki.dev/mat32/v2"
-	"goki.dev/svg"
+	"cogentcore.org/core/events"
+	"cogentcore.org/core/icons"
+	"cogentcore.org/core/math32"
+	"cogentcore.org/core/svg"
+	"cogentcore.org/core/tree"
 )
 
-func (gr *Graph) AppBar(tb *core.Toolbar) {
-	giv.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
-	giv.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
-	giv.NewFuncButton(tb, gr.Stop)
-	giv.NewFuncButton(tb, gr.Step)
+func (gr *Graph) MakeToolbar(p *tree.Plan) {
+	core.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
+	core.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
+	core.NewFuncButton(tb, gr.Stop)
+	core.NewFuncButton(tb, gr.Step)
 
 	core.NewSeparator(tb)
-	giv.NewFuncButton(tb, gr.AddLine).SetIcon(icons.Add)
+	core.NewFuncButton(tb, gr.AddLine).SetIcon(icons.Add)
 
 	core.NewSeparator(tb)
-	giv.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
-	giv.NewFuncButton(tb, gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
-	giv.NewFuncButton(tb, gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
+	core.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
+	core.NewFuncButton(tb, gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
+	core.NewFuncButton(tb, gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
 }
 
 func (gr *Graph) MakeBasicElements(b *core.Body) {
 	sp := core.NewSplits(b)
 
-	lsp := core.NewSplits(sp).SetDim(mat32.Y)
+	lsp := core.NewSplits(sp).SetDim(math32.Y)
 
-	gr.Objects.LinesView = giv.NewTableView(lsp).SetSlice(&gr.Lines)
+	gr.Objects.LinesView = core.NewTable(lsp).SetSlice(&gr.Lines)
 	gr.Objects.LinesView.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
 
-	params := giv.NewStructView(lsp).SetStruct(&gr.Params)
+	params := core.NewForm(lsp).SetStruct(&gr.Params)
 	params.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
@@ -47,11 +47,11 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	gr.Objects.SVG = gr.Objects.Graph.SVG
 	gr.Objects.SVG.InvertY = true
 
-	gr.Vectors.Min = mat32.Vec2{X: -GraphViewBoxSize, Y: -GraphViewBoxSize}
-	gr.Vectors.Max = mat32.Vec2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
+	gr.Vectors.Min = math32.Vector2{X: -GraphViewBoxSize, Y: -GraphViewBoxSize}
+	gr.Vectors.Max = math32.Vector2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
 	gr.Vectors.Size = gr.Vectors.Max.Sub(gr.Vectors.Min)
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
-	gr.Vectors.Inc = mat32.Vec2{X: n, Y: n}
+	gr.Vectors.Inc = math32.Vector2{X: n, Y: n}
 
 	gr.Objects.Root = &gr.Objects.SVG.Root
 	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
