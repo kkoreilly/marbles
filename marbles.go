@@ -257,9 +257,16 @@ func (gr *Graph) RunMarbles() {
 		return
 	}
 	gr.State.Running = true
+	gr.State.Step = 0
 	startFrames := 0
 	start := time.Now()
-	for gr.State.Step = 0; gr.State.Running; gr.State.Step++ {
+	ticker := time.NewTicker(time.Second / 60)
+	for range ticker.C {
+		if !gr.State.Running {
+			ticker.Stop()
+			return
+		}
+		gr.State.Step++
 		if gr.State.Error != nil {
 			gr.State.Running = false
 		}
