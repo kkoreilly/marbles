@@ -188,8 +188,7 @@ func (gr *Graph) Defaults() {
 
 // Graph updates graph for current equations, and resets marbles too
 func (gr *Graph) Graph() { //types:add
-	updt := gr.Objects.Graph.UpdateStart()
-	defer gr.Objects.Graph.UpdateEndRender(updt)
+	defer gr.Objects.Graph.NeedsRender()
 
 	if gr.State.Running {
 		gr.Stop()
@@ -235,16 +234,12 @@ func (gr *Graph) Step() { //types:add
 
 // StopSelecting stops selecting current marble
 func (gr *Graph) StopSelecting() { //types:add
-	var updt bool
-	if !gr.State.Running {
-		updt = gr.Objects.Graph.UpdateStart()
-	}
 	if gr.State.SelectedMarble != -1 {
 		gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
 		gr.State.SelectedMarble = -1
 	}
 	if !gr.State.Running {
-		gr.Objects.Graph.UpdateEndRender(updt)
+		gr.Objects.Graph.NeedsRender()
 	}
 }
 
@@ -417,8 +412,6 @@ func (ls *Lines) Graph() {
 	defer TheGraph.EvalMu.Unlock()
 
 	if !TheGraph.State.Running {
-		updt := TheGraph.Objects.Graph.UpdateStart()
-		defer TheGraph.Objects.Graph.UpdateEnd(updt)
 		nln := len(*ls)
 		if TheGraph.Objects.Lines.NumChildren() != nln {
 			TheGraph.Objects.Lines.SetNChildren(nln, svg.PathType, "line")
@@ -474,33 +467,26 @@ func (ln *Line) Graph(lidx int) {
 
 // InitCoords makes the x and y axis
 func (gr *Graph) InitCoords() {
-	updt := gr.Objects.Graph.UpdateStart()
 	gr.Objects.Coords.DeleteChildren()
 
-	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords, "x-axis")
+	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords)
 	gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
 	gr.Objects.XAxis.End.X = gr.Vectors.Max.X
 	gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
 
-	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords, "y-axis")
+	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords)
 	gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
 	gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
 	gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
-
-	gr.Objects.Graph.UpdateEnd(updt)
 }
 
 // UpdateCoords updates the x and y axis
 func (gr *Graph) UpdateCoords() {
-	updt := gr.Objects.Graph.UpdateStart()
-
 	gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
 	gr.Objects.XAxis.Start, gr.Objects.XAxis.End = math32.Vector2{X: gr.Vectors.Min.X, Y: 0}, math32.Vector2{X: gr.Vectors.Max.X, Y: 0}
 
 	gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
 	gr.Objects.YAxis.Start, gr.Objects.YAxis.End = math32.Vector2{X: 0, Y: gr.Vectors.Min.Y}, math32.Vector2{X: 0, Y: gr.Vectors.Max.Y}
-
-	gr.Objects.Graph.UpdateEnd(updt)
 }
 
 // Defaults sets the graph parameters to the default settings
