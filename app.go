@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"cogentcore.org/core/colors"
 	"cogentcore.org/core/core"
 	"cogentcore.org/core/events"
@@ -84,6 +86,11 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	sp.SetSplits(0.5, 0.5)
 
 	gr.Objects.Lines = svg.NewGroup(gr.Objects.Root)
+	gr.Objects.Lines.Maker(func(p *tree.Plan) {
+		for i := range len(gr.Lines) {
+			tree.AddAt(p, strconv.Itoa(i), func(w *svg.Path) {})
+		}
+	})
 	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root)
 	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root)
 	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root)

@@ -11,7 +11,7 @@ import (
 	"cogentcore.org/core/core"
 )
 
-func app() {
+func main() {
 	TheSettings.Defaults()
 
 	b := core.NewBody("Marbles")

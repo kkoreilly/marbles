@@ -412,10 +412,7 @@ func (ls *Lines) Graph() {
 	defer TheGraph.EvalMu.Unlock()
 
 	if !TheGraph.State.Running {
-		nln := len(*ls)
-		if TheGraph.Objects.Lines.NumChildren() != nln {
-			TheGraph.Objects.Lines.SetNChildren(nln, svg.PathType, "line")
-		}
+		TheGraph.Objects.Lines.UpdateFromMake()
 	}
 	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
 		sizeFromCenter := math32.Vector2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
