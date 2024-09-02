@@ -65,6 +65,7 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	lsp.SetSplits(0.7, 0.3)
 
 	gr.Objects.Graph = core.NewSVG(sp)
+	gr.Objects.Graph.SetReadOnly(false)
 
 	gr.Objects.SVG = gr.Objects.Graph.SVG
 	gr.Objects.SVG.InvertY = true
