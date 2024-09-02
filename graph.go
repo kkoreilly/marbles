@@ -16,8 +16,8 @@ import (
 	"cogentcore.org/core/colors"
 	"cogentcore.org/core/core"
 	"cogentcore.org/core/math32"
+	"cogentcore.org/core/parse/complete"
 	"cogentcore.org/core/svg"
-	"goki.dev/pi/v2/complete"
 )
 
 // Graph contains the lines and parameters of a graph
@@ -143,7 +143,7 @@ type Vectors struct {
 type Objects struct {
 	Graph         *core.SVG
 	SVG           *svg.SVG
-	Root          *svg.SVGNode
+	Root          *svg.Root
 	Lines         *svg.Group
 	Marbles       *svg.Group
 	Coords        *svg.Group
@@ -151,7 +151,7 @@ type Objects struct {
 	XAxis         *svg.Line
 	YAxis         *svg.Line
 
-	LinesView *core.TableView
+	LinesTable *core.Table
 }
 
 // Lines is a collection of lines
@@ -240,7 +240,7 @@ func (gr *Graph) StopSelecting() { //gti:add
 		updt = gr.Objects.Graph.UpdateStart()
 	}
 	if gr.State.SelectedMarble != -1 {
-		gr.Objects.Marbles.Child(gr.State.SelectedMarble).SetProp("stroke", "none")
+		gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
 		gr.State.SelectedMarble = -1
 	}
 	if !gr.State.Running {
@@ -266,7 +266,7 @@ func (gr *Graph) AddLine() { //gti:add
 	}
 	newLine := &Line{Colors: LineColors{color, TheSettings.LineDefaults.LineColors.ColorSwitch}}
 	gr.Lines = append(gr.Lines, newLine)
-	gr.Objects.LinesView.Update()
+	gr.Objects.LinesTable.Update()
 }
 
 // Reset resets the graph to its starting position (one default line and default params)
@@ -446,8 +446,8 @@ func (ls *Lines) Graph() {
 // Graph graphs a single line
 func (ln *Line) Graph(lidx int) {
 	path := TheGraph.Objects.Lines.Child(lidx).(*svg.Path)
-	path.SetProp("fill", "none")
-	path.SetProp("stroke", ln.Colors.Color)
+	path.SetProperty("fill", "none")
+	path.SetProperty("stroke", ln.Colors.Color)
 	ps := ""
 	start := true
 	skipped := false
@@ -475,17 +475,17 @@ func (ln *Line) Graph(lidx int) {
 // InitCoords makes the x and y axis
 func (gr *Graph) InitCoords() {
 	updt := gr.Objects.Graph.UpdateStart()
-	gr.Objects.Coords.DeleteChildren(true)
+	gr.Objects.Coords.DeleteChildren()
 
 	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords, "x-axis")
 	gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
 	gr.Objects.XAxis.End.X = gr.Vectors.Max.X
-	gr.Objects.XAxis.SetProp("stroke", colors.Scheme.Outline)
+	gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
 
 	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords, "y-axis")
 	gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
 	gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
-	gr.Objects.YAxis.SetProp("stroke", colors.Scheme.Outline)
+	gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
 
 	gr.Objects.Graph.UpdateEnd(updt)
 }
@@ -494,10 +494,10 @@ func (gr *Graph) InitCoords() {
 func (gr *Graph) UpdateCoords() {
 	updt := gr.Objects.Graph.UpdateStart()
 
-	gr.Objects.XAxis.SetProp("stroke", colors.Scheme.Outline)
+	gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
 	gr.Objects.XAxis.Start, gr.Objects.XAxis.End = math32.Vector2{X: gr.Vectors.Min.X, Y: 0}, math32.Vector2{X: gr.Vectors.Max.X, Y: 0}
 
-	gr.Objects.YAxis.SetProp("stroke", colors.Scheme.Outline)
+	gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
 	gr.Objects.YAxis.Start, gr.Objects.YAxis.End = math32.Vector2{X: 0, Y: gr.Vectors.Min.Y}, math32.Vector2{X: 0, Y: gr.Vectors.Max.Y}
 
 	gr.Objects.Graph.UpdateEnd(updt)

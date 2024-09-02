@@ -6,6 +6,7 @@ import (
 	"cogentcore.org/core/events"
 	"cogentcore.org/core/icons"
 	"cogentcore.org/core/math32"
+	"cogentcore.org/core/styles"
 	"cogentcore.org/core/svg"
 	"cogentcore.org/core/tree"
 )
@@ -28,10 +29,13 @@ func (gr *Graph) MakeToolbar(p *tree.Plan) {
 func (gr *Graph) MakeBasicElements(b *core.Body) {
 	sp := core.NewSplits(b)
 
-	lsp := core.NewSplits(sp).SetDim(math32.Y)
+	lsp := core.NewSplits(sp)
+	lsp.Styler(func(s *styles.Style) {
+		s.Direction = styles.Column
+	})
 
-	gr.Objects.LinesView = core.NewTable(lsp).SetSlice(&gr.Lines)
-	gr.Objects.LinesView.OnChange(func(e events.Event) {
+	gr.Objects.LinesTable = core.NewTable(lsp).SetSlice(&gr.Lines)
+	gr.Objects.LinesTable.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
 
@@ -63,11 +67,11 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 
 	sp.SetSplits(0.5, 0.5)
 
-	gr.Objects.Lines = svg.NewGroup(gr.Objects.Root, "lines")
-	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root, "marbles")
-	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root, "coords")
-	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root, "tracking-lines")
+	gr.Objects.Lines = svg.NewGroup(gr.Objects.Root)
+	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root)
+	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root)
+	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root)
 
-	gr.Objects.Coords.SetProp("stroke-width", "0.05dp")
-	gr.Objects.TrackingLines.SetProp("stroke-width", "0.05dp")
+	gr.Objects.Coords.SetProperty("stroke-width", "0.05dp")
+	gr.Objects.TrackingLines.SetProperty("stroke-width", "0.05dp")
 }
