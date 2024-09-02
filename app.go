@@ -21,10 +21,10 @@ func (gr *Graph) MakeToolbar(p *tree.Plan) {
 		w.SetFunc(gr.Run).SetIcon(icons.PlayArrow)
 	})
 	tree.Add(p, func(w *core.FuncButton) {
-		w.SetFunc(gr.Stop)
+		w.SetFunc(gr.Stop).SetIcon(icons.Stop)
 	})
 	tree.Add(p, func(w *core.FuncButton) {
-		w.SetFunc(gr.Step)
+		w.SetFunc(gr.Step).SetIcon(icons.Step)
 	})
 
 	tree.Add(p, func(w *core.Separator) {})

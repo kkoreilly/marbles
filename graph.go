@@ -68,9 +68,9 @@ type Line struct {
 	// Line color and colorswitch
 	Colors LineColors
 
-	TimesHit int `view:"-" json:"-"`
+	TimesHit int `display:"-" json:"-"`
 
-	Changes bool `view:"-" json:"-"`
+	Changes bool `display:"-" json:"-"`
 }
 
 // Params are the parameters of the graph
@@ -116,9 +116,9 @@ type Params struct { //types:add
 type Param struct {
 	Expr Expr `label:""`
 
-	Changes bool `view:"-"`
+	Changes bool `display:"-"`
 
-	BaseVal float64 `view:"-"`
+	BaseVal float64 `display:"-"`
 }
 
 // LineColors contains the color and colorswitch for a line

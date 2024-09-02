@@ -13,9 +13,9 @@ type Expr struct {
 	// Equation: use x for the x value, t for the time passed since the marbles were ran (incremented by TimeStep), and a for 10*sin(t) (swinging back and forth version of t)
 	Expr string `width:"30" label:""`
 
-	Val *govaluate.EvaluableExpression `view:"-" json:"-"`
+	Val *govaluate.EvaluableExpression `display:"-" json:"-"`
 
-	Params map[string]any `view:"-" json:"-"`
+	Params map[string]any `display:"-" json:"-"`
 }
 
 // Integrate returns the integral of an expression
