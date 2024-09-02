@@ -43,7 +43,7 @@ func (gr *Graph) GraphMarblesInit() {
 		circle.SetProperty("stroke", "none")
 		circle.SetProperty("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
-			m.Color = colors.BinarySpacedAccentVariant(i)
+			m.Color = colors.Spaced(i)
 			circle.SetProperty("fill", m.Color)
 		} else {
 			m.Color = errors.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
@@ -301,7 +301,7 @@ func (m *Marble) ToggleTrack(idx int) {
 }
 
 // SelectNextMarble selects the next marble in the viewbox
-func (gr *Graph) SelectNextMarble() { //gti:add
+func (gr *Graph) SelectNextMarble() { //types:add
 	if !gr.State.Running {
 		updt := gr.Objects.Graph.UpdateStart()
 		defer gr.Objects.Graph.UpdateEndRender(updt)

@@ -21,7 +21,7 @@ import (
 )
 
 // Graph contains the lines and parameters of a graph
-type Graph struct { //gti:add
+type Graph struct { //types:add
 
 	// the parameters for updating the marbles
 	Params Params
@@ -74,7 +74,7 @@ type Line struct {
 }
 
 // Params are the parameters of the graph
-type Params struct { //gti:add
+type Params struct { //types:add
 
 	// Number of marbles
 	NMarbles int `min:"1" max:"10000" step:"10" label:"Number of marbles"`
@@ -187,7 +187,7 @@ func (gr *Graph) Defaults() {
 }
 
 // Graph updates graph for current equations, and resets marbles too
-func (gr *Graph) Graph() { //gti:add
+func (gr *Graph) Graph() { //types:add
 	updt := gr.Objects.Graph.UpdateStart()
 	defer gr.Objects.Graph.UpdateEndRender(updt)
 
@@ -214,18 +214,18 @@ func (gr *Graph) Graph() { //gti:add
 }
 
 // Run runs the marbles for NSteps
-func (gr *Graph) Run() { //gti:add
+func (gr *Graph) Run() { //types:add
 	// gr.AutoSave()
 	go gr.RunMarbles()
 }
 
 // Stop stops the marbles
-func (gr *Graph) Stop() { //gti:add
+func (gr *Graph) Stop() { //types:add
 	gr.State.Running = false
 }
 
 // Step does one step update of marbles
-func (gr *Graph) Step() { //gti:add
+func (gr *Graph) Step() { //types:add
 	if gr.State.Running {
 		return
 	}
@@ -234,7 +234,7 @@ func (gr *Graph) Step() { //gti:add
 }
 
 // StopSelecting stops selecting current marble
-func (gr *Graph) StopSelecting() { //gti:add
+func (gr *Graph) StopSelecting() { //types:add
 	var updt bool
 	if !gr.State.Running {
 		updt = gr.Objects.Graph.UpdateStart()
@@ -249,7 +249,7 @@ func (gr *Graph) StopSelecting() { //gti:add
 }
 
 // TrackSelectedMarble toggles track for the currently selected marble
-func (gr *Graph) TrackSelectedMarble() { //gti:add
+func (gr *Graph) TrackSelectedMarble() { //types:add
 	if gr.State.SelectedMarble == -1 {
 		return
 	}
@@ -257,10 +257,10 @@ func (gr *Graph) TrackSelectedMarble() { //gti:add
 }
 
 // AddLine adds a new blank line
-func (gr *Graph) AddLine() { //gti:add
+func (gr *Graph) AddLine() { //types:add
 	var color color.RGBA
 	if TheSettings.LineDefaults.LineColors.Color == colors.White {
-		color = colors.BinarySpacedAccentVariant(len(gr.Lines) - 1)
+		color = colors.Spaced(len(gr.Lines) - 1)
 	} else {
 		color = TheSettings.LineDefaults.LineColors.Color
 	}
@@ -288,7 +288,7 @@ func (gr *Graph) CompileExprs() {
 		}
 		if colors.IsNil(ln.Colors.Color) {
 			if TheSettings.LineDefaults.LineColors.Color == colors.White {
-				ln.Colors.Color = colors.BinarySpacedAccentVariant(k)
+				ln.Colors.Color = colors.Spaced(k)
 			} else {
 				ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 			}
@@ -393,7 +393,7 @@ func (ln *Line) Compile() {
 func (ln *Line) Defaults(lidx int) {
 	ln.Expr.Expr = TheSettings.LineDefaults.Expr
 	if TheSettings.LineDefaults.LineColors.Color == colors.White {
-		ln.Colors.Color = colors.BinarySpacedAccentVariant(lidx)
+		ln.Colors.Color = colors.Spaced(lidx)
 	} else {
 		ln.Colors.Color = TheSettings.LineDefaults.LineColors.Color
 	}

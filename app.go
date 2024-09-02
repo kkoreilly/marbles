@@ -57,11 +57,11 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
 	gr.Vectors.Inc = math32.Vector2{X: n, Y: n}
 
-	gr.Objects.Root = &gr.Objects.SVG.Root
+	gr.Objects.Root = gr.Objects.SVG.Root
 	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
 	gr.Objects.Root.ViewBox.Size = gr.Vectors.Size
-	gr.Objects.Root.SetProp("stroke-width", "0.1dp")
-	gr.Objects.Root.SetProp("fill", colors.Scheme.Surface)
+	gr.Objects.Root.SetProperty("stroke-width", "0.1dp")
+	gr.Objects.Root.SetProperty("fill", colors.Scheme.Surface)
 
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
 
