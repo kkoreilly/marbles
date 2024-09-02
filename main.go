@@ -15,7 +15,9 @@ func app() {
 	TheSettings.Defaults()
 
 	b := core.NewBody("Marbles")
-	b.AddAppBar(TheGraph.AppBar)
+	b.AddTopBar(func(bar *core.Frame) {
+		core.NewToolbar(bar).Maker(TheGraph.MakeToolbar)
+	})
 
 	TheGraph.Init(b)
 

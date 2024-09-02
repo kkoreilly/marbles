@@ -12,18 +12,34 @@ import (
 )
 
 func (gr *Graph) MakeToolbar(p *tree.Plan) {
-	core.NewFuncButton(tb, gr.Graph).SetIcon(icons.ShowChart)
-	core.NewFuncButton(tb, gr.Run).SetIcon(icons.PlayArrow)
-	core.NewFuncButton(tb, gr.Stop)
-	core.NewFuncButton(tb, gr.Step)
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.Graph).SetIcon(icons.ShowChart)
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.Run).SetIcon(icons.PlayArrow)
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.Stop)
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.Step)
+	})
 
-	core.NewSeparator(tb)
-	core.NewFuncButton(tb, gr.AddLine).SetIcon(icons.Add)
+	tree.Add(p, func(w *core.Separator) {})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.AddLine).SetIcon(icons.Add)
+	})
 
-	core.NewSeparator(tb)
-	core.NewFuncButton(tb, gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
-	core.NewFuncButton(tb, gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
-	core.NewFuncButton(tb, gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
+	tree.Add(p, func(w *core.Separator) {})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.SelectNextMarble).SetText("Next marble").SetIcon(icons.ArrowForward)
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.StopSelecting).SetText("Unselect").SetIcon(icons.Close)
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
+	})
 }
 
 func (gr *Graph) MakeBasicElements(b *core.Body) {
