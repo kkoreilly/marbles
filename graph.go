@@ -1,4 +1,4 @@
-// Copyright (c) 2020, kplat1. All rights reserved.
+// Copyright (c) 2020, Kai O'Reilly. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -50,7 +50,7 @@ type State struct {
 	Step           int
 	Error          error
 	SelectedMarble int
-	File           string
+	File           core.Filename
 }
 
 // Line represents one line with an equation etc

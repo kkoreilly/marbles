@@ -6,6 +6,8 @@ import (
 	"cogentcore.org/core/colors"
 )
 
+// TODO: update settings to Cogent Core settings structure
+
 // Settings are the settings the app has
 type Settings struct {
 	LineDefaults LineDefaults `view:"no-inline" label:"Line Defaults"`
