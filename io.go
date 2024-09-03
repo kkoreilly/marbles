@@ -9,14 +9,14 @@ import (
 )
 
 // SaveLast saves to the last opened or saved file
-func (gr *Graph) SaveLast() {
+func (gr *Graph) SaveLast() { //types:add
 	if gr.State.File != "" {
 		TheGraph.SaveJSON(gr.State.File)
 	}
 }
 
 // OpenJSON opens a graph from a JSON file
-func (gr *Graph) OpenJSON(filename core.Filename) error {
+func (gr *Graph) OpenJSON(filename core.Filename) error { //types:add
 	b, err := os.ReadFile(string(filename))
 	if HandleError(err) {
 		return err
@@ -45,7 +45,7 @@ func (gr *Graph) OpenAutoSave() error {
 }
 
 // SaveJSON saves a graph to a JSON file
-func (gr *Graph) SaveJSON(filename core.Filename) error {
+func (gr *Graph) SaveJSON(filename core.Filename) error { //types:add
 	var b []byte
 	var err error
 	if TheSettings.PrettyJSON {

@@ -42,6 +42,20 @@ func (gr *Graph) MakeToolbar(p *tree.Plan) {
 	tree.Add(p, func(w *core.FuncButton) {
 		w.SetFunc(gr.TrackSelectedMarble).SetText("Track").SetIcon(icons.PinDrop)
 	})
+
+	tree.Add(p, func(w *core.Separator) {})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.OpenJSON).SetText("Open").SetIcon(icons.Open)
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.SaveLast).SetText("Save").SetIcon(icons.Save)
+		w.Updater(func() {
+			w.SetEnabled(gr.State.File != "")
+		})
+	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.SaveJSON).SetText("Save as").SetIcon(icons.SaveAs)
+	})
 }
 
 func (gr *Graph) MakeBasicElements(b *core.Body) {
