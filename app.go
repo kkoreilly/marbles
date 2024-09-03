@@ -7,6 +7,7 @@ import (
 	"cogentcore.org/core/core"
 	"cogentcore.org/core/events"
 	"cogentcore.org/core/icons"
+	"cogentcore.org/core/keymap"
 	"cogentcore.org/core/math32"
 	"cogentcore.org/core/styles"
 	"cogentcore.org/core/svg"
@@ -45,16 +46,18 @@ func (gr *Graph) MakeToolbar(p *tree.Plan) {
 
 	tree.Add(p, func(w *core.Separator) {})
 	tree.Add(p, func(w *core.FuncButton) {
-		w.SetFunc(gr.OpenJSON).SetText("Open").SetIcon(icons.Open)
+		w.SetFunc(gr.OpenJSON).SetText("Open").SetIcon(icons.Open).SetKey(keymap.Open)
+		w.Args[0].SetTag(`extension:".json"`)
 	})
 	tree.Add(p, func(w *core.FuncButton) {
-		w.SetFunc(gr.SaveLast).SetText("Save").SetIcon(icons.Save)
+		w.SetFunc(gr.SaveLast).SetText("Save").SetIcon(icons.Save).SetKey(keymap.Save)
 		w.Updater(func() {
 			w.SetEnabled(gr.State.File != "")
 		})
 	})
 	tree.Add(p, func(w *core.FuncButton) {
-		w.SetFunc(gr.SaveJSON).SetText("Save as").SetIcon(icons.SaveAs)
+		w.SetFunc(gr.SaveJSON).SetText("Save as").SetIcon(icons.SaveAs).SetKey(keymap.SaveAs)
+		w.Args[0].SetTag(`extension:".json"`)
 	})
 }
 

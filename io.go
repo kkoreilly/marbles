@@ -52,6 +52,7 @@ func (gr *Graph) SaveJSON(filename core.Filename) error { //types:add
 	}
 	gr.State.File = filename
 	// UpdateCurrentFileText()
+	gr.graphAndUpdate()
 	return nil
 }
 
