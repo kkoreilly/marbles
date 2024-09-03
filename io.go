@@ -24,7 +24,8 @@ func (gr *Graph) OpenJSON(filename core.Filename) error { //types:add
 		return err
 	}
 	gr.State.File = filename
-	// gr.AutoGraphAndUpdate()
+	// UpdateCurrentFileText()
+	gr.graphAndUpdate()
 	return nil
 }
 
@@ -34,7 +35,7 @@ func (gr *Graph) OpenAutoSave() error {
 	if HandleError(err) {
 		return err
 	}
-	// gr.AutoGraphAndUpdate()
+	gr.graphAndUpdate()
 	return nil
 }
 
@@ -50,6 +51,7 @@ func (gr *Graph) SaveJSON(filename core.Filename) error { //types:add
 		return err
 	}
 	gr.State.File = filename
+	// UpdateCurrentFileText()
 	return nil
 }
 

@@ -152,6 +152,7 @@ type Objects struct {
 	YAxis         *svg.Line
 
 	LinesTable *core.Table
+	ParamsForm *core.Form
 }
 
 // Lines is a collection of lines
@@ -212,9 +213,15 @@ func (gr *Graph) Graph() { //types:add
 	// }
 }
 
+func (gr *Graph) graphAndUpdate() {
+	gr.Graph()
+	gr.Objects.LinesTable.Update()
+	gr.Objects.ParamsForm.Update()
+}
+
 // Run runs the marbles for NSteps
 func (gr *Graph) Run() { //types:add
-	// gr.AutoSave()
+	gr.AutoSave()
 	go gr.RunMarbles()
 }
 

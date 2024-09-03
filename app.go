@@ -71,12 +71,12 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 		gr.Graph()
 	})
 
-	params := core.NewForm(lsp).SetStruct(&gr.Params)
-	params.OnChange(func(e events.Event) {
+	gr.Objects.ParamsForm = core.NewForm(lsp).SetStruct(&gr.Params)
+	gr.Objects.ParamsForm.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
 
-	lsp.SetSplits(0.7, 0.3)
+	lsp.SetSplits(0.6, 0.4)
 
 	gr.Objects.Graph = core.NewSVG(sp)
 	gr.Objects.Graph.SetReadOnly(false)
