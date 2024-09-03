@@ -97,10 +97,9 @@ func (gr *Graph) ResetMarbles() {
 func (gr *Graph) UpdateMarbles() bool {
 	if !gr.UpdateMarblesGraph() {
 		gr.UpdateMarblesData()
-	} else {
-		return true
+		return false
 	}
-	return false
+	return true
 }
 
 // UpdateMarblesGraph updates the graph of the marbles
@@ -275,7 +274,10 @@ func (gr *Graph) RunMarbles() {
 			gr.State.PrevTime = gr.State.Time
 			gr.State.Time += gr.Params.TimeStep.Eval(0, 0)
 		}
-		if gr.UpdateMarbles() {
+		gr.Objects.Graph.AsyncLock()
+		ok := gr.UpdateMarbles()
+		gr.Objects.Graph.AsyncUnlock()
+		if ok {
 			gr.State.Step--
 			continue
 		}
