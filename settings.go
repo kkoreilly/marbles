@@ -6,7 +6,7 @@ import (
 	"cogentcore.org/core/colors"
 )
 
-// TODO: update settings to Cogent Core settings structure
+// TODO: update settings to use Cogent Core settings structure
 
 // Settings are the settings the app has
 type Settings struct {

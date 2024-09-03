@@ -20,6 +20,7 @@ func main() {
 	})
 
 	TheGraph.Init(b)
+	TheGraph.OpenAutoSave()
 
 	b.RunMainWindow()
 }
