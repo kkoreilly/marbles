@@ -141,6 +141,8 @@ type Vectors struct {
 
 // Objects contains the svg graph and the svg groups, plus the axes
 type Objects struct {
+	Body *core.Body
+
 	Graph         *core.SVG
 	SVG           *svg.SVG
 	Root          *svg.Root
@@ -170,8 +172,9 @@ var FunctionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "
 // TheGraph is current graph
 var TheGraph Graph
 
-// Init sets up the graph for the coreen body. It should only be called once.
+// Init sets up the graph for the core body. It should only be called once.
 func (gr *Graph) Init(b *core.Body) {
+	gr.Objects.Body = b
 	gr.Defaults()
 	gr.MakeBasicElements(b)
 	gr.SetFunctionsTo(DefaultFunctions)
@@ -215,8 +218,7 @@ func (gr *Graph) Graph() { //types:add
 
 func (gr *Graph) graphAndUpdate() {
 	gr.Graph()
-	gr.Objects.LinesTable.Update()
-	gr.Objects.ParamsForm.Update()
+	gr.Objects.Body.Scene.Update()
 }
 
 // Run runs the marbles for NSteps
