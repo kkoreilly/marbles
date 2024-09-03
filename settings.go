@@ -139,7 +139,7 @@ func (ts *TrackingSettings) Defaults() {
 
 // BasicDefaults sets the line defaults to their defaults
 func (ln *LineDefaults) BasicDefaults() {
-	ln.Expr = "x"
+	ln.Expr = "sinx"
 	ln.LineColors.Color = colors.White
 	ln.Bounce = "0.95"
 	ln.GraphIf = "true"

@@ -504,8 +504,8 @@ func (pr *Params) Defaults() {
 
 // BasicDefaults sets the default defaults for the graph parameters
 func (pr *Params) BasicDefaults() {
-	pr.NMarbles = 10
-	pr.MarbleStartX.Expr = "rand-0.5"
+	pr.NMarbles = 100
+	pr.MarbleStartX.Expr = "10(rand-0.5)"
 	pr.MarbleStartY.Expr = "10-2n/nmarbles"
 	pr.StartVelY.Expr.Expr = "0"
 	pr.StartVelX.Expr.Expr = "0"
