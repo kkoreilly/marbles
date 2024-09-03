@@ -59,6 +59,9 @@ func (gr *Graph) MakeToolbar(p *tree.Plan) {
 		w.SetFunc(gr.SaveJSON).SetText("Save as").SetIcon(icons.SaveAs).SetKey(keymap.SaveAs)
 		w.Args[0].SetTag(`extension:".json"`)
 	})
+	tree.Add(p, func(w *core.FuncButton) {
+		w.SetFunc(gr.Reset).SetIcon(icons.Reset)
+	})
 }
 
 func (gr *Graph) MakeBasicElements(b *core.Body) {
