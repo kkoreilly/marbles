@@ -76,8 +76,6 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 		gr.Graph()
 	})
 
-	lsp.SetSplits(0.6, 0.4)
-
 	gr.Objects.Graph = core.NewSVG(sp)
 	gr.Objects.Graph.SetReadOnly(false)
 
@@ -97,8 +95,6 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	gr.Objects.Root.SetProperty("fill", colors.Scheme.Surface)
 
 	svg.NewCircle(gr.Objects.Root).SetRadius(50)
-
-	sp.SetSplits(0.5, 0.5)
 
 	gr.Objects.Lines = svg.NewGroup(gr.Objects.Root)
 	gr.Objects.Lines.Maker(func(p *tree.Plan) {
