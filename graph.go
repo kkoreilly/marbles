@@ -86,10 +86,10 @@ type Params struct { //types:add
 	MarbleStartY Expr
 
 	// Starting horizontal velocity of the marbles
-	StartVelY Param `view:"inline" label:"Starting velocity y"`
+	StartVelocityY Param `view:"inline" label:"Starting velocity y"`
 
 	// Starting vertical velocity of the marbles
-	StartVelX Param `view:"inline" label:"Starting velocity x"`
+	StartVelocityX Param `view:"inline" label:"Starting velocity x"`
 
 	// how fast to move along velocity vector -- lower = smoother, more slow-mo
 	UpdateRate Param `view:"inline"`
@@ -312,8 +312,8 @@ func (gr *Graph) CompileExprs() {
 
 // CompileParams compiles all of the graph parameter expressions
 func (gr *Graph) CompileParams() {
-	gr.Params.StartVelY.Compile()
-	gr.Params.StartVelX.Compile()
+	gr.Params.StartVelocityY.Compile()
+	gr.Params.StartVelocityX.Compile()
 	gr.Params.UpdateRate.Compile()
 	gr.Params.YForce.Compile()
 	gr.Params.XForce.Compile()
@@ -491,8 +491,8 @@ func (pr *Params) Defaults() {
 	pr.NMarbles = TheSettings.GraphDefaults.NMarbles
 	pr.MarbleStartX = TheSettings.GraphDefaults.MarbleStartX
 	pr.MarbleStartY = TheSettings.GraphDefaults.MarbleStartY
-	pr.StartVelY = TheSettings.GraphDefaults.StartVelY
-	pr.StartVelX = TheSettings.GraphDefaults.StartVelX
+	pr.StartVelocityY = TheSettings.GraphDefaults.StartVelocityY
+	pr.StartVelocityX = TheSettings.GraphDefaults.StartVelocityX
 	pr.UpdateRate = TheSettings.GraphDefaults.UpdateRate
 	pr.YForce = TheSettings.GraphDefaults.YForce
 	pr.XForce = TheSettings.GraphDefaults.XForce
@@ -507,8 +507,8 @@ func (pr *Params) BasicDefaults() {
 	pr.NMarbles = 100
 	pr.MarbleStartX.Expr = "10(rand-0.5)"
 	pr.MarbleStartY.Expr = "10-2n/nmarbles"
-	pr.StartVelY.Expr.Expr = "0"
-	pr.StartVelX.Expr.Expr = "0"
+	pr.StartVelocityY.Expr.Expr = "0"
+	pr.StartVelocityX.Expr.Expr = "0"
 	pr.UpdateRate.Expr.Expr = ".02"
 	pr.TimeStep.Expr.Expr = "0.01"
 	pr.YForce.Expr.Expr = "-0.1"

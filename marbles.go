@@ -14,8 +14,8 @@ import (
 // Marble contains the information of a marble
 type Marble struct {
 	Pos          math32.Vector2
-	Vel          math32.Vector2
-	PrvPos       math32.Vector2
+	Velocity     math32.Vector2
+	PrevPos      math32.Vector2
 	Color        color.RGBA
 	TrackingInfo TrackingInfo
 }
@@ -68,10 +68,10 @@ func (m *Marble) Init(n int) {
 
 	m.Pos = math32.Vector2{X: float32(xPos), Y: float32(yPos)}
 	// fmt.Printf("mb.Pos: %v \n", mb.Pos)
-	startY := TheGraph.Params.StartVelY.Eval(float64(m.Pos.X), float64(m.Pos.Y))
-	startX := TheGraph.Params.StartVelX.Eval(float64(m.Pos.X), float64(m.Pos.Y))
-	m.Vel = math32.Vector2{X: float32(startX), Y: float32(startY)}
-	m.PrvPos = m.Pos
+	startY := TheGraph.Params.StartVelocityY.Eval(float64(m.Pos.X), float64(m.Pos.Y))
+	startX := TheGraph.Params.StartVelocityX.Eval(float64(m.Pos.X), float64(m.Pos.Y))
+	m.Velocity = math32.Vector2{X: float32(startX), Y: float32(startY)}
+	m.PrevPos = m.Pos
 	tls := TheGraph.Params.TrackingSettings
 	m.TrackingInfo.Track = tls.TrackByDefault
 }
@@ -150,10 +150,10 @@ func (gr *Graph) UpdateMarblesData() {
 
 	for _, m := range gr.Marbles {
 
-		m.Vel.Y += float32(gr.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
-		m.Vel.X += float32(gr.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
+		m.Velocity.Y += float32(gr.Params.YForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
+		m.Velocity.X += float32(gr.Params.XForce.Eval(float64(m.Pos.X), float64(m.Pos.Y))) * ((gr.Vectors.Size.Y * gr.Vectors.Size.X) / 400)
 		updtrate := float32(gr.Params.UpdateRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))
-		npos := m.Pos.Add(m.Vel.MulScalar(updtrate))
+		npos := m.Pos.Add(m.Velocity.MulScalar(updtrate))
 		ppos := m.Pos
 		setColor := colors.White
 		for _, ln := range gr.Lines {
@@ -171,13 +171,13 @@ func (gr *Graph) UpdateMarblesData() {
 			if m.Collided(ln, npos, yp, yn) {
 				ln.TimesHit++
 				setColor = ln.Colors.ColorSwitch
-				m.Pos, m.Vel = m.CalcCollide(ln, npos, yp, yn, yno)
+				m.Pos, m.Velocity = m.CalcCollide(ln, npos, yp, yn, yno)
 				break
 			}
 		}
 
-		m.PrvPos = ppos
-		m.Pos = m.Pos.Add(m.Vel.MulScalar(float32(gr.Params.UpdateRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
+		m.PrevPos = ppos
+		m.Pos = m.Pos.Add(m.Velocity.MulScalar(float32(gr.Params.UpdateRate.Eval(float64(m.Pos.X), float64(m.Pos.Y)))))
 		if setColor != colors.White {
 			m.Color = setColor
 		}
@@ -226,7 +226,7 @@ func (m *Marble) CalcCollide(ln *Line, npos math32.Vector2, yp, yn, yno float64)
 	angLn := math32.Atan2(float32(yr-yl), 0.02)
 	angN := angLn + math.Pi/2 // + 90 deg
 
-	angI := math32.Atan2(m.Vel.Y, m.Vel.X)
+	angI := math32.Atan2(m.Velocity.Y, m.Velocity.X)
 	angII := angI + math.Pi
 
 	angNII := angN - angII
@@ -234,8 +234,8 @@ func (m *Marble) CalcCollide(ln *Line, npos math32.Vector2, yp, yn, yno float64)
 
 	Bounce := ln.Bounce.EvalWithY(float64(npos.X), TheGraph.State.Time, ln.TimesHit, float64(yi))
 
-	nvx := float32(Bounce) * (m.Vel.X*math32.Cos(angR) - m.Vel.Y*math32.Sin(angR))
-	nvy := float32(Bounce) * (m.Vel.X*math32.Sin(angR) + m.Vel.Y*math32.Cos(angR))
+	nvx := float32(Bounce) * (m.Velocity.X*math32.Cos(angR) - m.Velocity.Y*math32.Sin(angR))
+	nvy := float32(Bounce) * (m.Velocity.X*math32.Sin(angR) + m.Velocity.Y*math32.Cos(angR))
 
 	vel := math32.Vector2{X: nvx, Y: nvy}
 	pos := math32.Vector2{X: xi, Y: yi + float32(yn-yno)} // adding change from prev time to current time in same pos fixes collisions with moving lines
