@@ -14,8 +14,8 @@ func (gr *Graph) draw(pc *paint.Context) {
 // canvasCoord converts the given coordinate to a normalized 0-1 canvas coordinate.
 func (gr *Graph) canvasCoord(v math32.Vector2) math32.Vector2 {
 	res := math32.Vector2{}
-	res.X = v.X / (gr.Vectors.Max.X - gr.Vectors.Min.X)
-	res.Y = 1 - v.Y/(gr.Vectors.Max.Y-gr.Vectors.Min.Y)
+	res.X = (v.X - gr.Vectors.Min.X) / (gr.Vectors.Max.X - gr.Vectors.Min.X)
+	res.Y = (gr.Vectors.Max.Y - v.Y) / (gr.Vectors.Max.Y - gr.Vectors.Min.Y)
 	return res
 }
 
