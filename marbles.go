@@ -104,7 +104,6 @@ func (gr *Graph) UpdateMarbles() bool {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func (gr *Graph) UpdateMarblesGraph() bool {
-	gr.Lines.Graph()
 	// for i, m := range gr.Marbles {
 	// 	circle := gr.Objects.Marbles.Child(i).(*svg.Circle)
 	// 	circle.Pos = m.Pos

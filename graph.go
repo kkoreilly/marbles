@@ -6,7 +6,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"image/color"
 	"sort"
 	"strings"
@@ -168,9 +167,7 @@ func (gr *Graph) Init(b *core.Body) {
 	gr.Defaults()
 	gr.MakeBasicElements(b)
 	gr.SetFunctionsTo(DefaultFunctions)
-	gr.InitCoords()
 	gr.CompileExprs()
-	gr.Lines.Graph()
 	gr.ResetMarbles()
 }
 
@@ -199,7 +196,6 @@ func (gr *Graph) Graph() { //types:add
 	if gr.State.Error != nil {
 		return
 	}
-	gr.Lines.Graph()
 	SetCompleteWords(TheGraph.Functions)
 	// if gr.State.Error == nil {
 	// 	errorText.SetText("Graphed successfully")
@@ -403,86 +399,6 @@ func (ls *Lines) Defaults() {
 	(*ls)[0] = &ln
 	ln.Defaults(0)
 
-}
-
-// Graph graphs the lines
-func (ls *Lines) Graph() {
-	TheGraph.EvalMu.Lock()
-	defer TheGraph.EvalMu.Unlock()
-
-	if !TheGraph.State.Running {
-		// TheGraph.Objects.Lines.UpdateFromMake()
-	}
-	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
-		sizeFromCenter := math32.Vector2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
-		center := math32.Vector2{X: float32(TheGraph.Params.CenterX.Eval(0, 0)), Y: float32(TheGraph.Params.CenterY.Eval(0, 0))}
-		TheGraph.Vectors.Min = center.Sub(sizeFromCenter)
-		TheGraph.Vectors.Max = center.Add(sizeFromCenter)
-		TheGraph.Vectors.Size = sizeFromCenter.MulScalar(2)
-		// TheGraph.Objects.Root.ViewBox.Min = math32.Vector2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*GraphViewBoxSize}
-		// TheGraph.Objects.Root.ViewBox.Size = TheGraph.Vectors.Size
-		TheGraph.UpdateCoords()
-	}
-	for i, ln := range *ls {
-		// If the line doesn't change over time then we don't need to keep graphing it while running marbles
-		if !ln.Changes && TheGraph.State.Running && !TheGraph.Params.CenterX.Changes && !TheGraph.Params.CenterY.Changes {
-			continue
-		}
-		ln.Graph(i)
-	}
-}
-
-// Graph graphs a single line
-func (ln *Line) Graph(lidx int) {
-	// path := TheGraph.Objects.Lines.Child(lidx).(*svg.Path)
-	// path.SetProperty("fill", "none")
-	// path.SetProperty("stroke", ln.Colors.Color)
-	ps := ""
-	start := true
-	skipped := false
-	for x := TheGraph.Vectors.Min.X; x < TheGraph.Vectors.Max.X; x += TheGraph.Vectors.Inc.X {
-		if TheGraph.State.Error != nil {
-			return
-		}
-		fx := float64(x)
-		y := ln.Expr.Eval(fx, TheGraph.State.Time, ln.TimesHit)
-		GraphIf := ln.GraphIf.EvalBool(fx, y, TheGraph.State.Time, ln.TimesHit)
-		if GraphIf && TheGraph.Vectors.Min.Y < float32(y) && TheGraph.Vectors.Max.Y > float32(y) {
-			if start || skipped {
-				ps += fmt.Sprintf("M %v %v ", x, y)
-				start, skipped = false, false
-			} else {
-				ps += fmt.Sprintf("L %v %v ", x, y)
-			}
-		} else {
-			skipped = true
-		}
-	}
-	// path.SetData(ps)
-}
-
-// InitCoords makes the x and y axis
-func (gr *Graph) InitCoords() {
-	// gr.Objects.Coords.DeleteChildren()
-
-	// gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords)
-	// gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
-	// gr.Objects.XAxis.End.X = gr.Vectors.Max.X
-	// gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
-
-	// gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords)
-	// gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
-	// gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
-	// gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
-}
-
-// UpdateCoords updates the x and y axis
-func (gr *Graph) UpdateCoords() {
-	// gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
-	// gr.Objects.XAxis.Start, gr.Objects.XAxis.End = math32.Vector2{X: gr.Vectors.Min.X, Y: 0}, math32.Vector2{X: gr.Vectors.Max.X, Y: 0}
-
-	// gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
-	// gr.Objects.YAxis.Start, gr.Objects.YAxis.End = math32.Vector2{X: 0, Y: gr.Vectors.Min.Y}, math32.Vector2{X: 0, Y: gr.Vectors.Max.Y}
 }
 
 // Defaults sets the graph parameters to the default settings
