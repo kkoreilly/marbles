@@ -17,7 +17,6 @@ import (
 	"cogentcore.org/core/core"
 	"cogentcore.org/core/math32"
 	"cogentcore.org/core/parse/complete"
-	"cogentcore.org/core/svg"
 )
 
 // Graph contains the lines and parameters of a graph
@@ -141,17 +140,8 @@ type Vectors struct {
 
 // Objects contains the svg graph and the svg groups, plus the axes
 type Objects struct {
-	Body *core.Body
-
-	Graph         *core.SVG
-	SVG           *svg.SVG
-	Root          *svg.Root
-	Lines         *svg.Group
-	Marbles       *svg.Group
-	Coords        *svg.Group
-	TrackingLines *svg.Group
-	XAxis         *svg.Line
-	YAxis         *svg.Line
+	Body  *core.Body
+	Graph *core.Canvas
 
 	LinesTable *core.Table
 	ParamsForm *core.Form
@@ -244,7 +234,7 @@ func (gr *Graph) Step() { //types:add
 // StopSelecting stops selecting current marble
 func (gr *Graph) StopSelecting() { //types:add
 	if gr.State.SelectedMarble != -1 {
-		gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
+		// gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
 		gr.State.SelectedMarble = -1
 	}
 	if !gr.State.Running {
@@ -421,7 +411,7 @@ func (ls *Lines) Graph() {
 	defer TheGraph.EvalMu.Unlock()
 
 	if !TheGraph.State.Running {
-		TheGraph.Objects.Lines.UpdateFromMake()
+		// TheGraph.Objects.Lines.UpdateFromMake()
 	}
 	if !TheGraph.State.Running || TheGraph.Params.CenterX.Changes || TheGraph.Params.CenterY.Changes {
 		sizeFromCenter := math32.Vector2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
@@ -429,8 +419,8 @@ func (ls *Lines) Graph() {
 		TheGraph.Vectors.Min = center.Sub(sizeFromCenter)
 		TheGraph.Vectors.Max = center.Add(sizeFromCenter)
 		TheGraph.Vectors.Size = sizeFromCenter.MulScalar(2)
-		TheGraph.Objects.Root.ViewBox.Min = math32.Vector2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*GraphViewBoxSize}
-		TheGraph.Objects.Root.ViewBox.Size = TheGraph.Vectors.Size
+		// TheGraph.Objects.Root.ViewBox.Min = math32.Vector2{X: TheGraph.Vectors.Min.X, Y: -TheGraph.Vectors.Min.Y - 2*GraphViewBoxSize}
+		// TheGraph.Objects.Root.ViewBox.Size = TheGraph.Vectors.Size
 		TheGraph.UpdateCoords()
 	}
 	for i, ln := range *ls {
@@ -444,9 +434,9 @@ func (ls *Lines) Graph() {
 
 // Graph graphs a single line
 func (ln *Line) Graph(lidx int) {
-	path := TheGraph.Objects.Lines.Child(lidx).(*svg.Path)
-	path.SetProperty("fill", "none")
-	path.SetProperty("stroke", ln.Colors.Color)
+	// path := TheGraph.Objects.Lines.Child(lidx).(*svg.Path)
+	// path.SetProperty("fill", "none")
+	// path.SetProperty("stroke", ln.Colors.Color)
 	ps := ""
 	start := true
 	skipped := false
@@ -468,31 +458,31 @@ func (ln *Line) Graph(lidx int) {
 			skipped = true
 		}
 	}
-	path.SetData(ps)
+	// path.SetData(ps)
 }
 
 // InitCoords makes the x and y axis
 func (gr *Graph) InitCoords() {
-	gr.Objects.Coords.DeleteChildren()
+	// gr.Objects.Coords.DeleteChildren()
 
-	gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords)
-	gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
-	gr.Objects.XAxis.End.X = gr.Vectors.Max.X
-	gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
+	// gr.Objects.XAxis = svg.NewLine(gr.Objects.Coords)
+	// gr.Objects.XAxis.Start.X = gr.Vectors.Min.X
+	// gr.Objects.XAxis.End.X = gr.Vectors.Max.X
+	// gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
 
-	gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords)
-	gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
-	gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
-	gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
+	// gr.Objects.YAxis = svg.NewLine(gr.Objects.Coords)
+	// gr.Objects.YAxis.Start.Y = gr.Vectors.Min.Y
+	// gr.Objects.YAxis.End.Y = gr.Vectors.Max.Y
+	// gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
 }
 
 // UpdateCoords updates the x and y axis
 func (gr *Graph) UpdateCoords() {
-	gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
-	gr.Objects.XAxis.Start, gr.Objects.XAxis.End = math32.Vector2{X: gr.Vectors.Min.X, Y: 0}, math32.Vector2{X: gr.Vectors.Max.X, Y: 0}
+	// gr.Objects.XAxis.SetProperty("stroke", colors.Scheme.Outline)
+	// gr.Objects.XAxis.Start, gr.Objects.XAxis.End = math32.Vector2{X: gr.Vectors.Min.X, Y: 0}, math32.Vector2{X: gr.Vectors.Max.X, Y: 0}
 
-	gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
-	gr.Objects.YAxis.Start, gr.Objects.YAxis.End = math32.Vector2{X: 0, Y: gr.Vectors.Min.Y}, math32.Vector2{X: 0, Y: gr.Vectors.Max.Y}
+	// gr.Objects.YAxis.SetProperty("stroke", colors.Scheme.Outline)
+	// gr.Objects.YAxis.Start, gr.Objects.YAxis.End = math32.Vector2{X: 0, Y: gr.Vectors.Min.Y}, math32.Vector2{X: 0, Y: gr.Vectors.Max.Y}
 }
 
 // Defaults sets the graph parameters to the default settings

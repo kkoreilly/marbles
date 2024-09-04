@@ -1,16 +1,12 @@
 package main
 
 import (
-	"strconv"
-
-	"cogentcore.org/core/colors"
 	"cogentcore.org/core/core"
 	"cogentcore.org/core/events"
 	"cogentcore.org/core/icons"
 	"cogentcore.org/core/keymap"
 	"cogentcore.org/core/math32"
 	"cogentcore.org/core/styles"
-	"cogentcore.org/core/svg"
 	"cogentcore.org/core/tree"
 )
 
@@ -82,11 +78,7 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 		gr.Graph()
 	})
 
-	gr.Objects.Graph = core.NewSVG(sp)
-	gr.Objects.Graph.SetReadOnly(false)
-
-	gr.Objects.SVG = gr.Objects.Graph.SVG
-	gr.Objects.SVG.InvertY = true
+	gr.Objects.Graph = core.NewCanvas(sp).SetDraw(gr.draw)
 
 	gr.Vectors.Min = math32.Vector2{X: -GraphViewBoxSize, Y: -GraphViewBoxSize}
 	gr.Vectors.Max = math32.Vector2{X: GraphViewBoxSize, Y: GraphViewBoxSize}
@@ -94,24 +86,16 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
 	gr.Vectors.Inc = math32.Vector2{X: n, Y: n}
 
-	gr.Objects.Root = gr.Objects.SVG.Root
-	gr.Objects.Root.ViewBox.Min = gr.Vectors.Min
-	gr.Objects.Root.ViewBox.Size = gr.Vectors.Size
-	gr.Objects.Root.SetProperty("stroke-width", "0.1dp")
-	gr.Objects.Root.SetProperty("fill", colors.Scheme.Surface)
+	// gr.Objects.Lines = svg.NewGroup(gr.Objects.Root)
+	// gr.Objects.Lines.Maker(func(p *tree.Plan) {
+	// 	for i := range len(gr.Lines) {
+	// 		tree.AddAt(p, strconv.Itoa(i), func(w *svg.Path) {})
+	// 	}
+	// })
+	// gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root)
+	// gr.Objects.Coords = svg.NewGroup(gr.Objects.Root)
+	// gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root)
 
-	svg.NewCircle(gr.Objects.Root).SetRadius(50)
-
-	gr.Objects.Lines = svg.NewGroup(gr.Objects.Root)
-	gr.Objects.Lines.Maker(func(p *tree.Plan) {
-		for i := range len(gr.Lines) {
-			tree.AddAt(p, strconv.Itoa(i), func(w *svg.Path) {})
-		}
-	})
-	gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root)
-	gr.Objects.Coords = svg.NewGroup(gr.Objects.Root)
-	gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root)
-
-	gr.Objects.Coords.SetProperty("stroke-width", "0.05dp")
-	gr.Objects.TrackingLines.SetProperty("stroke-width", "0.05dp")
+	// gr.Objects.Coords.SetProperty("stroke-width", "0.05dp")
+	// gr.Objects.TrackingLines.SetProperty("stroke-width", "0.05dp")
 }

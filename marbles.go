@@ -30,21 +30,21 @@ type TrackingInfo struct {
 
 // GraphMarblesInit initializes the graph drawing of the marbles
 func (gr *Graph) GraphMarblesInit() {
-	gr.Objects.Marbles.DeleteChildren()
-	gr.Objects.TrackingLines.DeleteChildren()
+	// gr.Objects.Marbles.DeleteChildren()
+	// gr.Objects.TrackingLines.DeleteChildren()
 	for i, m := range gr.Marbles {
-		svg.NewGroup(gr.Objects.TrackingLines)
-		size := float32(TheSettings.MarbleSettings.MarbleSize) * gr.Vectors.Size.Y / 20
+		// svg.NewGroup(gr.Objects.TrackingLines)
+		// size := float32(TheSettings.MarbleSettings.MarbleSize) * gr.Vectors.Size.Y / 20
 		// fmt.Printf("size: %v \n", size)
-		circle := svg.NewCircle(gr.Objects.Marbles).SetPos(m.Pos).SetRadius(size)
-		circle.SetProperty("stroke", "none")
-		circle.SetProperty("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
+		// circle := svg.NewCircle(gr.Objects.Marbles).SetPos(m.Pos).SetRadius(size)
+		// circle.SetProperty("stroke", "none")
+		// circle.SetProperty("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
 			m.Color = colors.Spaced(i)
-			circle.SetProperty("fill", m.Color)
+			// circle.SetProperty("fill", m.Color)
 		} else {
 			m.Color = errors.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
-			circle.SetProperty("fill", TheSettings.MarbleSettings.MarbleColor)
+			// circle.SetProperty("fill", TheSettings.MarbleSettings.MarbleColor)
 		}
 		m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
 		m.TrackingInfo.StartedTrackingAt = 0
@@ -105,13 +105,12 @@ func (gr *Graph) UpdateMarbles() bool {
 // UpdateMarblesGraph updates the graph of the marbles
 func (gr *Graph) UpdateMarblesGraph() bool {
 	gr.Lines.Graph()
-	for i, m := range gr.Marbles {
-		circle := gr.Objects.Marbles.Child(i).(*svg.Circle)
-		circle.Pos = m.Pos
-		circle.SetProperty("fill", m.Color)
-		m.UpdateTrackingLines(circle, i)
-
-	}
+	// for i, m := range gr.Marbles {
+	// 	circle := gr.Objects.Marbles.Child(i).(*svg.Circle)
+	// 	circle.Pos = m.Pos
+	// 	circle.SetProperty("fill", m.Color)
+	// 	m.UpdateTrackingLines(circle, i)
+	// }
 
 	gr.Objects.Graph.NeedsRender()
 	return false
@@ -125,19 +124,19 @@ func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
 		if fslu <= 100/tls.Accuracy {
 			m.TrackingInfo.FramesSinceLastUpdate++
 		} else {
-			svgGroup := TheGraph.Objects.TrackingLines.Child(idx)
-			lpos := m.TrackingInfo.LastPos
-			m.TrackingInfo.FramesSinceLastUpdate = 0
-			m.TrackingInfo.LastPos = m.Pos
-			if TheGraph.State.Step-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
-				TheGraph.Objects.TrackingLines.Child(idx).AsTree().DeleteChildAt(0)
-			}
-			line := svg.NewLine(svgGroup).SetStart(lpos).SetEnd(m.Pos)
-			clr := tls.LineColor
-			if clr == colors.White {
-				clr = errors.Log1(colors.FromAny(circle.Property("fill"), colors.White))
-			}
-			line.SetProperty("stroke", clr)
+			// svgGroup := TheGraph.Objects.TrackingLines.Child(idx)
+			// lpos := m.TrackingInfo.LastPos
+			// m.TrackingInfo.FramesSinceLastUpdate = 0
+			// m.TrackingInfo.LastPos = m.Pos
+			// if TheGraph.State.Step-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
+			// 	TheGraph.Objects.TrackingLines.Child(idx).AsTree().DeleteChildAt(0)
+			// }
+			// line := svg.NewLine(svgGroup).SetStart(lpos).SetEnd(m.Pos)
+			// clr := tls.LineColor
+			// if clr == colors.White {
+			// 	clr = errors.Log1(colors.FromAny(circle.Property("fill"), colors.White))
+			// }
+			// line.SetProperty("stroke", clr)
 		}
 	}
 }
@@ -295,7 +294,7 @@ func (gr *Graph) RunMarbles() {
 // ToggleTrack toogles tracking setting for a certain marble
 func (m *Marble) ToggleTrack(idx int) {
 	m.TrackingInfo.Track = !m.TrackingInfo.Track
-	TheGraph.Objects.TrackingLines.Child(idx).AsTree().DeleteChildren()
+	// TheGraph.Objects.TrackingLines.Child(idx).AsTree().DeleteChildren()
 	m.TrackingInfo.FramesSinceLastUpdate = 0
 	m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
 	m.TrackingInfo.StartedTrackingAt = TheGraph.State.Step
@@ -307,7 +306,7 @@ func (gr *Graph) SelectNextMarble() { //types:add
 		defer gr.Objects.Graph.NeedsRender()
 	}
 	if gr.State.SelectedMarble != -1 {
-		gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
+		// gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
 	}
 	gr.State.SelectedMarble++
 	if gr.State.SelectedMarble >= len(gr.Marbles) {
@@ -324,5 +323,5 @@ func (gr *Graph) SelectNextMarble() { //types:add
 		return
 
 	}
-	gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "yellow")
+	// gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "yellow")
 }
