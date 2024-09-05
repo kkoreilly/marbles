@@ -13,6 +13,7 @@ func (gr *Graph) draw(pc *paint.Context) {
 	gr.updateCoords()
 	gr.drawAxes(pc)
 	gr.drawLines(pc)
+	gr.drawMarbles(pc)
 }
 
 func (gr *Graph) updateCoords() {
@@ -83,4 +84,13 @@ func (ln *Line) draw(gr *Graph, pc *paint.Context) {
 	}
 	pc.StrokeStyle.Color = colors.Uniform(ln.Colors.Color)
 	pc.Stroke()
+}
+
+func (gr *Graph) drawMarbles(pc *paint.Context) {
+	for _, m := range gr.Marbles {
+		pos := gr.canvasCoord(m.Pos)
+		pc.DrawCircle(pos.X, pos.Y, 0.005)
+		pc.FillStyle.Color = colors.Uniform(m.Color)
+		pc.Fill()
+	}
 }

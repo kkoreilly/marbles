@@ -104,13 +104,6 @@ func (gr *Graph) UpdateMarbles() bool {
 
 // UpdateMarblesGraph updates the graph of the marbles
 func (gr *Graph) UpdateMarblesGraph() bool {
-	// for i, m := range gr.Marbles {
-	// 	circle := gr.Objects.Marbles.Child(i).(*svg.Circle)
-	// 	circle.Pos = m.Pos
-	// 	circle.SetProperty("fill", m.Color)
-	// 	m.UpdateTrackingLines(circle, i)
-	// }
-
 	gr.Objects.Graph.NeedsRender()
 	return false
 }
