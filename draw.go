@@ -88,8 +88,13 @@ func (ln *Line) draw(gr *Graph, pc *paint.Context) {
 }
 
 func (gr *Graph) drawMarbles(pc *paint.Context) {
-	for _, m := range gr.Marbles {
+	for i, m := range gr.Marbles {
 		pos := gr.canvasCoord(m.Pos)
+		if i == gr.State.SelectedMarble {
+			pc.DrawCircle(pos.X, pos.Y, 0.02)
+			pc.FillStyle.Color = colors.Scheme.Warn.Container
+			pc.Fill()
+		}
 		pc.DrawCircle(pos.X, pos.Y, 0.005)
 		pc.FillStyle.Color = colors.Uniform(m.Color)
 		pc.Fill()

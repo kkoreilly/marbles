@@ -279,9 +279,6 @@ func (gr *Graph) SelectNextMarble() { //types:add
 	if !gr.State.Running {
 		defer gr.Objects.Graph.NeedsRender()
 	}
-	if gr.State.SelectedMarble != -1 {
-		// gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
-	}
 	gr.State.SelectedMarble++
 	if gr.State.SelectedMarble >= len(gr.Marbles) {
 		gr.State.SelectedMarble = 0
@@ -295,7 +292,5 @@ func (gr *Graph) SelectNextMarble() { //types:add
 			}
 		}
 		return
-
 	}
-	// gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "yellow")
 }
