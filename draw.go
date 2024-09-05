@@ -103,6 +103,8 @@ func (ln *Line) draw(gr *Graph, pc *paint.Context) {
 		}
 	}
 	pc.StrokeStyle.Color = colors.Uniform(ln.Colors.Color)
+	pc.StrokeStyle.Width.Dp(4)
+	pc.ToDots()
 	pc.Stroke()
 }
 
