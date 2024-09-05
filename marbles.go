@@ -3,12 +3,12 @@ package main
 import (
 	"image/color"
 	"math"
+	"slices"
 	"time"
 
 	"cogentcore.org/core/base/errors"
 	"cogentcore.org/core/colors"
 	"cogentcore.org/core/math32"
-	"cogentcore.org/core/svg"
 )
 
 // Marble contains the information of a marble
@@ -20,10 +20,12 @@ type Marble struct {
 	TrackingInfo TrackingInfo
 }
 
-// TrackingInfo contains all of the tracking info for a marbles
+// TrackingInfo contains all of the tracking info for a marble.
 type TrackingInfo struct {
-	Track                 bool
-	LastPos               math32.Vector2
+	Track bool
+	// History contains all of the previous positions,
+	// with the most recent last.
+	History               []math32.Vector2
 	FramesSinceLastUpdate int
 	StartedTrackingAt     int
 }
@@ -36,7 +38,7 @@ func (gr *Graph) GraphMarblesInit() {
 		} else {
 			m.Color = errors.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
 		}
-		m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
+		m.TrackingInfo.History = []math32.Vector2{m.Pos}
 		m.TrackingInfo.StartedTrackingAt = 0
 	}
 }
@@ -90,28 +92,21 @@ func (gr *Graph) UpdateMarbles() bool {
 	return false
 }
 
-// UpdateTrackingLines adds a tracking line for a marble, if needed
-func (m *Marble) UpdateTrackingLines(circle *svg.Circle, idx int) {
+// UpdateTracking updates the tracking info for the marble.
+func (m *Marble) UpdateTracking() {
+	if !m.TrackingInfo.Track {
+		return
+	}
 	tls := TheGraph.Params.TrackingSettings
-	if m.TrackingInfo.Track {
-		fslu := m.TrackingInfo.FramesSinceLastUpdate
-		if fslu <= 100/tls.Accuracy {
-			m.TrackingInfo.FramesSinceLastUpdate++
-		} else {
-			// svgGroup := TheGraph.Objects.TrackingLines.Child(idx)
-			// lpos := m.TrackingInfo.LastPos
-			// m.TrackingInfo.FramesSinceLastUpdate = 0
-			// m.TrackingInfo.LastPos = m.Pos
-			// if TheGraph.State.Step-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
-			// 	TheGraph.Objects.TrackingLines.Child(idx).AsTree().DeleteChildAt(0)
-			// }
-			// line := svg.NewLine(svgGroup).SetStart(lpos).SetEnd(m.Pos)
-			// clr := tls.LineColor
-			// if clr == colors.White {
-			// 	clr = errors.Log1(colors.FromAny(circle.Property("fill"), colors.White))
-			// }
-			// line.SetProperty("stroke", clr)
-		}
+	fslu := m.TrackingInfo.FramesSinceLastUpdate
+	if fslu <= 100/tls.Accuracy {
+		m.TrackingInfo.FramesSinceLastUpdate++
+		return
+	}
+	m.TrackingInfo.History = append(m.TrackingInfo.History, m.Pos)
+	m.TrackingInfo.FramesSinceLastUpdate = 0
+	if TheGraph.State.Step-m.TrackingInfo.StartedTrackingAt >= tls.NTrackingFrames {
+		m.TrackingInfo.History = slices.Delete(m.TrackingInfo.History, 0, 1)
 	}
 }
 
@@ -153,6 +148,7 @@ func (gr *Graph) UpdateMarblesData() {
 		if setColor != colors.White {
 			m.Color = setColor
 		}
+		m.UpdateTracking()
 	}
 }
 
@@ -268,9 +264,8 @@ func (gr *Graph) RunMarbles() {
 // ToggleTrack toogles tracking setting for a certain marble
 func (m *Marble) ToggleTrack(idx int) {
 	m.TrackingInfo.Track = !m.TrackingInfo.Track
-	// TheGraph.Objects.TrackingLines.Child(idx).AsTree().DeleteChildren()
 	m.TrackingInfo.FramesSinceLastUpdate = 0
-	m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
+	m.TrackingInfo.History = []math32.Vector2{m.Pos}
 	m.TrackingInfo.StartedTrackingAt = TheGraph.State.Step
 }
 
