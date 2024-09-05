@@ -161,7 +161,7 @@ var FunctionNames = []string{"f", "g", "b", "c", "j", "k", "l", "m", "o", "p", "
 // TheGraph is current graph
 var TheGraph Graph
 
-// Init sets up the graph for the core body. It should only be called once.
+// Init sets up the graph for the given body. It should only be called once.
 func (gr *Graph) Init(b *core.Body) {
 	gr.Objects.Body = b
 	gr.Defaults()
@@ -327,7 +327,7 @@ func CheckCircular(expr string, k int) bool {
 	return false
 }
 
-// CheckIfReferences checks if an expr references a coreen function
+// CheckIfReferences checks if an expr references a given function
 func CheckIfReferences(expr string, k int) bool {
 	sort.Slice(BasicFunctionList, func(i, j int) bool {
 		return len(BasicFunctionList[i]) > len(BasicFunctionList[j])

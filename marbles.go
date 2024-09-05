@@ -162,8 +162,8 @@ func (m *Marble) Collided(ln *Line, npos math32.Vector2, yp, yn float64) bool {
 	return false
 }
 
-// CalcCollide calculates the new position and velocity of a marble after a collision with the coreen
-// line, coreen the previous line y, new line y, and new line y with old time
+// CalcCollide calculates the new position and velocity of a marble after a collision with the given
+// line, given the previous line y, new line y, and new line y with old time
 func (m *Marble) CalcCollide(ln *Line, npos math32.Vector2, yp, yn, yno float64) (math32.Vector2, math32.Vector2) {
 	dly := yn - yp // change in the lines y
 	dx := npos.X - m.Pos.X
