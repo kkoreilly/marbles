@@ -85,17 +85,4 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	gr.Vectors.Size = gr.Vectors.Max.Sub(gr.Vectors.Min)
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
 	gr.Vectors.Inc = math32.Vector2{X: n, Y: n}
-
-	// gr.Objects.Lines = svg.NewGroup(gr.Objects.Root)
-	// gr.Objects.Lines.Maker(func(p *tree.Plan) {
-	// 	for i := range len(gr.Lines) {
-	// 		tree.AddAt(p, strconv.Itoa(i), func(w *svg.Path) {})
-	// 	}
-	// })
-	// gr.Objects.Marbles = svg.NewGroup(gr.Objects.Root)
-	// gr.Objects.Coords = svg.NewGroup(gr.Objects.Root)
-	// gr.Objects.TrackingLines = svg.NewGroup(gr.Objects.Root)
-
-	// gr.Objects.Coords.SetProperty("stroke-width", "0.05dp")
-	// gr.Objects.TrackingLines.SetProperty("stroke-width", "0.05dp")
 }

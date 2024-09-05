@@ -229,10 +229,7 @@ func (gr *Graph) Step() { //types:add
 
 // StopSelecting stops selecting current marble
 func (gr *Graph) StopSelecting() { //types:add
-	if gr.State.SelectedMarble != -1 {
-		// gr.Objects.Marbles.Child(gr.State.SelectedMarble).AsTree().SetProperty("stroke", "none")
-		gr.State.SelectedMarble = -1
-	}
+	gr.State.SelectedMarble = -1
 	if !gr.State.Running {
 		gr.Objects.Graph.NeedsRender()
 	}

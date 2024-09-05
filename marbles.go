@@ -45,7 +45,6 @@ func (gr *Graph) GraphMarblesInit() {
 
 // Init makes a marble
 func (m *Marble) Init(n int) {
-	// diff := (TheGraph.Vectors.Size.Y / 20) * 2 * float32(n) / float32(TheGraph.Params.NMarbles)
 	if TheGraph.Params.MarbleStartX.Compile() != nil {
 		return
 	}
