@@ -12,6 +12,7 @@ func (gr *Graph) draw(pc *paint.Context) {
 	defer TheGraph.EvalMu.Unlock()
 	gr.updateCoords()
 	gr.drawAxes(pc)
+	gr.drawTrackingLines(pc)
 	gr.drawLines(pc)
 	gr.drawMarbles(pc)
 }
@@ -26,7 +27,7 @@ func (gr *Graph) updateCoords() {
 	}
 }
 
-// canvasCoord converts the given coordinate to a normalized 0-1 canvas coordinate.
+// canvasCoord converts the given graph coordinate to a normalized 0-1 canvas coordinate.
 func (gr *Graph) canvasCoord(v math32.Vector2) math32.Vector2 {
 	res := math32.Vector2{}
 	res.X = (v.X - gr.Vectors.Min.X) / (gr.Vectors.Max.X - gr.Vectors.Min.X)
@@ -48,6 +49,24 @@ func (gr *Graph) drawAxes(pc *paint.Context) {
 	pc.MoveTo(start.X, start.Y)
 	pc.LineTo(end.X, end.Y)
 	pc.Stroke()
+}
+
+func (gr *Graph) drawTrackingLines(pc *paint.Context) {
+	for _, m := range gr.Marbles {
+		if !m.TrackingInfo.Track {
+			continue
+		}
+		for j, pos := range m.TrackingInfo.History {
+			cpos := gr.canvasCoord(pos)
+			if j == 0 {
+				pc.MoveTo(cpos.X, cpos.Y)
+			} else {
+				pc.LineTo(cpos.X, cpos.Y)
+			}
+		}
+		pc.StrokeStyle.Color = colors.Uniform(m.Color)
+		pc.Stroke()
+	}
 }
 
 func (gr *Graph) drawLines(pc *paint.Context) {
