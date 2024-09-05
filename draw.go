@@ -52,10 +52,11 @@ func (gr *Graph) drawAxes(pc *paint.Context) {
 
 func (gr *Graph) drawLines(pc *paint.Context) {
 	for _, ln := range gr.Lines {
+		// TODO: this logic doesn't work
 		// If the line doesn't change over time then we don't need to keep graphing it while running marbles
-		if !ln.Changes && TheGraph.State.Running && !TheGraph.Params.CenterX.Changes && !TheGraph.Params.CenterY.Changes {
-			continue
-		}
+		// if !ln.Changes && gr.State.Running && !gr.Params.CenterX.Changes && !gr.Params.CenterY.Changes {
+		// 	continue
+		// }
 		ln.draw(gr, pc)
 	}
 }

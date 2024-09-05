@@ -30,21 +30,11 @@ type TrackingInfo struct {
 
 // GraphMarblesInit initializes the graph drawing of the marbles
 func (gr *Graph) GraphMarblesInit() {
-	// gr.Objects.Marbles.DeleteChildren()
-	// gr.Objects.TrackingLines.DeleteChildren()
 	for i, m := range gr.Marbles {
-		// svg.NewGroup(gr.Objects.TrackingLines)
-		// size := float32(TheSettings.MarbleSettings.MarbleSize) * gr.Vectors.Size.Y / 20
-		// fmt.Printf("size: %v \n", size)
-		// circle := svg.NewCircle(gr.Objects.Marbles).SetPos(m.Pos).SetRadius(size)
-		// circle.SetProperty("stroke", "none")
-		// circle.SetProperty("stroke-width", 4*TheSettings.MarbleSettings.MarbleSize)
 		if TheSettings.MarbleSettings.MarbleColor == "default" {
 			m.Color = colors.Spaced(i)
-			// circle.SetProperty("fill", m.Color)
 		} else {
 			m.Color = errors.Log1(colors.FromName(TheSettings.MarbleSettings.MarbleColor))
-			// circle.SetProperty("fill", TheSettings.MarbleSettings.MarbleColor)
 		}
 		m.TrackingInfo.LastPos = math32.Vector2{X: m.Pos.X, Y: m.Pos.Y}
 		m.TrackingInfo.StartedTrackingAt = 0
@@ -93,18 +83,10 @@ func (gr *Graph) ResetMarbles() {
 	gr.GraphMarblesInit()
 }
 
-// UpdateMarbles calls update marbles graph and update marbles data
+// UpdateMarbles updates the marbles graph and marbles data
 func (gr *Graph) UpdateMarbles() bool {
-	if !gr.UpdateMarblesGraph() {
-		gr.UpdateMarblesData()
-		return false
-	}
-	return true
-}
-
-// UpdateMarblesGraph updates the graph of the marbles
-func (gr *Graph) UpdateMarblesGraph() bool {
 	gr.Objects.Graph.NeedsRender()
+	gr.UpdateMarblesData()
 	return false
 }
 
