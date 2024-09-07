@@ -87,4 +87,13 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	gr.Vectors.Size = gr.Vectors.Max.Sub(gr.Vectors.Min)
 	var n float32 = 1.0 / float32(TheSettings.GraphInc)
 	gr.Vectors.Inc = math32.Vector2{X: n, Y: n}
+
+	statusText := core.NewText(b)
+	statusText.Updater(func() {
+		if gr.State.File == "" {
+			statusText.SetText("<i>No file open</i>")
+		} else {
+			statusText.SetText("<b>" + string(gr.State.File) + "</b>")
+		}
+	})
 }

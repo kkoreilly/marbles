@@ -259,7 +259,6 @@ func (gr *Graph) AddLine() { //types:add
 // Reset resets the graph to its starting position (one default line and default params)
 func (gr *Graph) Reset() { //types:add
 	gr.State.File = ""
-	// UpdateCurrentFileText()
 	gr.Lines = nil
 	gr.Lines.Defaults()
 	gr.Params.Defaults()
