@@ -61,19 +61,21 @@ func (gr *Graph) MakeToolbar(p *tree.Plan) {
 }
 
 func (gr *Graph) MakeBasicElements(b *core.Body) {
-	sp := core.NewSplits(b)
-
-	lsp := core.NewSplits(sp)
-	lsp.Styler(func(s *styles.Style) {
-		s.Direction = styles.Column
+	sp := core.NewSplits(b).SetTiles(core.TileSecondLong)
+	sp.Styler(func(s *styles.Style) {
+		if sp.SizeClass() == core.SizeExpanded {
+			s.Direction = styles.Column
+		} else {
+			s.Direction = styles.Row
+		}
 	})
 
-	gr.Objects.LinesTable = core.NewTable(lsp).SetSlice(&gr.Lines)
+	gr.Objects.LinesTable = core.NewTable(sp).SetSlice(&gr.Lines)
 	gr.Objects.LinesTable.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
 
-	gr.Objects.ParamsForm = core.NewForm(lsp).SetStruct(&gr.Params)
+	gr.Objects.ParamsForm = core.NewForm(sp).SetStruct(&gr.Params)
 	gr.Objects.ParamsForm.OnChange(func(e events.Event) {
 		gr.Graph()
 	})
