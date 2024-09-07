@@ -91,7 +91,7 @@ func (gr *Graph) MakeBasicElements(b *core.Body) {
 	statusText := core.NewText(b)
 	statusText.Updater(func() {
 		if gr.State.File == "" {
-			statusText.SetText("<i>No file open</i>")
+			statusText.SetText("Welcome to Marbles!")
 		} else {
 			statusText.SetText("<b>" + string(gr.State.File) + "</b>")
 		}
