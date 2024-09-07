@@ -114,9 +114,9 @@ type Params struct { //types:add
 type Param struct {
 	Expr Expr `label:""`
 
-	Changes bool `display:"-"`
+	Changes bool `display:"-" json:"-"`
 
-	BaseVal float64 `display:"-"`
+	BaseVal float64 `display:"-" json:"-"`
 }
 
 // LineColors contains the color and colorswitch for a line
